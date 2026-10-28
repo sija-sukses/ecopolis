@@ -388,6 +388,14 @@ Animasinya ada tiga, semuanya CSS dan semuanya mati pada
 - Onboarding jadi layar pertama `/play`, bukan modal di landing page. PRD
   menyebut "Modal/Page overlay", jadi keduanya sah; cara ini menghapus
   kebutuhan guard redirect dan menjaga landing page tetap ringan.
+- Sertifikat PDF memakai grid berkoordinat tetap (konstanta `Y` di
+  `lib/pdf.ts`). Versi pertamanya menghitung posisi batang indikator dari
+  tinggi gambar peta, sehingga begitu petanya tinggi, keempat batang terdorong
+  keluar halaman dan menabrak baris kaki. Sekarang kebalikannya: kotaknya
+  tetap, isinya yang dipaskan. Peta diskalakan masuk ke kotaknya, narasi
+  diturunkan ukurannya sampai muat (9,5 sampai 8 pt) dengan pagar terakhir di
+  batas bawah, dan jari-jari batang indikator ikut lebar isiannya supaya nilai
+  kecil tidak jadi lingkaran.
 - Sertifikat PDF menyuntikkan peta sebagai PNG. SVG-nya diserialisasi lebih
   dulu dan setiap `var(--x)` diganti nilai nyatanya yang dibaca dari dokumen,
   karena custom property CSS tidak ikut terbawa saat SVG dilepas dari halaman.

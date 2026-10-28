@@ -8,6 +8,12 @@ import type { GameState, StatKey } from './types.ts';
  * pun raster, sehingga teksnya tidak bisa diseleksi.
  *
  * jsPDF di-import secara dinamis, jadi tidak satu byte pun masuk bundle awal.
+ *
+ * Seluruh tata letaknya memakai koordinat tetap yang dihitung di muka (lihat
+ * konstanta Y di bawah). Versi sebelumnya menghitung posisi batang indikator
+ * dari tinggi gambar peta, sehingga begitu petanya tinggi, keempat batang
+ * terdorong keluar halaman dan menabrak baris kaki. Sekarang tidak ada satu
+ * pun posisi yang bergantung pada tinggi isi; isinya yang dipaskan ke kotak.
  */
 
 const STAT_LABELS: Record<StatKey, string> = {
@@ -17,10 +23,44 @@ const STAT_LABELS: Record<StatKey, string> = {
   energy: 'Energi',
 };
 
-/** mm, A4 lanskap. */
+/* Semua satuan milimeter, A4 lanskap. */
 const W = 297;
 const H = 210;
-const M = 16;
+const M = 14;
+
+/* Kartu terang di dalam bidang ink. */
+const CARD = { x: M, y: M, w: W - M * 2, h: H - M * 2 };
+const PAD = 12;
+const L = CARD.x + PAD;
+const R = CARD.x + CARD.w - PAD;
+
+/* Kolom kiri untuk peta dan indikator, kolom kanan untuk narasi. */
+const COL_L_W = 94;
+const COL_R_X = L + 106;
+const COL_R_W = R - COL_R_X;
+
+/* Baris-baris yang posisinya dikunci. */
+const Y = {
+  brand: 38,
+  tagline: 44,
+  face: 50,
+  name: 64,
+  band: 70,
+  mapBottom: 140,
+  stat0: 150,
+  statStep: 8,
+  titleTop: 78,
+  narrative: 99,
+  narrativeMax: 146,
+  sdgTop: 152,
+  sdgH: 22,
+  footer1: 181,
+  footer2: 188,
+};
+
+const FACE = 20;
+const BAR_X = L + 32;
+const BAR_W = 46;
 
 type Rgb = [number, number, number];
 
@@ -33,15 +73,33 @@ function token(name: string, fallback: Rgb): Rgb {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
+/** Menggambar sebuah sumber gambar ke canvas lalu mengembalikannya sebagai PNG. */
+async function rasterise(src: string, w: number, h: number, crisp: boolean) {
+  const img = new Image();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error('gambar gagal dimuat'));
+    img.src = src;
+  });
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext('2d');
+  if (!g) return null;
+  g.imageSmoothingEnabled = !crisp;
+  g.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL('image/png');
+}
+
 /**
- * Menyalin SVG peta menjadi PNG.
+ * Menyalin peta SVG di halaman menjadi PNG.
  *
- * Warna bangunan memakai custom property CSS, yang tidak ikut terbawa ketika
- * SVG dilepas dari dokumen. Jadi setiap `var(--x)` diganti nilai nyatanya
- * lebih dulu, dibaca dari dokumen yang sedang tampil: tokennya tetap satu
- * sumber, tidak disalin ke dalam JavaScript.
+ * Warnanya memakai custom property CSS, yang tidak ikut terbawa ketika SVG
+ * dilepas dari dokumen. Jadi setiap `var(--x)` diganti nilai nyatanya lebih
+ * dulu, dibaca dari dokumen yang sedang tampil: tokennya tetap satu sumber,
+ * tidak disalin ke dalam JavaScript.
  */
-async function svgToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | null> {
+async function mapToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | null> {
   try {
     const root = getComputedStyle(document.documentElement);
     let markup = new XMLSerializer().serializeToString(svg);
@@ -49,30 +107,30 @@ async function svgToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | n
       const value = root.getPropertyValue(name).trim();
       return value || 'none';
     });
-
     const box = svg.viewBox.baseVal;
-    const ratio = box.height / box.width;
-    const w = pxWidth;
-    const h = Math.round(pxWidth * ratio);
+    const ratio = box.height > 0 ? box.height / box.width : 1;
+    return await rasterise(
+      `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`,
+      pxWidth,
+      Math.round(pxWidth * ratio),
+      false,
+    );
+  } catch {
+    return null;
+  }
+}
 
-    const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
-    const img = new Image();
-    img.width = w;
-    img.height = h;
-
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error('SVG gagal dimuat'));
-      img.src = url;
-    });
-
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    const g = canvas.getContext('2d');
-    if (!g) return null;
-    g.drawImage(img, 0, 0, w, h);
-    return canvas.toDataURL('image/png');
+/** Avatar dibaca dari berkasnya sendiri, dengan penghalusan dimatikan. */
+async function faceToPng(el: HTMLImageElement): Promise<string | null> {
+  try {
+    const res = await fetch(el.currentSrc || el.src);
+    const text = await res.text();
+    return await rasterise(
+      `data:image/svg+xml;charset=utf-8,${encodeURIComponent(text)}`,
+      160,
+      160,
+      true,
+    );
   } catch {
     return null;
   }
@@ -80,8 +138,8 @@ async function svgToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | n
 
 export async function downloadCertificate(
   state: GameState,
-  svg: SVGSVGElement | null,
-  face: SVGSVGElement | null = null,
+  mapSvg: SVGSVGElement | null,
+  faceImg: HTMLImageElement | null = null,
 ) {
   const { leader, stats, review, choices } = state;
   if (!leader || !review) return;
@@ -93,102 +151,144 @@ export async function downloadCertificate(
   const bg = token('--bg', [195, 206, 246]);
   const accent = token('--accent', [255, 107, 61]);
   const grass = token('--field-grass', [134, 196, 90]);
+  const paper: Rgb = [255, 255, 255];
 
-  // Bidang ink penuh, lalu kartu terang di atasnya.
   doc.setFillColor(...ink);
   doc.rect(0, 0, W, H, 'F');
   doc.setFillColor(...bg);
-  doc.rect(M, M, W - M * 2, H - M * 2, 'F');
+  doc.rect(CARD.x, CARD.y, CARD.w, CARD.h, 'F');
 
+  /* ---- Kepala ---- */
   doc.setTextColor(...ink);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.text('ECOPOLIS', M + 10, M + 14);
+  doc.text('ECOPOLIS', L, Y.brand);
   doc.setFont('helvetica', 'normal');
-  doc.text('Sertifikat Pemimpin Kota dan Laporan 2050', M + 10, M + 20);
+  doc.setFontSize(9);
+  doc.text('Sertifikat Pemimpin Kota dan Laporan 2050', L, Y.tagline);
 
-  // Avatar pemimpin, di sebelah namanya.
-  const facePng = face ? await svgToPng(face, 180) : null;
-  const faceSize = 18;
-  if (facePng) doc.addImage(facePng, 'PNG', M + 10, M + 26, faceSize, faceSize);
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(28);
-  doc.text(leader.name, M + 10 + (facePng ? faceSize + 6 : 0), M + 40);
-
-  const png = svg ? await svgToPng(svg, 700) : null;
-  const mapW = 104;
-  const mapX = M + 8;
-  const mapY = M + 46;
-  let mapH = 0;
-  if (png) {
-    const props = doc.getImageProperties(png);
-    mapH = (props.height / props.width) * mapW;
-    doc.addImage(png, 'PNG', mapX, mapY, mapW, mapH);
+  const facePng = faceImg ? await faceToPng(faceImg) : null;
+  if (facePng) {
+    doc.setFillColor(...paper);
+    doc.circle(L + FACE / 2, Y.face + FACE / 2, FACE / 2, 'F');
+    doc.addImage(facePng, 'PNG', L, Y.face, FACE, FACE);
   }
 
-  // Indikator akhir, sebagai batang yang bisa dibaca sekilas.
-  let y = mapY + (mapH || 0) + 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(26);
+  doc.text(leader.name, facePng ? L + FACE + 7 : L, Y.name, { maxWidth: COL_L_W + 54 });
+
+  /* ---- Kolom kiri: peta, dipaskan ke dalam kotak tetap ---- */
+  const mapPng = mapSvg ? await mapToPng(mapSvg, 700) : null;
+  if (mapPng) {
+    const boxH = Y.mapBottom - Y.band;
+    const props = doc.getImageProperties(mapPng);
+    const scale = Math.min(COL_L_W / props.width, boxH / props.height);
+    const w = props.width * scale;
+    const h = props.height * scale;
+    doc.addImage(mapPng, 'PNG', L + (COL_L_W - w) / 2, Y.band + (boxH - h) / 2, w, h);
+  }
+
+  /* ---- Kolom kiri: empat indikator ---- */
   doc.setFontSize(9);
-  (Object.keys(STAT_LABELS) as StatKey[]).forEach((k) => {
+  (Object.keys(STAT_LABELS) as StatKey[]).forEach((k, i) => {
+    const y = Y.stat0 + i * Y.statStep;
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...ink);
-    doc.text(STAT_LABELS[k], mapX, y);
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(mapX + 34, y - 3.2, 52, 4.4, 2.2, 2.2, 'F');
-    doc.setFillColor(...ink);
-    const fill = Math.max(2.4, (stats[k] / 100) * 52);
-    doc.roundedRect(mapX + 34, y - 3.2, fill, 4.4, 2.2, 2.2, 'F');
+    doc.text(STAT_LABELS[k], L, y);
+
+    doc.setFillColor(...paper);
+    doc.roundedRect(BAR_X, y - 3.1, BAR_W, 4.4, 2.2, 2.2, 'F');
+
+    const fill = (stats[k] / 100) * BAR_W;
+    if (fill > 0.6) {
+      doc.setFillColor(...ink);
+      // Jari-jari ikut lebar isian, supaya nilai kecil tidak jadi lingkaran.
+      const r = Math.min(2.2, fill / 2);
+      doc.roundedRect(BAR_X, y - 3.1, fill, 4.4, r, r, 'F');
+    }
+
     doc.setFont('helvetica', 'bold');
-    doc.text(String(stats[k]), mapX + 90, y);
-    y += 8;
+    doc.text(String(stats[k]), L + COL_L_W, y, { align: 'right' });
   });
 
-  // Kolom kanan: judul AI, narasi, dan refleksi SDG.
-  const colX = M + 126;
-  const colW = W - colX - M - 10;
-
+  /* ---- Kolom kanan: judul dari AI ---- */
   doc.setFillColor(...accent);
-  doc.roundedRect(colX, M + 44, colW, 12, 3, 3, 'F');
+  doc.roundedRect(COL_R_X, Y.titleTop, COL_R_W, 13, 3, 3, 'F');
   doc.setTextColor(...ink);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(13);
-  doc.text(review.title, colX + 5, M + 52, { maxWidth: colW - 10 });
+  doc.text(review.title, COL_R_X + 5, Y.titleTop + 8.6, { maxWidth: COL_R_W - 10 });
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
-  let ty = M + 64;
-  for (const para of review.narrative.split('\n\n')) {
-    const lines = doc.splitTextToSize(para.trim(), colW);
-    doc.text(lines, colX, ty);
-    ty += lines.length * 4.6 + 3.5;
+  /* ---- Kolom kanan: narasi, ukurannya diturunkan sampai muat ---- */
+  const paras = review.narrative
+    .split('\n\n')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const room = Y.narrativeMax - Y.narrative;
+
+  let size = 9.5;
+  let lead = 4.6;
+  let blocks: string[][] = [];
+  for (const candidate of [9.5, 9, 8.5, 8]) {
+    size = candidate;
+    lead = candidate * 0.49;
+    doc.setFontSize(size);
+    blocks = paras.map((p) => doc.splitTextToSize(p, COL_R_W) as string[]);
+    const total = blocks.reduce((n, l) => n + l.length, 0) * lead + (blocks.length - 1) * 3;
+    if (total <= room) break;
   }
 
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(size);
+  let ty = Y.narrative;
+  for (const block of blocks) {
+    for (const line of block) {
+      // Pagar terakhir: apa pun yang tersisa berhenti di batas bawahnya.
+      if (ty > Y.narrativeMax) break;
+      doc.text(line, COL_R_X, ty);
+      ty += lead;
+    }
+    ty += 3;
+  }
+
+  /* ---- Kolom kanan: refleksi SDG ---- */
   doc.setFillColor(...grass);
-  doc.roundedRect(colX, ty, colW, 26, 3, 3, 'F');
+  doc.roundedRect(COL_R_X, Y.sdgTop, COL_R_W, Y.sdgH, 3, 3, 'F');
+  doc.setTextColor(...ink);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text('SDG 11 & 13', colX + 5, ty + 7);
+  doc.text('SDG 11 & 13', COL_R_X + 5, Y.sdgTop + 6);
   doc.setFont('helvetica', 'normal');
-  doc.text(doc.splitTextToSize(review.sdgReflection, colW - 10), colX + 5, ty + 12.5);
-
-  // Kaki: kebijakan yang diambil, dan asal laporannya.
-  doc.setFontSize(7.5);
-  doc.setTextColor(...ink);
+  doc.setFontSize(7.6);
   doc.text(
-    `Kebijakan: ${choices.map((c) => c.label).join(' · ')}`,
-    M + 10,
-    H - M - 14,
-    { maxWidth: W - M * 2 - 20 },
+    (doc.splitTextToSize(review.sdgReflection, COL_R_W - 10) as string[]).slice(0, 4),
+    COL_R_X + 5,
+    Y.sdgTop + 11,
+  );
+
+  /* ---- Kaki ---- */
+  doc.setTextColor(...ink);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Kebijakan', L, Y.footer1);
+  doc.setFont('helvetica', 'normal');
+  doc.text(
+    (
+      doc.splitTextToSize(choices.map((c) => c.label).join('  ·  '), R - L - 24) as string[]
+    ).slice(0, 1),
+    L + 24,
+    Y.footer1,
   );
   doc.text(
     review.fallback
-      ? 'Laporan Hasil Evaluasi Standar · INVOFEST 2026'
-      : 'Laporan dibangkitkan AI · INVOFEST 2026',
-    M + 10,
-    H - M - 8,
+      ? 'Laporan Hasil Evaluasi Standar  ·  Ecopolis untuk INVOFEST 2026'
+      : 'Laporan dibangkitkan AI  ·  Ecopolis untuk INVOFEST 2026',
+    L,
+    Y.footer2,
   );
 
-  const safe = leader.name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-') || 'pemimpin';
-  doc.save(`ecopolis-${safe.toLowerCase()}-2050.pdf`);
+  const safe =
+    leader.name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase() || 'pemimpin';
+  doc.save(`ecopolis-${safe}-2050.pdf`);
 }

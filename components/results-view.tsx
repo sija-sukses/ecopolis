@@ -39,7 +39,7 @@ export function ResultsView() {
       await downloadCertificate(
         state,
         mapBox.current?.querySelector('svg') ?? null,
-        document.querySelector<SVGSVGElement>('.result__face'),
+        document.querySelector<HTMLImageElement>('img.result__face'),
       );
     } finally {
       setMaking(false);
