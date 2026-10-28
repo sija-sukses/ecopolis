@@ -63,7 +63,7 @@ components/
 lib/
   game-context.tsx        # Context + useReducer + persist
   reducer.ts              # murni, tanpa efek samping
-  scenarios.json          # 5 ronde
+  scenarios.ts            # 5 ronde (data, bukan logika)
   fallback.ts             # 4 template narasi lokal
   sfx.ts                  # Web Audio, tanpa library
   pdf.ts                  # generator sertifikat
@@ -117,39 +117,29 @@ dibuka langsung.
 
 ## 4. Mesin skenario
 
-`lib/scenarios.json` — data, bukan kode. Satu entri per ronde:
-
-```json
-{
-  "id": 1,
-  "plot": 0,
-  "title": "Pembangunan Sumber Energi Pertama",
-  "context": "Kota membutuhkan pasokan listrik dasar...",
-  "options": [
-    {
-      "id": "a",
-      "label": "PLTU Batu Bara",
-      "blurb": "Murah, cepat, dan langsung menyalakan industri.",
-      "effects": { "economy": 20, "environment": -25, "satisfaction": -5, "energy": 20 },
-      "asset": "pltu"
-    },
-    {
-      "id": "b",
-      "label": "PLTS Surya",
-      "blurb": "Investasi besar di awal, bersih untuk seterusnya.",
-      "effects": { "economy": -15, "environment": 20, "satisfaction": 10, "energy": 15 },
-      "asset": "plts"
-    }
-  ]
-}
-```
+`lib/scenarios.ts` — tetap data murni, bukan logika, tapi sebagai `const`
+TypeScript alih-alih `.json` seperti rencana awal. Alasannya: array ber-tipe
+`Scenario[]` membuat salah tulis kunci efek (`enviroment`) gagal saat build,
+sedangkan JSON akan lolos dan baru terasa salah saat dimainkan. Import-nya juga
+bersih di Next maupun di `node --test`, tanpa `with { type: 'json' }`.
 
 Reducer menerapkan `effects`, meng-clamp hasilnya ke 0..100, menaruh `asset`
 di `plots[plot]`, mencatat pilihan, menaikkan `round`. **Nol pemanggilan API
 selama ronde** — sesuai syarat ketahanan rate limit di PRD.
 
-Menambah ronde ke-6 nanti = menambah satu objek JSON. Tidak ada kode yang
+Menambah ronde ke-6 nanti = menambah satu entri di array. Tidak ada kode yang
 perlu diubah.
+
+### Penyeimbangan lima ronde
+
+Lima dilema: energi, transportasi, lahan kosong, sampah, permukiman. Angka
+efeknya disetel supaya **tidak ada opsi yang unggul di keempat statistik**
+sekaligus — ada satu tes yang memverifikasi ini, jadi penyeimbangan tidak bisa
+rusak tanpa ketahuan.
+
+Dua jalur ekstrem sengaja berakhir krisis: serba-hijau menamatkan permainan
+dengan ekonomi ~10, serba-ekonomi dengan lingkungan ~0. Di situlah pelajaran
+tradeoff-nya, dan keduanya punya narasi fallback sendiri.
 
 ---
 
@@ -301,9 +291,9 @@ ronde 5, Lighthouse di URL preview Vercel.
 ## 11. Yang masih menunggu
 
 1. **Referensi visual dari Anda** — palet, tipografi, mood. Memblokir penulisan
-   komponen apa pun; struktur di dokumen ini tidak terpengaruh.
+   komponen apa pun; inti logika di atas tidak terpengaruh dan sudah jalan.
 2. **`GEMINI_API_KEY`** — dibutuhkan untuk memverifikasi model mana yang benar-benar
    bisa diakses kunci Anda (`GET /v1beta/models`) sebelum mengandalkan
-   `gemini-3.8-flash`.
-3. **Isi 5 skenario** — judul, konteks, dan angka efeknya perlu diseimbangkan
-   supaya tidak ada pilihan yang jelas selalu benar. Saya ajukan draf, Anda koreksi.
+   `gemini-3.8-flash`. Tanpa kunci, aplikasi tetap jalan memakai narasi lokal.
+3. **Koreksi isi 5 skenario** — draf sudah ada di `lib/scenarios.ts`. Yang perlu
+   Anda nilai: apakah dilemanya terasa realistis untuk konteks Indonesia.
