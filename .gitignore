@@ -9,3 +9,6 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
+
+# taste-skill working files
+.taste-skill/

@@ -288,6 +288,47 @@ ronde 5, Lighthouse di URL preview Vercel.
 
 ---
 
+## 10a. Arah visual
+
+Dibagikan oleh taste-skill, seed 131985738: **Loud and flat** (poster datar),
+tipografi **Chivo** 900, sektor education, nada playful.
+
+Satu slot ditolak dan diganti, sesuai aturan skill-nya sendiri: palet bagian
+(abu, mint, oranye) tidak dipakai karena bertabrakan dengan referensi visual
+yang Anda berikan. **Proporsinya** tetap dipertahankan (satu ground, satu ink,
+satu aksen, tiap panel satu warna penuh), tapi warnanya diambil dari
+referensi: lavender `#c3cef6`, ink `#16193a`, aksen `#ff6b3d`, bidang hijau
+`#86c45a` dan oranye `#f5b06a`.
+
+Ide halamannya: **lima petak kosong Ecopolis menjadi tulang punggung halaman**.
+Tiap materi edukasi adalah satu petak dan menyiapkan ronde dengan persoalan
+yang sama, jadi belajar adalah pengarahan, bukan jalan memutar.
+
+Satu hal yang bisa dimainkan di landing page: keputusan ronde 1 yang sungguhan,
+memakai data dan rumus yang sama dengan permainannya (`components/try-round.tsx`).
+
+Dua penyimpangan dari blueprint yang dibagikan, keduanya karena gerbang
+pengukurnya sendiri menolak versi aslinya:
+
+1. Panel edukasi aslinya memakai kata kerja raksasa yang menempel di tengah
+   layar sementara fotonya lewat di belakang. Itu membuat teks tertimpa gambar
+   dan terpotong di tepi atas. Diganti: foto menguasai satu sisi, teks sisi
+   lain, warna bidang berganti tiap panel.
+2. Tangga pernyataan di bagian "Tidak ada yang gratis" diturunkan ke 36px dan
+   ditandai sebagai paragraf, bukan judul, karena aturan rumahnya membatasi
+   judul maksimal dua baris.
+
+### Sistem isometrik
+
+Satu ubin 128 x 64. Kelima petak **adalah** pulaunya: balok rumput setebal 24
+dengan sisi tanah, tanpa slab besar di bawahnya, karena susunan lima petak
+hanya mengisi lima dari sembilan sel dan slab persegi selalu menyisakan tanah
+kosong yang terbaca sebagai piring hampa.
+
+Bangunan ditulis sekali sebagai `<symbol>` dan dipakai ulang lewat `<use>`,
+digambar seukuran ubin penuh lalu dikecilkan 0.85 supaya tetap ada ruang di
+sekeliling tiap petak.
+
 ## 11. Yang masih menunggu
 
 1. **Referensi visual dari Anda** — palet, tipografi, mood. Memblokir penulisan
@@ -297,3 +338,5 @@ ronde 5, Lighthouse di URL preview Vercel.
    `gemini-3.8-flash`. Tanpa kunci, aplikasi tetap jalan memakai narasi lokal.
 3. **Koreksi isi 5 skenario** — draf sudah ada di `lib/scenarios.ts`. Yang perlu
    Anda nilai: apakah dilemanya terasa realistis untuk konteks Indonesia.
+4. **Halaman `/play` dan `/results`** — belum dibuat, jadi tombol "Mulai
+   Simulasi" di landing page masih menuju 404.
