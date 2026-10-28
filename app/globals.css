@@ -38,6 +38,24 @@
   --smoke: #eef1fb;
   --glass: #bcd9f2;
   --sun: #ffd45e;
+  /* Material tambahan, diambil dari referensi isometrik di folder refrensi. */
+  --solar: #2f3b74;
+  --solar-dark: #222b57;
+  --solar-line: #eef2ff;
+  --brick-top: #c4604a;
+  --brick-left: #a44c39;
+  --brick-right: #8a3e2e;
+  --coal: #2b2f45;
+  --coal-light: #3d4259;
+  --steel-top: #d7dbe8;
+  --steel-left: #aeb4c9;
+  --steel-right: #949bb4;
+  --asphalt: #585e78;
+  --asphalt-line: #f2f4ff;
+  --bus: #2f6fd0;
+  --bus-dark: #1f4f9e;
+  --pond: #7fc0ea;
+
   --isle-top: #e8c98f;
   --isle-left: #cfa468;
   --isle-right: #b98b52;
