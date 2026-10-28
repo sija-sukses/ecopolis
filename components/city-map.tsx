@@ -23,7 +23,7 @@ export function CityMap({ plots, label, className, animate = false }: Props) {
   return (
     <svg
         className={className}
-      viewBox="-142 -98 284 240"
+      viewBox="-148 -136 296 284"
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label={label}
@@ -33,18 +33,22 @@ export function CityMap({ plots, label, className, animate = false }: Props) {
       {PLOT_POS.map(([x, y], i) => {
         const asset = plots[i];
         return (
-          <g
-            key={i}
-            transform={`translate(${x} ${y})`}
-            className={animate && asset ? 'drop' : undefined}
-            style={animate && asset ? { animationDelay: `${0.12 * i + 0.3}s` } : undefined}
-          >
-            <PlotPad />
-            {asset && (
-              <g transform={`translate(0 ${-BUILDING_LIFT}) scale(${BUILDING_SCALE})`}>
-                <Building id={asset} />
-              </g>
-            )}
+          // Posisi petak dan animasi jatuhnya sengaja dipisah ke dua elemen.
+          // CSS transform menimpa atribut transform pada elemen SVG, jadi
+          // menganimasikan keduanya di satu elemen akan menghapus posisi
+          // petaknya dan menumpuk seluruh kota di titik asal.
+          <g key={i} transform={`translate(${x} ${y})`}>
+            <g
+              className={animate && asset ? 'drop' : undefined}
+              style={animate && asset ? { animationDelay: `${0.12 * i + 0.3}s` } : undefined}
+            >
+              <PlotPad />
+              {asset && (
+                <g transform={`translate(0 ${-BUILDING_LIFT}) scale(${BUILDING_SCALE})`}>
+                  <Building id={asset} />
+                </g>
+              )}
+            </g>
           </g>
         );
       })}

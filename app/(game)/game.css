@@ -1,0 +1,588 @@
+/* ===========================================================================
+   Layar permainan dan laporan.
+
+   Berkas terpisah dan hanya di-import oleh layout (game), jadi landing page
+   tidak ikut memuat satu baris pun darinya. Token, tombol, dan bentuknya sama
+   dengan globals.css.
+   =========================================================================== */
+
+.stage {
+  min-height: 100svh;
+  padding: clamp(14px, 2.4vw, 28px) var(--gutter) clamp(24px, 4vw, 48px);
+}
+
+.stage--wait {
+  background: var(--bg);
+}
+
+.stage--onboard {
+  display: grid;
+  place-items: center;
+}
+
+/* --- Pengenalan pemimpin --- */
+
+.onboard {
+  width: min(560px, 100%);
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: var(--r);
+  background: var(--field-ink);
+  color: var(--field-paper);
+}
+
+.onboard__title {
+  font-size: var(--step-mid);
+}
+
+.onboard__lead {
+  margin-top: 18px;
+  font-size: var(--step-body);
+  color: #c9cde8;
+}
+
+.field {
+  display: block;
+  margin-top: 32px;
+}
+
+.field__label {
+  display: block;
+  font-size: var(--step-small);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.field__input {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 10px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--r);
+  background: var(--field-paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--step-lead);
+  font-weight: 700;
+}
+
+.field__help {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--step-small);
+  color: #c9cde8;
+}
+
+.field__input[aria-invalid="true"] + .field__help {
+  color: var(--accent);
+}
+
+.pick {
+  margin-top: 28px;
+  padding: 0;
+  border: 0;
+}
+
+.pick__row {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.pick__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-height: 56px;
+  padding: 18px;
+  border: 0;
+  border-radius: var(--r);
+  background: #242a52;
+  color: var(--field-paper);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 140ms ease;
+}
+
+.pick__btn:hover {
+  transform: translateY(-3px);
+}
+
+.pick__btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.onboard .btn {
+  width: 100%;
+  margin-top: 32px;
+}
+
+/* --- Papan indikator --- */
+
+.hud {
+  padding: clamp(16px, 2vw, 24px);
+  border-radius: var(--r);
+  background: var(--field-ink);
+  color: var(--field-paper);
+}
+
+.hud__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hud__who {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hud__who span {
+  font-size: var(--step-lead);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.hud__who b {
+  font-size: var(--step-small);
+  font-weight: 700;
+  color: #c9cde8;
+}
+
+.hud__mute {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #242a52;
+  color: var(--field-paper);
+  font: inherit;
+  font-size: var(--step-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hud__mute[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.hud__bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.stat__name {
+  display: block;
+  font-size: var(--step-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #c9cde8;
+}
+
+.stat__track {
+  display: block;
+  height: 14px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #242a52;
+  overflow: hidden;
+}
+
+.stat__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--field-grass);
+  transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stat__num {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: var(--step-lead);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__delta {
+  font-size: var(--step-small);
+  font-weight: 900;
+}
+
+.stat__delta--up {
+  color: var(--field-grass);
+}
+
+.stat__delta--down {
+  color: var(--accent);
+}
+
+/* --- Peta dan kartu keputusan --- */
+
+.stage__grid {
+  display: grid;
+  grid-template-columns: 54fr 46fr;
+  gap: clamp(16px, 2.4vw, 36px);
+  align-items: center;
+  margin-top: clamp(16px, 2.4vw, 32px);
+}
+
+.stage__map svg {
+  width: 100%;
+  height: auto;
+  max-height: 62svh;
+}
+
+.card {
+  padding: clamp(24px, 3vw, 40px);
+  border-radius: var(--r);
+  background: var(--field-warm);
+  color: var(--ink);
+  animation: cardin 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cardin {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card__title {
+  font-size: var(--step-mid);
+}
+
+/* Fokus tetap dipindahkan ke judul tiap ronde baru supaya pembaca layar dan
+   pengguna papan ketik tahu kartunya berganti, tapi judul bukan kontrol yang
+   bisa ditekan, jadi cincin fokusnya tidak perlu digambar. */
+.card__title:focus {
+  outline: none;
+}
+
+.card__ctx {
+  margin-top: 16px;
+  font-size: var(--step-body);
+  line-height: 1.5;
+}
+
+.card__opts {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.card__hint {
+  margin-top: 18px;
+  font-size: var(--step-small);
+}
+
+.opt:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+/* --- Menunggu laporan --- */
+
+.analyzing {
+  padding: clamp(24px, 3vw, 40px);
+  border-radius: var(--r);
+  background: var(--field-warm);
+  color: var(--ink);
+}
+
+.analyzing__title {
+  font-size: var(--step-mid);
+}
+
+.analyzing p {
+  margin-top: 16px;
+  font-size: var(--step-body);
+  line-height: 1.5;
+}
+
+.analyzing__bar {
+  position: relative;
+  display: block;
+  height: 14px;
+  margin-top: 26px;
+  border-radius: 999px;
+  background: #e0c49b;
+  overflow: hidden;
+}
+
+.analyzing__bar::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 42%;
+  border-radius: 999px;
+  background: var(--ink);
+  animation: sweep 1300ms ease-in-out infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+/* --- Laporan --- */
+
+.result {
+  padding-bottom: clamp(48px, 7vw, 110px);
+}
+
+.result__hero {
+  padding-top: clamp(24px, 3vw, 48px);
+  text-align: center;
+}
+
+.result__who {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.result__who span {
+  display: block;
+  font-size: var(--step-small);
+  font-weight: 700;
+}
+
+.result__who b {
+  display: block;
+  font-size: var(--step-lead);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.result__title {
+  margin-top: 24px;
+  margin-inline: auto;
+  max-width: 18ch;
+  font-size: var(--step-mid);
+}
+
+.result__badge {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--field-ink);
+  color: var(--field-paper);
+  font-size: var(--step-small);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.result__map {
+  margin-top: clamp(16px, 2.4vw, 32px);
+}
+
+.result__map svg {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  height: auto;
+}
+
+.result__story {
+  margin-top: clamp(32px, 5vw, 72px);
+  padding-block: clamp(48px, 7vw, 110px);
+  background: var(--field-ink);
+  color: var(--field-paper);
+}
+
+.result__story h2 {
+  max-width: 16ch;
+  font-size: var(--step-mid);
+}
+
+.result__para {
+  margin-top: 24px;
+  max-width: 62ch;
+  font-size: var(--step-lead);
+  line-height: 1.5;
+}
+
+.result__sdg {
+  padding-top: clamp(48px, 7vw, 110px);
+}
+
+.result__sdg h2 {
+  font-size: var(--step-mid);
+}
+
+.result__reflect {
+  margin-top: 20px;
+  max-width: 62ch;
+  font-size: var(--step-lead);
+  line-height: 1.45;
+}
+
+.sdgs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.sdg {
+  padding: 24px;
+  border-radius: var(--r);
+  background: var(--field-grass);
+  color: var(--ink);
+}
+
+.sdg__num {
+  display: block;
+  font-size: var(--step-mid);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.sdg__label {
+  display: block;
+  margin-top: 8px;
+  font-size: var(--step-small);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sdg__track {
+  display: block;
+  height: 12px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.sdg__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ink);
+}
+
+.sdg__tag {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--field-ink);
+  color: var(--field-paper);
+  font-size: var(--step-small);
+  font-weight: 900;
+}
+
+.sdg__name {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--step-small);
+  line-height: 1.4;
+}
+
+.result__close {
+  padding-top: clamp(48px, 7vw, 110px);
+}
+
+.result__close h2 {
+  font-size: var(--step-mid);
+}
+
+.result__list {
+  display: grid;
+  gap: 10px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.result__list li {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  padding: 16px 22px;
+  border-radius: var(--r);
+  background: var(--surface);
+}
+
+.result__list b {
+  font-size: var(--step-small);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.result__list span {
+  font-size: var(--step-body);
+  font-weight: 700;
+}
+
+.result__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.result__home {
+  font-size: var(--step-small);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .hud__bars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stage__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stage__map svg {
+    max-height: 40svh;
+  }
+
+  .sdgs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .result__actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .analyzing__bar::after {
+    animation: none;
+  }
+
+  .pick__btn:hover {
+    transform: none;
+  }
+}

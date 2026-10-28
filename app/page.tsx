@@ -1,7 +1,6 @@
 import Image from 'next/image';
 
 import { CityMap } from '@/components/city-map.tsx';
-import { IsoSprite } from '@/components/iso.tsx';
 import { TryRound } from '@/components/try-round.tsx';
 import type { AssetId } from '@/lib/types.ts';
 
@@ -69,7 +68,6 @@ const SCORED = [
 export default function Home() {
   return (
     <>
-      <IsoSprite />
 
       <header className="shell topbar">
         <a className="wordmark" href="#atas">

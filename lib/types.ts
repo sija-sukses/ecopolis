@@ -70,6 +70,7 @@ export type Action =
   | { type: 'choose'; option: OptionId }
   | { type: 'review'; review: Review }
   | { type: 'mute'; muted: boolean }
+  | { type: 'restore'; state: GameState }
   | { type: 'reset' };
 
 export type ReviewPayload = {

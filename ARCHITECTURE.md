@@ -325,9 +325,22 @@ dengan sisi tanah, tanpa slab besar di bawahnya, karena susunan lima petak
 hanya mengisi lima dari sembilan sel dan slab persegi selalu menyisakan tanah
 kosong yang terbaca sebagai piring hampa.
 
-Bangunan ditulis sekali sebagai `<symbol>` dan dipakai ulang lewat `<use>`,
-digambar seukuran ubin penuh lalu dikecilkan 0.85 supaya tetap ada ruang di
-sekeliling tiap petak.
+Bangunan digambar seukuran ubin penuh lalu dikecilkan 0.85 supaya tetap ada
+ruang di sekeliling tiap petak. Sempat dipakai `<symbol>` + `<use>` agar bisa
+dipakai ulang, tapi viewport milik `<symbol>` memotong bangunan yang menjulang
+keluar darinya, dan satu halaman hanya memuat satu peta: indirection-nya tidak
+menghemat apa pun.
+
+Sub-bangunan (cerobong, atap, bak, menara) ditempatkan lewat `at(u, v, lift)`
+dalam satuan ubin, bukan dengan menebak offset piksel. Pada bidang isometrik,
+bergeser mendatar sejauh dx selalu berarti bergeser menurun dx/2 juga; tanpa
+aturan itu sub-bangunan tampak melayang lepas dari atapnya.
+
+**Jebakan yang sempat memakan waktu paling lama:** `transform` CSS pada elemen
+SVG **menimpa** atribut `transform`-nya. Animasi jatuhnya bangunan sempat
+dipasang pada elemen yang sama dengan posisi petaknya, sehingga keadaan akhir
+animasi menghapus `translate(x y)` dan menumpuk kelima petak di titik asal.
+Posisi dan animasi kini dipisah ke dua elemen bersarang.
 
 ## 11. Yang masih menunggu
 
@@ -338,5 +351,19 @@ sekeliling tiap petak.
    `gemini-3.8-flash`. Tanpa kunci, aplikasi tetap jalan memakai narasi lokal.
 3. **Koreksi isi 5 skenario** — draf sudah ada di `lib/scenarios.ts`. Yang perlu
    Anda nilai: apakah dilemanya terasa realistis untuk konteks Indonesia.
-4. **Halaman `/play` dan `/results`** — belum dibuat, jadi tombol "Mulai
-   Simulasi" di landing page masih menuju 404.
+4. **Kunci Gemini di Vercel** — tanpa `GEMINI_API_KEY`, `/results` selalu
+   memakai narasi lokal dan menampilkan badge "Laporan Hasil Evaluasi Standar".
+
+## 12. Catatan pelaksanaan
+
+- `framer-motion` **tidak dipasang**, meski disebut di PRD. Pergantian kartu
+  ditangani `key={round}` plus animasi CSS, dan jatuhnya bangunan juga CSS.
+  Keduanya nol byte tambahan, yang langsung menolong target Lighthouse. Pasang
+  kalau nanti benar-benar butuh animasi keluar (exit) yang sulit ditulis
+  dengan CSS.
+- Onboarding jadi layar pertama `/play`, bukan modal di landing page. PRD
+  menyebut "Modal/Page overlay", jadi keduanya sah; cara ini menghapus
+  kebutuhan guard redirect dan menjaga landing page tetap ringan.
+- Sertifikat PDF menyuntikkan peta sebagai PNG. SVG-nya diserialisasi lebih
+  dulu dan setiap `var(--x)` diganti nilai nyatanya yang dibaca dari dokumen,
+  karena custom property CSS tidak ikut terbawa saat SVG dilepas dari halaman.

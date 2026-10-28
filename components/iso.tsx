@@ -120,22 +120,35 @@ export const BUILDING_LIFT = PAD_H - 14;
     tetap ada ruang kosong di sekeliling tiap petak. */
 export const BUILDING_SCALE = 0.85;
 
+/**
+ * Menempatkan sesuatu di atas permukaan ubin.
+ *
+ * `u` dan `v` adalah satuan ubin pada dua sumbu isometrik, `lift` adalah
+ * tinggi permukaan yang ditumpanginya. Tanpa ini, offset ditulis dengan
+ * menebak dalam piksel layar dan sub-bangunan tampak melayang lepas dari
+ * atapnya: pada bidang isometrik, bergeser mendatar sejauh dx selalu berarti
+ * bergeser menurun dx/2 juga.
+ */
+function at(u: number, v: number, lift = 0) {
+  return `translate(${(u - v) * HW} ${(u + v) * HH - lift})`;
+}
+
 function Pltu() {
   return (
     <g>
       <Box h={42} inset={24} lift={14} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
       {/* Dua cerobong bergaris, penanda PLTU yang paling dikenali. */}
-      <g transform="translate(-20 -30)">
+      <g transform={at(-0.18, 0.18, 56)}>
         <Box h={62} inset={44} top={C.smoke} left={C.stoneL} right={C.stoneR} />
-        <rect x="-8" y="-100" width="16" height="10" rx="3" fill={C.warmR} />
+        <rect x="-9" y="-70" width="18" height="11" rx="3" fill={C.warmR} />
+        <circle cx="0" cy="-82" r="12" fill={C.smoke} opacity="0.85" />
+        <circle cx="13" cy="-98" r="9" fill={C.smoke} opacity="0.55" />
+        <circle cx="-6" cy="-110" r="7" fill={C.smoke} opacity="0.4" />
       </g>
-      <g transform="translate(18 -20)">
+      <g transform={at(0.2, -0.2, 56)}>
         <Box h={46} inset={46} top={C.smoke} left={C.stoneL} right={C.stoneR} />
-        <rect x="-7" y="-74" width="14" height="9" rx="3" fill={C.warmR} />
+        <rect x="-7" y="-53" width="14" height="9" rx="3" fill={C.warmR} />
       </g>
-      <circle cx="-20" cy="-104" r="12" fill={C.smoke} opacity="0.85" />
-      <circle cx="-4" cy="-118" r="9" fill={C.smoke} opacity="0.6" />
-      <circle cx="-32" cy="-124" r="7" fill={C.smoke} opacity="0.45" />
     </g>
   );
 }
@@ -144,14 +157,18 @@ function Plts() {
   return (
     <g>
       {/* Tiga baris panel miring menghadap satu arah. */}
-      {[0, 1, 2].map((i) => (
-        <g key={i} transform={`translate(${(i - 1) * 30} ${(i - 1) * 15 - 6})`}>
-          <polygon points="-34,2 0,19 34,2 0,-15" fill={C.stoneL} />
-          <polygon points="-34,-6 0,11 34,-6 0,-23" fill={C.glass} />
-          <rect x="-3" y="4" width="6" height="14" fill={C.stoneR} />
+      {[
+        [-0.3, 0.3],
+        [0, 0],
+        [0.3, -0.3],
+      ].map(([u, v], i) => (
+        <g key={i} transform={at(u, v, 14)}>
+          <polygon points="-30,2 0,17 30,2 0,-13" fill={C.stoneL} />
+          <polygon points="-30,-6 0,9 30,-6 0,-21" fill={C.glass} />
+          <rect x="-3" y="4" width="6" height="12" fill={C.stoneR} />
         </g>
       ))}
-      <circle cx="40" cy="-70" r="18" fill={C.sun} />
+      <circle cx="34" cy="-62" r="17" fill={C.sun} />
     </g>
   );
 }
@@ -159,18 +176,20 @@ function Plts() {
 function Tol() {
   return (
     <g>
-      {/* Jalan layang melintasi petak, ditopang dua pilar. */}
-      <g transform="translate(0 -46)">
-        <polygon points={diamond(7)} fill={C.stoneTop} />
-        <polygon points={`${-(HW - 14)},0 0,${HH - 7} 0,${HH + 3} ${-(HW - 14)},10`} fill={C.stoneL} />
-        <polygon points={`${HW - 14},0 0,${HH - 7} 0,${HH + 3} ${HW - 14},10`} fill={C.stoneR} />
-        <polygon points="-56,0 0,28 56,0 0,-28" fill={C.stoneTop} />
-        <polygon points="-30,-2 -14,6 0,-1 -16,-9" fill={C.smoke} />
-        <polygon points="14,6 30,14 44,7 28,-1" fill={C.smoke} />
+      {/* Dua pilar menopang satu dek jalan yang melintasi petak. */}
+      <g transform={at(-0.3, 0.3, 14)}>
+        <Box h={44} inset={46} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
       </g>
-      <Box h={46} inset={26} lift={10} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
-      <g transform="translate(-34 18)">
-        <Box h={40} inset={28} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
+      <g transform={at(0.3, -0.3, 14)}>
+        <Box h={44} inset={46} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
+      </g>
+      <g transform={at(0, 0, 58)}>
+        <polygon points="-60,0 0,30 60,0 0,-30" fill={C.stoneTop} />
+        <polygon points="-60,0 0,30 0,38 -60,8" fill={C.stoneL} />
+        <polygon points="60,0 0,30 0,38 60,8" fill={C.stoneR} />
+        {/* Marka jalan, sejajar sumbu isometrik. */}
+        <polygon points="-34,-1 -18,7 -10,3 -26,-5" fill={C.smoke} />
+        <polygon points="10,9 26,17 34,13 18,5" fill={C.smoke} />
       </g>
     </g>
   );
@@ -179,14 +198,14 @@ function Tol() {
 function Brt() {
   return (
     <g>
-      {/* Halte memanjang dengan satu bus listrik di depannya. */}
+      {/* Halte beratap terang, dengan satu bus listrik menunggu di depannya. */}
       <Box h={30} inset={24} lift={14} top={C.glass} left={C.stoneL} right={C.stoneR} />
-      <g transform="translate(0 -40)">
-        <polygon points={diamond(20)} fill={C.smoke} />
+      <g transform={at(0, 0, 44)}>
+        <polygon points={diamond(16)} fill={C.smoke} />
       </g>
-      <g transform="translate(6 24)">
-        <Box h={30} inset={35} top={C.leafTop} left={C.leafL} right={C.leafR} />
-        <rect x="-16" y="-24" width="32" height="9" rx="3" fill={C.glass} />
+      <g transform={at(0.28, -0.1, 14)}>
+        <Box h={28} inset={40} top={C.leafTop} left={C.leafL} right={C.leafR} />
+        <rect x="-14" y="-24" width="28" height="8" rx="3" fill={C.glass} />
       </g>
     </g>
   );
@@ -195,39 +214,37 @@ function Brt() {
 function Industri() {
   return (
     <g>
-      {/* Tiga blok pabrik dengan atap gergaji. */}
-      <Box h={44} inset={23} lift={14} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
-      <g transform="translate(-30 -58)">
-        <Box h={34} inset={36} top={C.warmTop} left={C.warmL} right={C.warmR} />
+      {/* Blok pabrik bertingkat di atas satu alas beton. */}
+      <Box h={40} inset={23} lift={14} top={C.stoneTop} left={C.stoneL} right={C.stoneR} />
+      <g transform={at(-0.2, 0.04, 54)}>
+        <Box h={30} inset={38} top={C.warmTop} left={C.warmL} right={C.warmR} />
       </g>
-      <g transform="translate(14 -50)">
-        <Box h={52} inset={37} top={C.warmTop} left={C.warmL} right={C.warmR} />
+      <g transform={at(0.1, -0.1, 54)}>
+        <Box h={46} inset={38} top={C.warmTop} left={C.warmL} right={C.warmR} />
+        <circle cx="0" cy="-62" r="11" fill={C.smoke} opacity="0.7" />
+        <circle cx="12" cy="-76" r="8" fill={C.smoke} opacity="0.45" />
       </g>
-      <g transform="translate(40 -36)">
-        <Box h={30} inset={39} top={C.smoke} left={C.stoneL} right={C.stoneR} />
+      <g transform={at(0.06, 0.28, 54)}>
+        <Box h={22} inset={42} top={C.smoke} left={C.stoneL} right={C.stoneR} />
       </g>
-      <circle cx="14" cy="-118" r="12" fill={C.smoke} opacity="0.75" />
-      <circle cx="30" cy="-132" r="8" fill={C.smoke} opacity="0.5" />
     </g>
   );
 }
 
 function Hutan() {
-  const tree = (x: number, y: number, s: number) => (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <rect x="-5" y="-16" width="10" height="20" rx="4" fill={C.warmR} />
-      <circle cx="0" cy="-34" r="26" fill={C.leafTop} />
-      <circle cx="-16" cy="-22" r="18" fill={C.leafL} />
-      <circle cx="17" cy="-24" r="17" fill={C.leafR} />
+  const tree = (s: number) => (
+    <g transform={`scale(${s})`}>
+      <rect x="-5" y="-18" width="10" height="22" rx="4" fill={C.warmR} />
+      <circle cx="0" cy="-36" r="25" fill={C.leafTop} />
+      <circle cx="-15" cy="-24" r="17" fill={C.leafL} />
+      <circle cx="16" cy="-26" r="16" fill={C.leafR} />
     </g>
   );
   return (
     <g>
-      <g transform="translate(0 -14)">
-        {tree(-32, 12, 0.85)}
-        {tree(30, 16, 0.78)}
-        {tree(-2, -6, 1.05)}
-      </g>
+      <g transform={at(-0.3, 0.25, 14)}>{tree(0.9)}</g>
+      <g transform={at(0.3, -0.25, 14)}>{tree(0.8)}</g>
+      <g transform={at(0, 0, 14)}>{tree(1.05)}</g>
     </g>
   );
 }
@@ -235,14 +252,16 @@ function Hutan() {
 function Tpa() {
   return (
     <g>
-      {/* Gundukan sampah bertingkat dengan serakan di puncaknya. */}
+      {/* Gundukan sampah bertingkat, makin ke atas makin kecil. */}
       <Box h={24} inset={20} lift={14} top={C.warmL} left={C.warmL} right={C.warmR} />
       <Box h={22} inset={31} lift={38} top={C.smoke} left={C.stoneL} right={C.stoneR} />
       <Box h={18} inset={42} lift={60} top={C.warmTop} left={C.warmL} right={C.warmR} />
-      <circle cx="-14" cy="-92" r="6" fill={C.glass} />
-      <circle cx="10" cy="-96" r="5" fill={C.leafTop} />
-      <circle cx="-2" cy="-104" r="4" fill={C.warmR} />
-      <circle cx="26" cy="-86" r="4" fill={C.smoke} />
+      <g transform={at(0, 0, 78)}>
+        <circle cx="-12" cy="-5" r="6" fill={C.glass} />
+        <circle cx="9" cy="-9" r="5" fill={C.leafTop} />
+        <circle cx="-2" cy="-16" r="4" fill={C.warmR} />
+        <circle cx="20" cy="2" r="4" fill={C.smoke} />
+      </g>
     </g>
   );
 }
@@ -250,18 +269,18 @@ function Tpa() {
 function Daurulang() {
   return (
     <g>
-      {/* Hanggar pemilahan dengan tiga bak terpisah di depannya. */}
+      {/* Hanggar pemilahan beratap hangat, dengan tiga bak di depannya. */}
       <Box h={32} inset={24} lift={14} top={C.glass} left={C.stoneL} right={C.stoneR} />
-      <g transform="translate(0 -42)">
-        <polygon points={diamond(20)} fill={C.warmTop} />
+      <g transform={at(0, 0, 46)}>
+        <polygon points={diamond(18)} fill={C.warmTop} />
       </g>
       {[
-        [-36, 20, C.leafTop],
-        [-6, 34, C.sun],
-        [24, 24, C.warmR],
-      ].map(([x, y, fill], i) => (
-        <g key={i} transform={`translate(${x} ${y})`}>
-          <Box h={22} inset={43} top={fill as string} left={C.stoneL} right={C.stoneR} />
+        [-0.3, C.leafTop],
+        [0, C.sun],
+        [0.3, C.warmR],
+      ].map(([u, fill], i) => (
+        <g key={i} transform={at(u as number, 0.34, 14)}>
+          <Box h={20} inset={46} top={fill as string} left={C.stoneL} right={C.stoneR} />
         </g>
       ))}
     </g>
@@ -269,40 +288,39 @@ function Daurulang() {
 }
 
 function Perumahan() {
-  const house = (x: number, y: number, roof: string) => (
-    <g transform={`translate(${x} ${y})`}>
-      <Box h={26} inset={39} top={C.smoke} left={C.stoneL} right={C.stoneR} />
-      <g transform="translate(0 -26)">
-        <polygon points="-26,0 0,13 26,0 0,-13" fill={roof} />
+  const house = (roof: string) => (
+    <g>
+      <Box h={24} inset={42} top={C.smoke} left={C.stoneL} right={C.stoneR} />
+      <g transform="translate(0 -24)">
+        <polygon points="-23,0 0,11 23,0 0,-11" fill={roof} />
       </g>
     </g>
   );
   return (
     <g>
-      {house(-32, 8, C.warmR)}
-      {house(2, 24, C.warmTop)}
-      {house(32, 4, C.warmR)}
-      {house(0, -10, C.warmTop)}
+      {/* Empat rumah tapak, tersusun dua kali dua di atas petak. */}
+      <g transform={at(-0.22, -0.22, 14)}>{house(C.warmR)}</g>
+      <g transform={at(0.22, -0.22, 14)}>{house(C.warmTop)}</g>
+      <g transform={at(-0.22, 0.22, 14)}>{house(C.warmTop)}</g>
+      <g transform={at(0.22, 0.22, 14)}>{house(C.warmR)}</g>
     </g>
   );
 }
 
 function Apartemen() {
+  const tower = (h: number, terraces: number[]) => (
+    <g>
+      <Box h={h} inset={38} top={C.glass} left={C.stoneL} right={C.stoneR} />
+      {terraces.map((t) => (
+        <polygon key={t} points={`-26,${-t} 0,${-t + 13} 26,${-t} 0,${-t - 13}`} fill={C.leafTop} />
+      ))}
+    </g>
+  );
   return (
     <g>
-      {/* Dua menara dengan teras hijau di tiap lantai. */}
-      <g transform="translate(-22 6)">
-        <Box h={74} inset={37} top={C.glass} left={C.stoneL} right={C.stoneR} />
-        {[22, 42, 62].map((t) => (
-          <polygon key={t} points={`-27,${-t} 0,${-t + 13} 27,${-t} 0,${-t - 13}`} fill={C.leafTop} />
-        ))}
-      </g>
-      <g transform="translate(26 20)">
-        <Box h={52} inset={40} top={C.glass} left={C.stoneL} right={C.stoneR} />
-        {[20, 38].map((t) => (
-          <polygon key={t} points={`-24,${-t} 0,${-t + 12} 24,${-t} 0,${-t - 12}`} fill={C.leafTop} />
-        ))}
-      </g>
+      {/* Menara belakang lebih tinggi, jadi keduanya tetap terbaca. */}
+      <g transform={at(-0.2, -0.2, 14)}>{tower(74, [22, 44, 64])}</g>
+      <g transform={at(0.2, 0.2, 14)}>{tower(50, [20, 38])}</g>
     </g>
   );
 }
@@ -322,25 +340,15 @@ const BUILDINGS: Record<AssetId, () => React.JSX.Element> = {
 
 export const ASSET_IDS = Object.keys(BUILDINGS) as AssetId[];
 
-/** Semua bangunan sebagai <symbol>, ditulis sekali per halaman. */
-export function IsoSprite() {
-  return (
-    <svg width="0" height="0" aria-hidden="true" style={{ position: 'absolute' }}>
-      <defs>
-        {ASSET_IDS.map((id) => {
-          const Building = BUILDINGS[id];
-          return (
-            <symbol key={id} id={`b-${id}`} overflow="visible">
-              <Building />
-            </symbol>
-          );
-        })}
-      </defs>
-    </svg>
-  );
-}
-
-/** Satu bangunan, dipanggil dari sprite. */
+/**
+ * Satu bangunan, digambar langsung.
+ *
+ * Sempat dipakai <symbol> + <use> agar bisa dipakai ulang, tapi viewport milik
+ * <symbol> memotong bangunan yang menjulang keluar darinya, dan satu halaman
+ * hanya memuat satu peta berisi lima bangunan: indirection-nya tidak menghemat
+ * apa pun dan hanya menambah cara untuk gagal.
+ */
 export function Building({ id }: { id: AssetId }) {
-  return <use href={`#b-${id}`} />;
+  const Draw = BUILDINGS[id];
+  return <Draw />;
 }
