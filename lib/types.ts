@@ -1,3 +1,5 @@
+import type { AvatarId } from './avatars.ts';
+
 export type StatKey = 'economy' | 'environment' | 'satisfaction' | 'energy';
 
 export type Stats = Record<StatKey, number>;
@@ -37,7 +39,7 @@ export type Scenario = {
 
 export type Leader = {
   name: string;
-  avatar: 'male' | 'female';
+  avatar: AvatarId;
 };
 
 export type Choice = {

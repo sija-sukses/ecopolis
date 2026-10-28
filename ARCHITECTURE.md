@@ -354,6 +354,30 @@ Posisi dan animasi kini dipisah ke dua elemen bersarang.
 4. **Kunci Gemini di Vercel** — tanpa `GEMINI_API_KEY`, `/results` selalu
    memakai narasi lokal dan menampilkan badge "Laporan Hasil Evaluasi Standar".
 
+## 11a. Avatar
+
+Enam avatar piksel 16 x 16 milik proyek, disalin apa adanya dari folder
+`avatar` ke `public/avatar/<id>.svg`. **Tidak satu warna pun diubah**:
+komponen `Avatar` hanya memasangnya sebagai `<img>` dan memberi kait animasi,
+sementara `image-rendering: pixelated` menjaga pikselnya tajam saat diperbesar.
+
+`lib/avatars.ts` memegang katalognya sebagai data murni (id, nama, jenis
+kelamin), terpisah dari gambarnya, supaya `fallback.ts` dan server action bisa
+menurunkan panggilan Bapak/Ibu tanpa menyentuh JSX dan tes `node --test` tetap
+jalan. Nilai lama `male` / `female` yang mungkin masih tersimpan di
+sessionStorage tetap terbaca lewat peta legacy.
+
+Avatar muncul di empat tempat: pemilih di layar onboarding, papan indikator di
+sebelah nama pemimpin, kepala halaman laporan, dan sertifikat PDF.
+
+Animasinya ada tiga, semuanya CSS dan semuanya mati pada
+`prefers-reduced-motion`:
+
+- yang sedang dipilih di pemilih mengambang pelan, yang lain diam
+- di papan indikator, avatar melonjak kecil kalau kepuasan warga naik dan
+  menggeleng kalau turun, sekali tiap ronde
+- di halaman laporan, avatar mengambang pelan
+
 ## 12. Catatan pelaksanaan
 
 - `framer-motion` **tidak dipasang**, meski disebut di PRD. Pergantian kartu

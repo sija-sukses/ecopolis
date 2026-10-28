@@ -2,16 +2,18 @@
 
 import { useState } from 'react';
 
+import { Avatar } from '@/components/avatars.tsx';
+import { AVATARS, DEFAULT_AVATAR } from '@/lib/avatars.ts';
+import type { AvatarId } from '@/lib/avatars.ts';
 import { useGame } from '@/lib/game-context.tsx';
 import { play } from '@/lib/sfx.ts';
-import type { Leader } from '@/lib/types.ts';
 
 const MAX = 20;
 
 export function Onboarding() {
   const { state, dispatch } = useGame();
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState<Leader['avatar']>('male');
+  const [avatar, setAvatar] = useState<AvatarId>(DEFAULT_AVATAR);
   const [touched, setTouched] = useState(false);
 
   const trimmed = name.trim();
@@ -29,7 +31,8 @@ export function Onboarding() {
     <form className="onboard" onSubmit={submit} noValidate>
       <h1 className="onboard__title">Siapa yang memimpin?</h1>
       <p className="onboard__lead">
-        Nama Anda dipakai di seluruh simulasi dan di laporan kota pada tahun 2050.
+        Nama dan avatar Anda muncul di papan indikator sepanjang permainan, lalu di laporan kota
+        pada tahun 2050.
       </p>
 
       <label className="field">
@@ -46,26 +49,28 @@ export function Onboarding() {
           aria-invalid={touched && !valid}
         />
         <span className="field__help" id="nama-bantuan">
-          {touched && !valid ? 'Isi nama lebih dulu, 1 sampai 20 huruf.' : `${trimmed.length}/${MAX} huruf`}
+          {touched && !valid
+            ? 'Isi nama lebih dulu, 1 sampai 20 huruf.'
+            : `${trimmed.length}/${MAX} huruf`}
         </span>
       </label>
 
       <fieldset className="pick">
-        <legend className="field__label">Avatar</legend>
-        <div className="pick__row">
-          {(['male', 'female'] as const).map((a) => (
+        <legend className="field__label">Pilih avatar</legend>
+        <div className="pick__grid">
+          {AVATARS.map((a) => (
             <button
-              key={a}
+              key={a.id}
               type="button"
               className="pick__btn"
-              aria-pressed={avatar === a}
+              aria-pressed={avatar === a.id}
               onClick={() => {
                 play('click', state.muted);
-                setAvatar(a);
+                setAvatar(a.id);
               }}
             >
-              <Face avatar={a} />
-              <span>{a === 'male' ? 'Bapak' : 'Ibu'}</span>
+              <Avatar id={a.id} size={64} className="pick__face" />
+              <span>{a.label}</span>
             </button>
           ))}
         </div>
@@ -75,23 +80,5 @@ export function Onboarding() {
         Terapkan kebijakan pertama
       </button>
     </form>
-  );
-}
-
-/** Avatar digambar datar, sewarna token halaman, agar sepadan dengan kotanya. */
-export function Face({ avatar, size = 72 }: { avatar: Leader['avatar']; size?: number }) {
-  return (
-    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true">
-      <circle cx="32" cy="32" r="32" fill="var(--field-warm)" />
-      {avatar === 'female' ? (
-        <path d="M10 36c0-16 8-24 22-24s22 8 22 24v6h-8V28H18v20h-8z" fill="var(--ink)" />
-      ) : (
-        <path d="M12 32c0-13 8-20 20-20s20 7 20 20v2h-8v-8H20v8h-8z" fill="var(--ink)" />
-      )}
-      <circle cx="32" cy="36" r="15" fill="var(--smoke)" />
-      <circle cx="26" cy="34" r="2.6" fill="var(--ink)" />
-      <circle cx="38" cy="34" r="2.6" fill="var(--ink)" />
-      <path d="M26 43c3 3 9 3 12 0" stroke="var(--ink)" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-    </svg>
   );
 }

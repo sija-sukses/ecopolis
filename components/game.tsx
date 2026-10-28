@@ -76,6 +76,7 @@ export function Game() {
         stats={state.stats}
         round={state.round}
         leaderName={state.leader.name}
+        avatar={state.leader.avatar}
         muted={state.muted}
         onToggleMute={() => dispatch({ type: 'mute', muted: !state.muted })}
       />

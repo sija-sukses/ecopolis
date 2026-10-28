@@ -41,7 +41,7 @@ function token(name: string, fallback: Rgb): Rgb {
  * lebih dulu, dibaca dari dokumen yang sedang tampil: tokennya tetap satu
  * sumber, tidak disalin ke dalam JavaScript.
  */
-async function mapToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | null> {
+async function svgToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | null> {
   try {
     const root = getComputedStyle(document.documentElement);
     let markup = new XMLSerializer().serializeToString(svg);
@@ -78,7 +78,11 @@ async function mapToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | n
   }
 }
 
-export async function downloadCertificate(state: GameState, svg: SVGSVGElement | null) {
+export async function downloadCertificate(
+  state: GameState,
+  svg: SVGSVGElement | null,
+  face: SVGSVGElement | null = null,
+) {
   const { leader, stats, review, choices } = state;
   if (!leader || !review) return;
 
@@ -103,11 +107,16 @@ export async function downloadCertificate(state: GameState, svg: SVGSVGElement |
   doc.setFont('helvetica', 'normal');
   doc.text('Sertifikat Pemimpin Kota dan Laporan 2050', M + 10, M + 20);
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(32);
-  doc.text(leader.name, M + 10, M + 38);
+  // Avatar pemimpin, di sebelah namanya.
+  const facePng = face ? await svgToPng(face, 180) : null;
+  const faceSize = 18;
+  if (facePng) doc.addImage(facePng, 'PNG', M + 10, M + 26, faceSize, faceSize);
 
-  const png = svg ? await mapToPng(svg, 700) : null;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(28);
+  doc.text(leader.name, M + 10 + (facePng ? faceSize + 6 : 0), M + 40);
+
+  const png = svg ? await svgToPng(svg, 700) : null;
   const mapW = 104;
   const mapX = M + 8;
   const mapY = M + 46;

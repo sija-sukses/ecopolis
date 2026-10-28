@@ -83,9 +83,10 @@
   border: 0;
 }
 
-.pick__row {
-  display: flex;
-  gap: 14px;
+.pick__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   margin-top: 12px;
 }
 
@@ -94,17 +95,18 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  flex: 1;
   min-height: 56px;
-  padding: 18px;
+  padding: 16px 10px;
   border: 0;
   border-radius: var(--r);
   background: #242a52;
   color: var(--field-paper);
   font: inherit;
+  font-size: var(--step-small);
   font-weight: 700;
+  text-align: center;
   cursor: pointer;
-  transition: transform 140ms ease;
+  transition: transform 140ms ease, background-color 140ms ease;
 }
 
 .pick__btn:hover {
@@ -114,6 +116,62 @@
 .pick__btn[aria-pressed="true"] {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+/* Gambarnya berlatar transparan, jadi diberi alas terang supaya karakternya
+   tetap terbaca di atas panel gelap. image-rendering menjaga pikselnya tajam
+   saat diperbesar. */
+.avatar {
+  display: block;
+  border-radius: 50%;
+  background: var(--surface);
+  image-rendering: pixelated;
+}
+
+.pick__face {
+  width: clamp(44px, 12vw, 64px);
+  height: auto;
+}
+
+/* Avatar yang sedang dipilih mengambang pelan, sisanya diam: satu-satunya
+   yang bergerak adalah yang sedang jadi pilihan. */
+.pick__btn[aria-pressed="true"] .pick__face {
+  animation: mengambang 2.6s ease-in-out infinite;
+}
+
+@keyframes mengambang {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes melonjak {
+  0% {
+    transform: scale(0.82);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes menggeleng {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 .onboard .btn {
@@ -140,9 +198,24 @@
 
 .hud__who {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+.hud__face {
+  flex: none;
+  width: clamp(40px, 9vw, 52px);
+  height: auto;
+}
+
+/* Reaksi terhadap kepuasan warga, sekali jalan tiap ronde. */
+.hud__face--senang {
+  animation: melonjak 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hud__face--kecewa {
+  animation: menggeleng 520ms ease-in-out both;
 }
 
 .hud__who span {
@@ -364,6 +437,12 @@
   gap: 16px;
 }
 
+.result__face {
+  width: clamp(56px, 14vw, 76px);
+  height: auto;
+  animation: mengambang 3.4s ease-in-out infinite;
+}
+
 .result__who span {
   display: block;
   font-size: var(--step-small);
@@ -576,9 +655,19 @@
   }
 }
 
+@media (max-width: 900px) {
+  .pick__grid {
+    gap: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .analyzing__bar::after {
+  .analyzing__bar::after,
+  .pick__btn[aria-pressed="true"] .pick__face,
+  .hud__face--senang,
+  .hud__face--kecewa,
+  .result__face {
     animation: none;
   }
 

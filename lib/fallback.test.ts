@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { AVATARS, avatarOf, honorificOf } from './avatars.ts';
 import { fallbackReview } from './fallback.ts';
 import { INITIAL_STATS } from './reducer.ts';
 import type { Leader, Stats } from './types.ts';
 
-const BUDI: Leader = { name: 'Budi', avatar: 'male' };
-const SARI: Leader = { name: 'Sari', avatar: 'female' };
+const BUDI: Leader = { name: 'Budi', avatar: 'rian' };
+const SARI: Leader = { name: 'Sari', avatar: 'lia' };
 
 const stats = (economy: number, environment: number): Stats => ({
   ...INITIAL_STATS,
@@ -60,4 +61,24 @@ test('angka statistik yang benar muncul di narasi', () => {
   const r = fallbackReview(BUDI, stats(73, 64));
   assert.match(r.narrative, /73/);
   assert.match(r.narrative, /64/);
+});
+
+test('panggilan diturunkan dari katalog avatar', () => {
+  assert.equal(honorificOf('rian'), 'Bapak');
+  assert.equal(honorificOf('siti'), 'Ibu');
+});
+
+test('nilai avatar lama dari sessionStorage tetap terbaca', () => {
+  assert.equal(honorificOf('male'), 'Bapak');
+  assert.equal(honorificOf('female'), 'Ibu');
+});
+
+test('avatar tak dikenal jatuh ke bawaan, bukan undefined', () => {
+  assert.equal(avatarOf('entah-apa').id, 'rian');
+});
+
+test('katalog berisi enam avatar dengan id unik', () => {
+  assert.equal(AVATARS.length, 6);
+  assert.equal(new Set(AVATARS.map((a) => a.id)).size, 6);
+  assert.equal(AVATARS.filter((a) => a.gender === 'wanita').length, 3);
 });

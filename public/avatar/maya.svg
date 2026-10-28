@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <!-- Cyan Beanie -->
+  <rect x="4" y="1" width="7" height="2" fill="#0284c7"/>
+  <rect x="3" y="3" width="9" height="2" fill="#38bdf8"/>
+  <!-- Long Dark Wavy Hair -->
+  <rect x="2" y="5" width="11" height="8" fill="#0f172a"/>
+  <!-- Face Warm Tan -->
+  <rect x="5" y="5" width="5" height="6" fill="#f59e0b"/>
+  <rect x="4" y="6" width="7" height="4" fill="#f59e0b"/>
+  <!-- Eyes -->
+  <rect x="5" y="7" width="1" height="2" fill="#0f172a"/>
+  <rect x="8" y="7" width="1" height="2" fill="#0f172a"/>
+  <!-- Teal Earring -->
+  <rect x="3" y="9" width="1" height="1" fill="#14b8a6"/>
+  <rect x="11" y="9" width="1" height="1" fill="#14b8a6"/>
+  <!-- Smile -->
+  <rect x="6" y="9" width="2" height="1" fill="#b45309"/>
+  <!-- Green Eco Top -->
+  <rect x="5" y="11" width="5" height="1" fill="#f59e0b"/>
+  <rect x="3" y="12" width="10" height="4" fill="#15803d"/>
+</svg>

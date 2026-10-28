@@ -1,6 +1,7 @@
 'use server';
 
 import type { Review, ReviewPayload } from '@/lib/types.ts';
+import { honorificOf } from '@/lib/avatars.ts';
 import { fallbackReview } from '@/lib/fallback.ts';
 
 /**
@@ -35,7 +36,7 @@ function buildPrompt({ leader, stats, choices }: ReviewPayload): string {
     'Anda adalah Kepala Evaluator Iklim AI untuk kota Ecopolis pada tahun 2050.',
     '',
     `Nama pemimpin: ${leader.name}`,
-    `Panggilan: ${leader.avatar === 'female' ? 'Ibu' : 'Bapak'}`,
+    `Panggilan: ${honorificOf(leader.avatar)}`,
     `Statistik akhir — Ekonomi: ${stats.economy}, Lingkungan: ${stats.environment}, Kepuasan Warga: ${stats.satisfaction}, Energi: ${stats.energy} (skala 0-100).`,
     '',
     'Kebijakan yang diambil:',

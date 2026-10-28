@@ -5,7 +5,7 @@ import { applyEffects, initialState, isFinished, reducer, INITIAL_STATS } from '
 import { ROUNDS, SCENARIOS } from './scenarios.ts';
 import type { GameState, Leader, OptionId } from './types.ts';
 
-const LEADER: Leader = { name: 'Budi', avatar: 'male' };
+const LEADER: Leader = { name: 'Budi', avatar: 'rian' };
 
 const started = () => reducer(initialState, { type: 'start', leader: LEADER });
 
@@ -94,7 +94,7 @@ test('reset mengosongkan permainan tapi mempertahankan setelan mute', () => {
 });
 
 test('start mengosongkan permainan sebelumnya', () => {
-  const s = reducer(playAll('a'), { type: 'start', leader: { name: 'Sari', avatar: 'female' } });
+  const s = reducer(playAll('a'), { type: 'start', leader: { name: 'Sari', avatar: 'lia' } });
   assert.equal(s.round, 1);
   assert.equal(s.choices.length, 0);
   assert.equal(s.leader?.name, 'Sari');

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { CityMap } from '@/components/city-map.tsx';
-import { Face } from '@/components/onboarding.tsx';
+import { Avatar } from '@/components/avatars.tsx';
 import { useGame } from '@/lib/game-context.tsx';
 import { downloadCertificate } from '@/lib/pdf.ts';
 import { play } from '@/lib/sfx.ts';
@@ -36,7 +36,11 @@ export function ResultsView() {
     setMaking(true);
     play('click', state.muted);
     try {
-      await downloadCertificate(state, mapBox.current?.querySelector('svg') ?? null);
+      await downloadCertificate(
+        state,
+        mapBox.current?.querySelector('svg') ?? null,
+        document.querySelector<SVGSVGElement>('.result__face'),
+      );
     } finally {
       setMaking(false);
     }
@@ -47,7 +51,7 @@ export function ResultsView() {
 
       <section className="result__hero shell">
         <div className="result__who">
-          <Face avatar={leader.avatar} size={58} />
+          <Avatar id={leader.avatar} size={72} className="result__face" />
           <p>
             <span>Laporan kepemimpinan</span>
             <b>{leader.name}</b>

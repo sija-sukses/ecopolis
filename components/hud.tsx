@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { Avatar } from '@/components/avatars.tsx';
 import { ROUNDS } from '@/lib/scenarios.ts';
 import type { Stats, StatKey } from '@/lib/types.ts';
 
@@ -18,17 +19,28 @@ type Props = {
   stats: Stats;
   round: number;
   leaderName: string;
+  avatar: string;
   muted: boolean;
   onToggleMute: () => void;
 };
 
-export function Hud({ stats, round, leaderName, muted, onToggleMute }: Props) {
+export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: Props) {
   const deltas = useDeltas(stats);
+
+  // Avatar ikut bereaksi terhadap kepuasan warga: melompat kecil kalau naik,
+  // menggeleng kalau turun. Kuncinya ikut berganti supaya animasinya mengulang.
+  const mood = deltas.satisfaction > 0 ? 'senang' : deltas.satisfaction < 0 ? 'kecewa' : '';
 
   return (
     <header className="hud">
       <div className="hud__top">
         <p className="hud__who">
+          <Avatar
+            key={`${avatar}-${mood}-${round}`}
+            id={avatar}
+            size={48}
+            className={`hud__face${mood ? ` hud__face--${mood}` : ''}`}
+          />
           <span>{leaderName}</span>
           <b>{round > ROUNDS ? 'Selesai' : `Ronde ${round} dari ${ROUNDS}`}</b>
         </p>

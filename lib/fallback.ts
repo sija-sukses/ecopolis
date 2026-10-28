@@ -1,3 +1,4 @@
+import { honorificOf } from './avatars.ts';
 import type { Leader, Review, Stats } from './types.ts';
 
 /**
@@ -65,7 +66,7 @@ function quadrant(stats: Stats): Quadrant {
 export function fallbackReview(leader: Leader, stats: Stats): Review {
   const ctx: Ctx = {
     name: leader.name,
-    honorific: leader.avatar === 'female' ? 'Ibu' : 'Bapak',
+    honorific: honorificOf(leader.avatar),
     stats,
   };
   const q = quadrant(stats);
