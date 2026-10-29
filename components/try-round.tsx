@@ -104,11 +104,12 @@ export function TryRound() {
         <CityMap
           className="tryout__city"
           plots={plots}
+          satisfaction={stats.satisfaction}
           animate
           label={
             option
-              ? `Petak pertama Ecopolis terisi ${option.label}.`
-              : 'Lima petak Ecopolis, semuanya masih kosong.'
+              ? `Kawasan pertama Ecopolis terisi ${option.label}.`
+              : 'Lima kawasan Ecopolis, semuanya masih kosong.'
           }
         />
 

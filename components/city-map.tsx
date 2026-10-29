@@ -25,28 +25,39 @@ type Props = {
   className?: string;
   /** Jatuhkan bangunan satu per satu saat pertama tampil. */
   animate?: boolean;
+  /** Avatar walikota yang tampil di mimbar Balai Kota. */
+  avatar?: string;
+  /** Nilai kepuasan warga (jika < 30, memicu aksi demo di depan Balai Kota). */
+  satisfaction?: number;
 };
 
-export function CityMap({ plots, label, className, animate = false }: Props) {
+export function CityMap({
+  plots,
+  label,
+  className,
+  animate = false,
+  avatar = 'rian',
+  satisfaction = 50,
+}: Props) {
   const stagger = animate && plots.every(Boolean);
   return (
     <svg
       className={className}
-      viewBox="-380 -76 756 400"
+      viewBox="-490 -115 980 510"
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label={label}
     >
-      <IslandTerrain />
+      <IslandTerrain avatar={avatar} satisfaction={satisfaction} plots={plots} />
       {PLOT_POS.map(([x, y], i) => {
         const asset = plots[i];
         return (
-          // Posisi petak dan animasi jatuhnya sengaja dipisah ke dua elemen.
+          // Posisi kawasan dan animasi jatuhnya sengaja dipisah ke dua elemen.
           // CSS transform menimpa atribut transform pada elemen SVG, jadi
           // menganimasikan keduanya di satu elemen akan menghapus posisi
-          // petaknya dan menumpuk seluruh kota di titik asal.
+          // kawasannya dan menumpuk seluruh kota di titik asal.
           <g key={i} transform={`translate(${x} ${y})`}>
-            <PlotPad />
+            <PlotPad built={Boolean(asset)} />
             {asset && (
               <g
                 className={animate ? 'drop' : undefined}

@@ -111,8 +111,10 @@ export function Game() {
         <div className="stage__map">
           <CityMap
             plots={state.plots}
+            avatar={state.leader.avatar}
+            satisfaction={state.stats.satisfaction}
             animate
-            label={`Peta Ecopolis, ${state.plots.filter(Boolean).length} dari ${ROUNDS} petak terbangun.`}
+            label={`Peta Ecopolis, ${state.plots.filter(Boolean).length} dari ${ROUNDS} kawasan terbangun.`}
           />
         </div>
 

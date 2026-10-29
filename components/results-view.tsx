@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CityMap } from '@/components/city-map.tsx';
@@ -67,8 +68,10 @@ export function ResultsView() {
         <div className="result__map" ref={mapBox}>
           <CityMap
             plots={plots}
+            avatar={leader.avatar}
+            satisfaction={stats.satisfaction}
             animate
-            label={`Kota Ecopolis pada 2050 dengan kelima petak terbangun: ${choices
+            label={`Kota Ecopolis pada 2050 dengan kelima kawasan terbangun: ${choices
               .map((c) => c.label)
               .join(', ')}.`}
           />
@@ -131,9 +134,9 @@ export function ResultsView() {
           >
             Main lagi
           </button>
-          <a className="result__home" href="/">
+          <Link className="result__home" href="/">
             Kembali ke beranda
-          </a>
+          </Link>
         </div>
       </section>
     </main>
