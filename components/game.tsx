@@ -8,6 +8,7 @@ import { CityMap } from '@/components/city-map.tsx';
 import { Hud } from '@/components/hud.tsx';
 import { Onboarding } from '@/components/onboarding.tsx';
 import { ScenarioCard } from '@/components/scenario-card.tsx';
+import { DEFAULT_AVATAR } from '@/lib/avatars.ts';
 import { fallbackReview } from '@/lib/fallback.ts';
 import { countFinishedSession, useGame } from '@/lib/game-context.tsx';
 import { isFinished } from '@/lib/reducer.ts';
@@ -31,7 +32,7 @@ export function Game() {
   // sekali. Kalau pemanggilannya sendiri gagal (juri sedang offline), narasi
   // cadangan dibangkitkan di sini juga, jadi permainan tidak pernah buntu.
   useEffect(() => {
-    if (!ready || !state.leader || !done || state.review || asked.current) return;
+    if (!ready || !state.leader || !done || busy || state.review || asked.current) return;
     asked.current = true;
     play('done', state.muted);
 
@@ -45,12 +46,37 @@ export function Game() {
         countFinishedSession();
         router.push('/results');
       });
-  }, [ready, done, state, dispatch, router]);
+  }, [ready, done, busy, state, dispatch, router]);
 
   // Permainan sudah tamat dan laporannya ada: tempatnya di /results.
   useEffect(() => {
     if (ready && done && state.review) router.replace('/results');
   }, [ready, done, state.review, router]);
+
+  // Kunci gulir layar selama simulasi berlangsung sampai kelima pertanyaan
+  // terjawab semua, lalu buka kembali saat berpindah ke halaman laporan.
+  useEffect(() => {
+    if (done && state.review) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, [done, state.review]);
+
+  // Dukung ?autostart=1 untuk langsung memulai simulasi dari ronde pertama.
+  useEffect(() => {
+    if (!ready || state.leader) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('autostart') === '1') {
+      dispatch({ type: 'start', leader: { name: 'Budi', avatar: DEFAULT_AVATAR } });
+    }
+  }, [ready, state.leader, dispatch]);
 
   if (!ready) return <div className="stage stage--wait" aria-busy="true" />;
 

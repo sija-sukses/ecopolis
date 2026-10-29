@@ -26,6 +26,7 @@ type Props = {
 
 export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: Props) {
   const deltas = useDeltas(stats);
+  const animatedStats = useAnimatedStats(stats);
 
   // Avatar ikut bereaksi terhadap kepuasan warga: melompat kecil kalau naik,
   // menggeleng kalau turun. Kuncinya ikut berganti supaya animasinya mengulang.
@@ -60,14 +61,22 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
       <div className="hud__bars" aria-live="polite">
         {KEYS.map((k) => {
           const d = deltas[k];
+          const fillClass = [
+            'stat__fill',
+            d > 0 ? 'stat__fill--up' : d < 0 ? 'stat__fill--down' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
           return (
             <div className="stat" key={k}>
               <span className="stat__name">{LABELS[k]}</span>
               <span className="stat__track">
-                <span className="stat__fill" style={{ width: `${stats[k]}%` }} />
+                <span className={fillClass} style={{ width: `${stats[k]}%` }}>
+                  {d !== 0 && <span key={`${round}-${k}`} className="stat__shimmer" aria-hidden="true" />}
+                </span>
               </span>
               <span className="stat__num">
-                {stats[k]}
+                {animatedStats[k]}
                 {d !== 0 && (
                   <b className={d > 0 ? 'stat__delta stat__delta--up' : 'stat__delta stat__delta--down'}>
                     {d > 0 ? `+${d}` : d}
@@ -80,6 +89,50 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
       </div>
     </header>
   );
+}
+
+/** Menganimasikan angka indikator secara halus mengikuti gerak batang progres. */
+function useAnimatedStats(target: Stats): Stats {
+  const [display, setDisplay] = useState<Stats>(target);
+  const currentRef = useRef<Stats>(target);
+  const { economy, environment, satisfaction, energy } = target;
+
+  useEffect(() => {
+    const from = { ...currentRef.current };
+    if (
+      from.economy === economy &&
+      from.environment === environment &&
+      from.satisfaction === satisfaction &&
+      from.energy === energy
+    ) {
+      return;
+    }
+
+    const duration = 560;
+    const start = performance.now();
+    let raf = 0;
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const next: Stats = {
+        economy: Math.round(from.economy + (economy - from.economy) * ease),
+        environment: Math.round(from.environment + (environment - from.environment) * ease),
+        satisfaction: Math.round(from.satisfaction + (satisfaction - from.satisfaction) * ease),
+        energy: Math.round(from.energy + (energy - from.energy) * ease),
+      };
+      currentRef.current = next;
+      setDisplay(next);
+      if (t < 1) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [economy, environment, satisfaction, energy]);
+
+  return display;
 }
 
 /** Selisih terhadap nilai sebelumnya, ditahan sebentar lalu dilepas. */

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { applyEffects, INITIAL_STATS } from '@/lib/reducer.ts';
 import { SCENARIOS } from '@/lib/scenarios.ts';
-import type { AssetId, OptionId, StatKey } from '@/lib/types.ts';
+import type { AssetId, OptionId, StatKey, Stats } from '@/lib/types.ts';
 import { CityMap } from './city-map.tsx';
 
 /**
@@ -26,11 +26,56 @@ const KEYS = Object.keys(LABELS) as StatKey[];
 
 const ROUND_ONE = SCENARIOS[0];
 
+/** Menganimasikan angka indikator secara halus mengikuti gerak batang progres. */
+function useAnimatedStats(target: Stats): Stats {
+  const [display, setDisplay] = useState<Stats>(target);
+  const currentRef = useRef<Stats>(target);
+  const { economy, environment, satisfaction, energy } = target;
+
+  useEffect(() => {
+    const from = { ...currentRef.current };
+    if (
+      from.economy === economy &&
+      from.environment === environment &&
+      from.satisfaction === satisfaction &&
+      from.energy === energy
+    ) {
+      return;
+    }
+
+    const duration = 560;
+    const start = performance.now();
+    let raf = 0;
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const next: Stats = {
+        economy: Math.round(from.economy + (economy - from.economy) * ease),
+        environment: Math.round(from.environment + (environment - from.environment) * ease),
+        satisfaction: Math.round(from.satisfaction + (satisfaction - from.satisfaction) * ease),
+        energy: Math.round(from.energy + (energy - from.energy) * ease),
+      };
+      currentRef.current = next;
+      setDisplay(next);
+      if (t < 1) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [economy, environment, satisfaction, energy]);
+
+  return display;
+}
+
 export function TryRound() {
   const [picked, setPicked] = useState<OptionId | null>(null);
 
   const option = ROUND_ONE.options.find((o) => o.id === picked);
   const stats = option ? applyEffects(INITIAL_STATS, option.effects) : INITIAL_STATS;
+  const animatedStats = useAnimatedStats(stats);
   const plots: (AssetId | null)[] = [option ? option.asset : null, null, null, null, null];
 
   return (
@@ -68,15 +113,37 @@ export function TryRound() {
         />
 
         <div className="bars" aria-live="polite">
-          {KEYS.map((k) => (
-            <div className="bar" key={k}>
-              <span className="bar__name">{LABELS[k]}</span>
-              <span className="bar__track">
-                <span className="bar__fill" style={{ width: `${stats[k]}%` }} />
-              </span>
-              <span className="bar__num">{stats[k]}</span>
-            </div>
-          ))}
+          {KEYS.map((k) => {
+            const delta = stats[k] - INITIAL_STATS[k];
+            const fillClass = [
+              'bar__fill',
+              delta > 0 ? 'bar__fill--up' : delta < 0 ? 'bar__fill--down' : '',
+            ]
+              .filter(Boolean)
+              .join(' ');
+            return (
+              <div className="bar" key={k}>
+                <span className="bar__name">{LABELS[k]}</span>
+                <span className="bar__track">
+                  <span className={fillClass} style={{ width: `${stats[k]}%` }}>
+                    {picked && <span key={picked} className="bar__shimmer" aria-hidden="true" />}
+                  </span>
+                </span>
+                <span className="bar__num">
+                  {animatedStats[k]}
+                  {delta !== 0 && (
+                    <b
+                      className={
+                        delta > 0 ? 'bar__delta bar__delta--up' : 'bar__delta bar__delta--down'
+                      }
+                    >
+                      {delta > 0 ? `+${delta}` : delta}
+                    </b>
+                  )}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

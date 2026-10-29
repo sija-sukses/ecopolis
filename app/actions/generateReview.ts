@@ -15,7 +15,9 @@ import { fallbackReview } from '@/lib/fallback.ts';
 
 const TIMEOUT_MS = 4000;
 
-const MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.8-flash';
+const rawModel = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
+const MODEL = rawModel.replace(/^models\//, '');
+const FALLBACK_MODEL = 'gemini-2.5-flash';
 
 const RESPONSE_SCHEMA = {
   type: 'object',
@@ -51,31 +53,39 @@ function buildPrompt({ leader, stats, choices }: ReviewPayload): string {
   ].join('\n');
 }
 
+async function requestGemini(model: string, key: string, prompt: string) {
+  return fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-goog-api-key': key,
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: RESPONSE_SCHEMA,
+          temperature: 1,
+        },
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: 'no-store',
+    },
+  );
+}
+
 export async function generateReview(payload: ReviewPayload): Promise<Review> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return fallbackReview(payload.leader, payload.stats);
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-goog-api-key': key,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: buildPrompt(payload) }] }],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            responseSchema: RESPONSE_SCHEMA,
-            temperature: 1,
-          },
-        }),
-        signal: AbortSignal.timeout(TIMEOUT_MS),
-        cache: 'no-store',
-      },
-    );
+    const prompt = buildPrompt(payload);
+    let res = await requestGemini(MODEL, key, prompt);
+    if (res.status === 404 && MODEL !== FALLBACK_MODEL) {
+      res = await requestGemini(FALLBACK_MODEL, key, prompt);
+    }
 
     if (!res.ok) throw new Error(`Gemini ${res.status}`);
 

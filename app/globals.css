@@ -61,6 +61,31 @@
   --isle-right: #b98b52;
   --isle-foam: #ffffff;
 
+  /* Zona pulau terapung: padang rumput mint lembut, ngarai terakota hangat,
+     aliran sungai biru langit, jaringan jalan tanah oker, dan pohon pinus. */
+  --mint-top: #9be28b;
+  --mint-left: #74c269;
+  --mint-right: #5da954;
+  --meadow-top: #b8eea4;
+  --canyon-top: #f4ae66;
+  --canyon-left: #d68549;
+  --canyon-right: #b86835;
+  --terracotta-top: #df7b58;
+  --terracotta-left: #be5d3e;
+  --terracotta-right: #9d482d;
+  --river-top: #8ec8f6;
+  --river-mid: #6eb2ea;
+  --river-deep: #5598d4;
+  --water-aura: #d8e2fa;
+  --path-top: #f2cf92;
+  --path-edge: #ddb16e;
+  --path-node: #fff3d6;
+  --pine-top: #46c486;
+  --pine-left: #31a56c;
+  --pine-right: #238755;
+  --trunk-left: #9c6b49;
+  --trunk-right: #7d5236;
+
   /* Bentuk, diputuskan satu kali untuk seluruh halaman. */
   --r: 28px;
   --gutter: clamp(20px, 4vw, 56px);
@@ -217,7 +242,7 @@ a { color: inherit; }
 
 .hero__city {
   width: 100%;
-  max-width: 700px;
+  max-width: 740px;
   margin-left: auto;
   height: auto;
   transform: rotate(-2deg);
@@ -227,10 +252,10 @@ a { color: inherit; }
 .hero__badge {
   position: absolute;
   left: 0;
-  bottom: clamp(16px, 5vw, 72px);
+  bottom: clamp(8px, 2vw, 24px);
   z-index: 1;
-  width: min(300px, 46%);
-  padding: 26px 28px;
+  width: min(268px, 38%);
+  padding: 22px 24px;
   border-radius: var(--r);
   background: var(--accent);
   color: var(--accent-ink);
@@ -452,22 +477,109 @@ a { color: inherit; }
 
 .tryout__city { width: 100%; height: auto; max-height: 52svh; }
 
-.bars { display: grid; gap: 12px; }
+.bars { display: grid; gap: 14px; }
 
-.bar { display: grid; grid-template-columns: 11ch 1fr 4ch; gap: 14px; align-items: center; }
+.bar {
+  display: grid;
+  grid-template-columns: 11ch 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
 
-.bar__name { font-size: var(--step-small); font-weight: 700; text-transform: uppercase; }
+.bar__name {
+  font-size: var(--step-small);
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
-.bar__track { height: 16px; border-radius: 999px; background: #e0c49b; overflow: hidden; }
+.bar__track {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 16px;
+  border-radius: 999px;
+  background: #e0c49b;
+  overflow: hidden;
+}
+
+@keyframes barShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes barPulse {
+  0% {
+    transform: scaleY(1);
+  }
+  40% {
+    transform: scaleY(1.16);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
 
 .bar__fill {
+  display: block;
+  position: relative;
   height: 100%;
   border-radius: 999px;
   background: var(--ink);
-  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    width 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 360ms ease;
+  overflow: hidden;
 }
 
-.bar__num { font-size: var(--step-small); font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
+.bar__fill--up {
+  background: var(--ink);
+  animation: barPulse 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bar__fill--down {
+  background: var(--accent);
+  animation: barPulse 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bar__shimmer {
+  display: block;
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 45%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+  animation: barShimmer 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bar__num {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 6.5ch;
+  font-size: var(--step-small);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.bar__delta {
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.bar__delta--up {
+  color: var(--ink);
+}
+
+.bar__delta--down {
+  color: #a62606;
+}
 
 /* --------------------------------------------------------------------------
    Yang dinilai: daftar berskala poster.

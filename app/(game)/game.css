@@ -7,8 +7,18 @@
    =========================================================================== */
 
 .stage {
-  min-height: 100svh;
-  padding: clamp(14px, 2.4vw, 28px) var(--gutter) clamp(24px, 4vw, 48px);
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(10px, 1.5vh, 18px);
+  padding: clamp(10px, 1.6vh, 20px) var(--gutter) clamp(12px, 1.8vh, 22px);
+  background: var(--bg);
+  z-index: 20;
 }
 
 .stage--wait {
@@ -16,7 +26,7 @@
 }
 
 .stage--onboard {
-  display: grid;
+  grid-template-rows: minmax(0, 1fr);
   place-items: center;
 }
 
@@ -24,25 +34,26 @@
 
 .onboard {
   width: min(560px, 100%);
-  padding: clamp(28px, 4vw, 48px);
+  max-height: 100%;
+  padding: clamp(20px, 3.2vh, 42px) clamp(22px, 3.6vw, 44px);
   border-radius: var(--r);
   background: var(--field-ink);
   color: var(--field-paper);
 }
 
 .onboard__title {
-  font-size: var(--step-mid);
+  font-size: clamp(1.85rem, 1.1rem + 3.2vw, 3.4rem);
 }
 
 .onboard__lead {
-  margin-top: 18px;
+  margin-top: clamp(10px, 1.4vh, 16px);
   font-size: var(--step-body);
   color: #c9cde8;
 }
 
 .field {
   display: block;
-  margin-top: 32px;
+  margin-top: clamp(16px, 2.4vh, 28px);
 }
 
 .field__label {
@@ -54,8 +65,8 @@
 
 .field__input {
   width: 100%;
-  min-height: 56px;
-  margin-top: 10px;
+  min-height: clamp(46px, 6vh, 54px);
+  margin-top: 8px;
   padding: 0 20px;
   border: 0;
   border-radius: var(--r);
@@ -68,7 +79,7 @@
 
 .field__help {
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: var(--step-small);
   color: #c9cde8;
 }
@@ -78,7 +89,7 @@
 }
 
 .pick {
-  margin-top: 28px;
+  margin-top: clamp(16px, 2.2vh, 24px);
   padding: 0;
   border: 0;
 }
@@ -86,17 +97,17 @@
 .pick__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .pick__btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 16px 10px;
+  gap: 8px;
+  min-height: 48px;
+  padding: clamp(10px, 1.4vh, 14px) 10px;
   border: 0;
   border-radius: var(--r);
   background: #242a52;
@@ -129,7 +140,7 @@
 }
 
 .pick__face {
-  width: clamp(44px, 12vw, 64px);
+  width: clamp(38px, 5.5vh, 58px);
   height: auto;
 }
 
@@ -176,13 +187,13 @@
 
 .onboard .btn {
   width: 100%;
-  margin-top: 32px;
+  margin-top: clamp(16px, 2.4vh, 28px);
 }
 
 /* --- Papan indikator --- */
 
 .hud {
-  padding: clamp(16px, 2vw, 24px);
+  padding: clamp(10px, 1.4vh, 16px) clamp(16px, 2vw, 24px);
   border-radius: var(--r);
   background: var(--field-ink);
   color: var(--field-paper);
@@ -192,20 +203,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
 .hud__who {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .hud__face {
   flex: none;
-  width: clamp(40px, 9vw, 52px);
+  width: clamp(32px, 4.2vh, 42px);
   height: auto;
 }
 
@@ -219,7 +230,7 @@
 }
 
 .hud__who span {
-  font-size: var(--step-lead);
+  font-size: clamp(1rem, 0.85rem + 0.8vh, 1.35rem);
   font-weight: 900;
   letter-spacing: -0.03em;
 }
@@ -231,8 +242,8 @@
 }
 
 .hud__mute {
-  min-height: 44px;
-  padding: 0 20px;
+  min-height: clamp(34px, 4.4vh, 40px);
+  padding: 0 16px;
   border: 0;
   border-radius: 999px;
   background: #242a52;
@@ -251,13 +262,13 @@
 .hud__bars {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-top: 20px;
+  gap: clamp(10px, 1.6vw, 18px);
+  margin-top: clamp(8px, 1.1vh, 12px);
 }
 
 .stat__name {
   display: block;
-  font-size: var(--step-small);
+  font-size: clamp(0.75rem, 0.7rem + 0.2vh, 0.875rem);
   font-weight: 700;
   text-transform: uppercase;
   color: #c9cde8;
@@ -265,8 +276,10 @@
 
 .stat__track {
   display: block;
-  height: 14px;
-  margin-top: 8px;
+  position: relative;
+  width: 100%;
+  height: clamp(8px, 1.1vh, 12px);
+  margin-top: 4px;
   border-radius: 999px;
   background: #242a52;
   overflow: hidden;
@@ -274,18 +287,42 @@
 
 .stat__fill {
   display: block;
+  position: relative;
   height: 100%;
   border-radius: 999px;
   background: var(--field-grass);
-  transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    width 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 360ms ease;
+  overflow: hidden;
+}
+
+.stat__fill--up {
+  background: var(--field-grass);
+}
+
+.stat__fill--down {
+  background: var(--accent);
+}
+
+.stat__shimmer {
+  display: block;
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 45%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+  animation: barShimmer 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .stat__num {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: var(--step-lead);
+  gap: 6px;
+  margin-top: 4px;
+  font-size: clamp(1rem, 0.85rem + 0.8vh, 1.35rem);
+  line-height: 1.1;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
 }
@@ -307,20 +344,46 @@
 
 .stage__grid {
   display: grid;
-  grid-template-columns: 54fr 46fr;
+  grid-template-columns: minmax(0, 60fr) minmax(0, 40fr);
   gap: clamp(16px, 2.4vw, 36px);
   align-items: center;
-  margin-top: clamp(16px, 2.4vw, 32px);
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.stage__map {
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .stage__map svg {
   width: 100%;
-  height: auto;
-  max-height: 62svh;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.stage__card {
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
 .card {
-  padding: clamp(24px, 3vw, 40px);
+  width: 100%;
+  max-height: 100%;
+  margin-block: auto;
+  padding: clamp(16px, 2.2vh, 28px) clamp(18px, 2.2vw, 30px);
   border-radius: var(--r);
   background: var(--field-warm);
   color: var(--ink);
@@ -330,7 +393,7 @@
 @keyframes cardin {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -339,7 +402,9 @@
 }
 
 .card__title {
-  font-size: var(--step-mid);
+  font-size: clamp(1.35rem, 0.75rem + 2.1vh, 2.2rem);
+  line-height: 0.94;
+  text-wrap: balance;
 }
 
 /* Fokus tetap dipindahkan ke judul tiap ronde baru supaya pembaca layar dan
@@ -350,20 +415,39 @@
 }
 
 .card__ctx {
-  margin-top: 16px;
-  font-size: var(--step-body);
-  line-height: 1.5;
+  margin-top: clamp(8px, 1.2vh, 14px);
+  font-size: clamp(0.875rem, 0.8rem + 0.35vh, 1.02rem);
+  line-height: 1.38;
 }
 
 .card__opts {
   display: grid;
-  gap: 14px;
-  margin-top: 28px;
+  gap: clamp(8px, 1.2vh, 12px);
+  margin-top: clamp(12px, 1.8vh, 20px);
+}
+
+.card .opt {
+  min-height: 0;
+  padding: clamp(11px, 1.5vh, 16px) clamp(14px, 1.6vw, 20px);
+  border-radius: calc(var(--r) - 8px);
+}
+
+.card .opt b {
+  font-size: clamp(0.95rem, 0.82rem + 0.65vh, 1.2rem);
+  line-height: 1.15;
+}
+
+.card .opt span {
+  margin-top: clamp(3px, 0.5vh, 5px);
+  font-size: clamp(0.8rem, 0.75rem + 0.25vh, 0.9rem);
+  line-height: 1.32;
 }
 
 .card__hint {
-  margin-top: 18px;
-  font-size: var(--step-small);
+  margin-top: clamp(8px, 1.2vh, 14px);
+  font-size: clamp(0.75rem, 0.7rem + 0.2vh, 0.85rem);
+  line-height: 1.3;
+  opacity: 0.85;
 }
 
 .opt:disabled {
@@ -381,12 +465,12 @@
 }
 
 .analyzing__title {
-  font-size: var(--step-mid);
+  font-size: clamp(1.35rem, 0.75rem + 2.1vh, 2.2rem);
 }
 
 .analyzing p {
   margin-top: 16px;
-  font-size: var(--step-body);
+  font-size: clamp(0.875rem, 0.8rem + 0.35vh, 1.02rem);
   line-height: 1.5;
 }
 
@@ -634,16 +718,103 @@
 }
 
 @media (max-width: 900px) {
+  .stage {
+    gap: 8px;
+    padding: 10px 14px 12px;
+  }
+
+  .hud {
+    padding: 10px 14px;
+  }
+
+  .hud__face {
+    width: 32px;
+  }
+
+  .hud__who span {
+    font-size: 1rem;
+  }
+
+  .hud__mute {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 0.78rem;
+  }
+
   .hud__bars {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .stat__name {
+    font-size: 0.65rem;
+  }
+
+  .stat__track {
+    height: 8px;
+    margin-top: 4px;
+  }
+
+  .stat__num {
+    margin-top: 4px;
+    font-size: 0.95rem;
+    gap: 4px;
+  }
+
+  .stat__delta {
+    font-size: 0.72rem;
   }
 
   .stage__grid {
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(110px, 32fr) minmax(0, 68fr);
+    gap: 8px;
   }
 
   .stage__map svg {
-    max-height: 40svh;
+    max-height: 22dvh;
+  }
+
+  .card {
+    padding: 14px 16px;
+  }
+
+  .card__title {
+    font-size: clamp(1.25rem, 5.2vw, 1.65rem);
+  }
+
+  .card__ctx {
+    margin-top: 6px;
+    font-size: 0.88rem;
+    line-height: 1.32;
+  }
+
+  .card__opts {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .card .opt {
+    padding: 10px 14px;
+  }
+
+  .card .opt b {
+    font-size: 0.98rem;
+  }
+
+  .card .opt span {
+    margin-top: 3px;
+    font-size: 0.78rem;
+  }
+
+  .card__hint {
+    margin-top: 6px;
+    font-size: 0.74rem;
+  }
+
+  .pick__grid {
+    gap: 8px;
   }
 
   .sdgs {
@@ -652,12 +823,6 @@
 
   .result__actions .btn {
     width: 100%;
-  }
-}
-
-@media (max-width: 900px) {
-  .pick__grid {
-    gap: 8px;
   }
 }
 

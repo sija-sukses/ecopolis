@@ -1,0 +1,8 @@
+{
+  "name": "Ecopolis. Simulator Kebijakan Iklim",
+  "description": "Pelajari lima persoalan iklim Indonesia, lalu pimpin sebuah kota lewat lima keputusan kebijakan dan lihat wujudnya di tahun 2050.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
