@@ -121,6 +121,7 @@ export default function Home() {
         <div className={styles.heroHud} aria-label="Ringkasan permainan">
           <span><b>5</b> keputusan</span><span><b>3</b> menit bermain</span><span><b>2050</b> laporan kota</span>
         </div>
+        <div className={styles.heroMist} aria-hidden="true" />
       </section>
 
       <section className={styles.intro} id="tentang" aria-labelledby="intro-title">
@@ -137,7 +138,22 @@ export default function Home() {
       </section>
 
       <section className={styles.dilemmas} id="dilema" aria-labelledby="dilema-title">
-        <div className={styles.terrainTop} aria-hidden="true" />
+        <svg
+          className={styles.terrainWave}
+          viewBox="0 0 1440 96"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0,64 C240,12 480,88 720,44 C960,0 1200,72 1440,28 L1440,96 L0,96 Z"
+            fill="#5bc449"
+            opacity="0.55"
+          />
+          <path
+            d="M0,78 C310,28 590,94 920,48 C1150,16 1320,62 1440,42 L1440,96 L0,96 Z"
+            fill="#75d95d"
+          />
+        </svg>
         <div className={styles.sectionInner}>
           <div className={styles.sectionHeading}>
             <div><p className={styles.sectionTag}>Peta keputusan</p><h2 id="dilema-title">Lima petak. Lima konsekuensi.</h2></div>
@@ -147,8 +163,12 @@ export default function Home() {
             {DILEMMAS.map(([name, question, copy], index) => {
               const scenario = SCENARIOS[index];
               const [optA, optB] = scenario.options;
+              const flip = index % 2 === 1;
               return (
-                <article className={styles.dilemma} key={name}>
+                <article
+                  className={`${styles.dilemma}${flip ? ` ${styles.dilemmaFlip}` : ''}`}
+                  key={name}
+                >
                   <div className={styles.dilemmaHead}>
                     <div className={styles.dilemmaMeta}>
                       <span className={styles.dilemmaNum}>

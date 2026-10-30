@@ -37,12 +37,26 @@
 .primaryButton:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #0e285b,0 22px 38px rgb(25 70 113 / 28%); }
 .primaryButton:active { transform: translateY(4px); box-shadow: 0 3px 0 #0e285b; }
 .textLink { padding-block: 7px; border-bottom: 2px solid rgb(255 255 255 / 75%); }
-.heroHud { position: absolute; right: max(32px,calc((100vw - 1240px)/2)); bottom: 30px; display: flex; overflow: hidden; border: 1px solid rgb(255 255 255 / 38%); border-radius: 14px; background: rgb(18 61 93 / 72%); box-shadow: 0 18px 40px rgb(34 82 123 / 22%); backdrop-filter: blur(12px); }
+.heroHud { position: absolute; z-index: 3; right: max(32px,calc((100vw - 1240px)/2)); bottom: 52px; display: flex; overflow: hidden; border: 1px solid rgb(255 255 255 / 38%); border-radius: 14px; background: rgb(18 61 93 / 78%); box-shadow: 0 18px 40px rgb(34 82 123 / 22%); backdrop-filter: blur(12px); }
 .heroHud span { display: grid; min-width: 142px; padding: 14px 18px; font-size: .68rem; font-weight: 700; }
 .heroHud span+span { border-left: 1px solid rgb(255 255 255 / 22%); }
 .heroHud b { font-size: 1.4rem; line-height: 1.1; }
+.heroMist {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: clamp(130px, 19vh, 210px);
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 70% at 72% 96%, rgb(235 245 255 / 88%) 0%, transparent 72%),
+    radial-gradient(ellipse 38% 60% at 46% 100%, rgb(225 239 255 / 76%) 0%, transparent 70%),
+    linear-gradient(180deg, transparent 0%, rgb(172 208 250 / 48%) 48%, #b9d8ff 96%);
+}
 
-.intro { position: relative; padding-block: clamp(110px,13vw,200px); overflow: hidden; background: radial-gradient(circle at 50% 10%,rgb(255 255 255 / 55%),transparent 34%),linear-gradient(180deg,#b9d8ff,var(--sky)); }
+.intro { position: relative; padding-block: clamp(90px,11vw,175px); overflow: hidden; background: radial-gradient(circle at 50% 10%,rgb(255 255 255 / 55%),transparent 34%),linear-gradient(180deg,#b9d8ff,var(--sky)); }
+.sectionInner { position: relative; z-index: 2; }
 .sectionTag { color: #256ea2; }
 .intro h2,.sectionHeading h2,.how h2,.finalContent h2 { font-size: clamp(2.8rem,5.6vw,5.7rem); line-height: .96; letter-spacing: -.06em; text-wrap: balance; }
 .intro h2 { max-width: 13ch; margin-top: 24px!important; }
@@ -58,11 +72,11 @@
 .islandOne { top: 18%; right: 5%; transform: scale(.8); }
 .islandTwo { bottom: 8%; left: 3%; animation-delay: -2.1s; transform: scale(1.15); }
 .islandThree { top: 70px; right: 3vw; animation-delay: -1.2s; transform: scale(.72); }
-.cloudOne,.cloudTwo { position: absolute; width: 120px; height: 46px; border-radius: 10px; background: rgb(255 255 255 / 70%); transform: skewY(-20deg); }
-.cloudOne { top: 17%; left: 4%; }.cloudTwo { right: 12%; bottom: 12%; width: 78px; height: 31px; opacity: .65; }
+.cloudOne,.cloudTwo { position: absolute; z-index: 0; width: 120px; height: 46px; border-radius: 10px; background: rgb(255 255 255 / 58%); transform: skewY(-20deg); pointer-events: none; }
+.cloudOne { top: 10%; right: 22%; }.cloudTwo { right: 12%; bottom: 12%; width: 78px; height: 31px; opacity: .55; }
 
 .dilemmas { position: relative; padding-block: clamp(100px,12vw,180px); background: var(--grass); color: #153d32; box-shadow: inset 0 -34px 0 var(--earth),inset 0 -52px 0 var(--earth-light); }
-.terrainTop { position: absolute; top: -34px; right: 0; left: 0; height: 35px; background: var(--grass); clip-path: polygon(0 100%,9% 40%,21% 70%,34% 0,49% 55%,65% 22%,82% 68%,100% 8%,100% 100%); }
+.terrainWave { position: absolute; top: -68px; right: 0; left: 0; width: 100%; height: 70px; display: block; pointer-events: none; }
 .dilemmas .sectionTag { color: #196341; }
 .sectionHeading { display: grid; grid-template-columns: 1.4fr .6fr; gap: 8vw; align-items: end; }
 .sectionHeading h2 { max-width: 12ch; margin-top: 22px!important; }
@@ -78,6 +92,15 @@
   border-radius: 22px;
   background: #e9fbe0;
   box-shadow: 0 9px 0 #489d3a, 0 18px 36px rgb(16 64 36 / 14%);
+}
+.dilemmaFlip {
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+}
+.dilemmaFlip .dilemmaDuel {
+  order: 1;
+}
+.dilemmaFlip .dilemmaHead {
+  order: 2;
 }
 .dilemmaHead { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .dilemmaMeta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -197,7 +220,8 @@
   .heroCopy { justify-content: flex-start; padding-block: 64px 360px; }.hero h1 { max-width: 8.5ch; font-size: clamp(3.4rem,13vw,5.6rem); }.heroLead { max-width: 36ch; }
   .heroHud { right: 20px; bottom: 20px; left: 20px; }.heroHud span { min-width: 0; flex: 1; padding: 12px; }
   .introGrid { grid-template-columns: 1fr; padding-left: 10%; }.sectionHeading { grid-template-columns: 1fr; gap: 34px; }
-  .dilemma { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
+  .dilemma, .dilemmaFlip { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
+  .dilemmaFlip .dilemmaDuel, .dilemmaFlip .dilemmaHead { order: initial; }
   .steps { grid-template-columns: 1fr; }.steps article { min-height: 220px; }
   .footer { flex-wrap: wrap; padding-block: 30px; }.footer p { order: 3; width: 100%; margin-left: 0; }.footer>span { margin-left: auto; }
   .islandOne { right: -32px; }.islandTwo { left: -40px; }
