@@ -121,7 +121,6 @@ export default function Home() {
         <div className={styles.heroHud} aria-label="Ringkasan permainan">
           <span><b>5</b> keputusan</span><span><b>3</b> menit bermain</span><span><b>2050</b> laporan kota</span>
         </div>
-        <div className={styles.heroMist} aria-hidden="true" />
       </section>
 
       <section className={styles.intro} id="tentang" aria-labelledby="intro-title">

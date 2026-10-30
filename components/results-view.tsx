@@ -161,7 +161,7 @@ export function ResultsView() {
               ))}
             </div>
 
-            <div className="result__actions">
+            <div className="result__actions" aria-label="Simpan dan bagikan laporan">
               <button className="btn" type="button" onClick={unduh} disabled={making}>
                 {making ? 'Menyiapkan PDF...' : 'Unduh laporan PDF'}
               </button>
@@ -173,20 +173,6 @@ export function ResultsView() {
               >
                 {sharing ? 'Menyiapkan gambar...' : 'Simpan kartu Story (PNG)'}
               </button>
-              <button
-                className="btn btn--ink"
-                type="button"
-                onClick={() => {
-                  play('click', state.muted);
-                  dispatch({ type: 'reset' });
-                  router.push('/play');
-                }}
-              >
-                Main lagi
-              </button>
-              <Link className="result__home" href="/">
-                Kembali ke beranda
-              </Link>
             </div>
           </div>
         </div>
@@ -241,6 +227,29 @@ export function ResultsView() {
           </ol>
         </section>
       </div>
+
+      <footer className="result__footer shell" aria-label="Navigasi permainan">
+        <div className="result__footer-copy">
+          <b>Ingin mencoba arah kebijakan lain untuk Ecopolis?</b>
+          <span>Setiap kombinasi 5 keputusan menghasilkan wajah kota dan evaluasi 2050 yang berbeda.</span>
+        </div>
+        <div className="result__nav-actions">
+          <button
+            className="btn btn--ink"
+            type="button"
+            onClick={() => {
+              play('click', state.muted);
+              dispatch({ type: 'reset' });
+              router.push('/play');
+            }}
+          >
+            Main lagi
+          </button>
+          <Link className="result__home" href="/">
+            Kembali ke beranda
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }
