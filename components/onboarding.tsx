@@ -64,13 +64,14 @@ export function Onboarding() {
               type="button"
               className="pick__btn"
               aria-pressed={avatar === a.id}
+              aria-label={`Karakter ${a.label}`}
+              title={`Pilih avatar (${a.gender})`}
               onClick={() => {
                 play('click', state.muted);
                 setAvatar(a.id);
               }}
             >
               <Avatar id={a.id} size={64} className="pick__face" />
-              <span>{a.label}</span>
             </button>
           ))}
         </div>

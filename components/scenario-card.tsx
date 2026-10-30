@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
+import { PolicyIcon } from '@/components/policy-icon.tsx';
 import type { OptionId, Scenario } from '@/lib/types.ts';
 
 type Props = {
@@ -38,8 +39,16 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
             disabled={busy}
             onClick={() => onChoose(o.id)}
           >
-            <b>{o.label}</b>
-            <span>{o.blurb}</span>
+            <span className="opt__row">
+              <PolicyIcon asset={o.asset} />
+              <span className="opt__copy">
+                <b>{o.label}</b>
+                <span>{o.blurb}</span>
+              </span>
+              <span className="opt__key" aria-hidden="true">
+                {o.id.toUpperCase()}
+              </span>
+            </span>
           </button>
         ))}
       </div>

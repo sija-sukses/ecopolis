@@ -133,6 +133,9 @@ export function TryRound() {
                   <b>{o.label}</b>
                   <span>{o.blurb}</span>
                 </span>
+                <span className="opt__key" aria-hidden="true">
+                  {o.id.toUpperCase()}
+                </span>
               </span>
             </button>
           ))}
