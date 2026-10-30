@@ -8,27 +8,48 @@ import { CityMap, type ActivePlotTransition } from '@/components/city-map.tsx';
 import { Hud } from '@/components/hud.tsx';
 import { Onboarding } from '@/components/onboarding.tsx';
 import { ScenarioCard } from '@/components/scenario-card.tsx';
+import { Cutscene } from '@/components/cutscene.tsx';
 import { DEFAULT_AVATAR } from '@/lib/avatars.ts';
 import {
-  CEREMONY_DURATION_MS,
   CONSTRUCTION_DURATION_MS,
+  CUTSCENE_ORDER,
+  CUTSCENE_TIMING,
   TOTAL_TRANSITION_MS,
+  type CutscenePhase,
 } from '@/lib/city-effects.ts';
 import { fallbackReview } from '@/lib/fallback.ts';
 import { countFinishedSession, useGame } from '@/lib/game-context.tsx';
 import { isFinished } from '@/lib/reducer.ts';
 import { ROUNDS, scenarioFor } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
-import type { OptionId } from '@/lib/types.ts';
+import type { AssetId, OptionId } from '@/lib/types.ts';
 
-/** Selama animasi awal konstruksi, kartu dikunci sejenak agar tidak terklik ganda. */
-const DROP_MS = 760;
+/**
+ * Sinematik yang sedang berjalan.
+ *
+ * `asset` disimpan di sini karena petaknya belum masuk ke state: pilihan baru
+ * di-dispatch pada tahap 'ceremony', supaya angka indikator berubah sebagai
+ * hasil dari yang baru saja ditonton, bukan di balik layar hitam.
+ */
+type Cutscene = {
+  plotIndex: number;
+  asset: AssetId;
+  option: OptionId;
+  label: string;
+  phase: CutscenePhase;
+};
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function Game() {
   const { state, dispatch, ready } = useGame();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [activeTransition, setActiveTransition] = useState<ActivePlotTransition | null>(null);
+  const [cutscene, setCutscene] = useState<Cutscene | null>(null);
+  const pendingRef = useRef<OptionId | null>(null);
   const timersRef = useRef<number[]>([]);
   const asked = useRef(false);
 
@@ -101,38 +122,109 @@ export function Game() {
     );
   }
 
+  function clearTimers() {
+    timersRef.current.forEach((id) => window.clearTimeout(id));
+    timersRef.current = [];
+  }
+
+  /** Menerapkan pilihan yang ditahan, kalau belum sempat diterapkan. */
+  function commitPending() {
+    const option = pendingRef.current;
+    if (!option) return;
+    pendingRef.current = null;
+    dispatch({ type: 'choose', option });
+  }
+
+  /** Mengakhiri sinematik di titik mana pun: dipakai tombol lewati, Esc, dan klik. */
+  function endCutscene() {
+    clearTimers();
+    commitPending();
+    setCutscene(null);
+    setActiveTransition(null);
+    setBusy(false);
+  }
+
   function choose(option: OptionId) {
     if (busy || !scenario) return;
     const targetPlot = scenario.plot;
-    const isFinalRound = scenario.round === ROUNDS;
+    const asset = scenario.options.find((o) => o.id === option)?.asset;
+    if (!asset) return;
+    const label = scenario.options.find((o) => o.id === option)?.label ?? '';
 
-    timersRef.current.forEach((id) => window.clearTimeout(id));
-    timersRef.current = [];
-
+    clearTimers();
     setBusy(true);
+
+    // Gerak dikurangi: lewati seluruh sinematik, pakai transisi peta yang lama.
+    if (prefersReducedMotion()) {
+      setActiveTransition({ plotIndex: targetPlot, stage: 'construction' });
+      dispatch({ type: 'choose', option });
+      const toCeremony = window.setTimeout(() => {
+        setActiveTransition({ plotIndex: targetPlot, stage: 'ceremony' });
+      }, CONSTRUCTION_DURATION_MS);
+      const toDone = window.setTimeout(() => {
+        setActiveTransition(null);
+        setBusy(false);
+      }, TOTAL_TRANSITION_MS);
+      timersRef.current.push(toCeremony, toDone);
+      return;
+    }
+
+    // Pilihan ditahan sampai tahap 'ceremony'.
+    pendingRef.current = option;
     setActiveTransition({ plotIndex: targetPlot, stage: 'construction' });
+    setCutscene({ plotIndex: targetPlot, asset, option, label, phase: 'zoom-in' });
     play('construct', state.muted);
-    dispatch({ type: 'choose', option });
 
-    const ceremonyTimer = window.setTimeout(() => {
-      setActiveTransition({ plotIndex: targetPlot, stage: 'ceremony' });
-      play('ceremony', state.muted);
-    }, CONSTRUCTION_DURATION_MS);
+    // Jadwalkan tiap tahap pada waktu kumulatifnya.
+    let elapsed = 0;
+    for (const phase of CUTSCENE_ORDER) {
+      elapsed += CUTSCENE_TIMING[phase];
+      const at = elapsed - CUTSCENE_TIMING[phase];
+      if (phase === 'zoom-in') continue;
 
-    const operationalTimer = window.setTimeout(() => {
-      setActiveTransition(null);
-    }, TOTAL_TRANSITION_MS);
+      const id = window.setTimeout(() => {
+        if (phase === 'ceremony') {
+          setActiveTransition({ plotIndex: targetPlot, stage: 'ceremony' });
+          play('ceremony', state.muted);
+        }
+        if (phase === 'zoom-out') {
+          // Pilihan baru diterapkan di sini, bukan saat peresmian: papan
+          // indikator masih tersembunyi sepanjang adegan, jadi kalau angkanya
+          // berubah lebih awal, animasi deltanya habis sebelum papan kembali.
+          commitPending();
+          setActiveTransition(null);
+        }
+        setCutscene((c) => (c ? { ...c, phase } : c));
+      }, at);
+      timersRef.current.push(id);
+    }
 
-    const unlockDelay = isFinalRound ? TOTAL_TRANSITION_MS : DROP_MS;
-    const unlockTimer = window.setTimeout(() => {
+    const endId = window.setTimeout(() => {
+      setCutscene(null);
       setBusy(false);
-    }, unlockDelay);
-
-    timersRef.current.push(ceremonyTimer, operationalTimer, unlockTimer);
+    }, elapsed);
+    timersRef.current.push(endId);
   }
 
+  // Petak yang sedang dibangun belum masuk ke state sampai tahap 'ceremony',
+  // jadi asetnya disuntikkan di sini supaya kamera punya sesuatu untuk disorot.
+  const displayPlots = cutscene
+    ? state.plots.map((a, i) => (i === cutscene.plotIndex ? cutscene.asset : a))
+    : state.plots;
+
+  // HUD dan kartu disembunyikan sepanjang adegan, dan baru kembali setelah
+  // iris menutup lagi, supaya kemunculannya tidak terlihat mendadak.
+  const hideUi =
+    cutscene?.phase === 'inspect' ||
+    cutscene?.phase === 'ceremony' ||
+    cutscene?.phase === 'iris-out';
+  const caption =
+    cutscene?.phase === 'ceremony'
+      ? `Peresmian ${cutscene.label}`
+      : `Peninjauan pembangunan ${cutscene?.label ?? ''}`;
+
   return (
-    <div className="stage">
+    <div className={`stage${hideUi ? ' stage--sinematik' : ''}`}>
       <Hud
         stats={state.stats}
         round={state.round}
@@ -145,12 +237,15 @@ export function Game() {
       <div className="stage__grid">
         <div className="stage__map">
           <CityMap
-            plots={state.plots}
+            plots={displayPlots}
             avatar={state.leader.avatar}
             satisfaction={state.stats.satisfaction}
             activeTransition={activeTransition}
+            cameraPlot={cutscene && cutscene.phase !== 'zoom-out' ? cutscene.plotIndex : null}
+            mayorMode={cutscene?.phase === 'ceremony' ? 'ceremony' : 'inspection'}
+            fill={hideUi}
             animate
-            label={`Peta Ecopolis, ${state.plots.filter(Boolean).length} dari ${ROUNDS} kawasan terbangun.`}
+            label={`Peta Ecopolis, ${displayPlots.filter(Boolean).length} dari ${ROUNDS} kawasan terbangun.`}
           />
         </div>
 
@@ -169,6 +264,10 @@ export function Game() {
           )}
         </div>
       </div>
+
+      {cutscene && (
+        <Cutscene phase={cutscene.phase} caption={caption} onSkip={endCutscene} />
+      )}
     </div>
   );
 }

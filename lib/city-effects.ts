@@ -231,7 +231,81 @@ export const CEREMONY_DURATION_MS = 1500;
 /** Total durasi transisi konstruksi + peresmian (3.0 detik). */
 export const TOTAL_TRANSITION_MS = CONSTRUCTION_DURATION_MS + CEREMONY_DURATION_MS;
 
-export type MayorPoseMode = 'idle' | 'ceremony';
+export type MayorPoseMode = 'idle' | 'ceremony' | 'inspection';
+
+/**
+ * Tahap sinematik saat sebuah kawasan dibangun.
+ *
+ * Kamera mendekat ke petaknya, layar ditutup iris hitam dari kanan bawah,
+ * lalu dibuka lagi dalam mode sinematik: Walikota berhelm meninjau lokasi,
+ * pekerja bekerja, dan berlanjut ke pemotongan pita. Indikator baru berubah
+ * di tahap 'ceremony', supaya dampaknya terbaca sebagai hasil dari yang baru
+ * saja ditonton, bukan terjadi di balik layar hitam.
+ */
+export type CutscenePhase =
+  | 'zoom-in'
+  | 'iris-in'
+  | 'inspect'
+  | 'ceremony'
+  | 'iris-out'
+  | 'zoom-out';
+
+/** Lama tiap tahap dalam milidetik. */
+export const CUTSCENE_TIMING: Record<CutscenePhase, number> = {
+  'zoom-in': 700,
+  'iris-in': 420,
+  inspect: 1800,
+  ceremony: 2200,
+  'iris-out': 420,
+  'zoom-out': 700,
+};
+
+export const CUTSCENE_ORDER: CutscenePhase[] = [
+  'zoom-in',
+  'iris-in',
+  'inspect',
+  'ceremony',
+  'iris-out',
+  'zoom-out',
+];
+
+export const CUTSCENE_TOTAL_MS = CUTSCENE_ORDER.reduce((n, p) => n + CUTSCENE_TIMING[p], 0);
+
+/** Seberapa dekat kamera mendekat saat menyorot satu petak. */
+export const CAMERA_ZOOM = 2.9;
+
+/**
+ * Titik tengah viewBox peta dalam koordinat ruang pengguna.
+ * viewBox-nya "-570 -145 1140 610", jadi tengahnya (0, 160).
+ * Harus ikut berubah kalau viewBox di `CityMap` diubah.
+ */
+const VIEW_CENTER: [number, number] = [0, 160];
+
+/**
+ * Transform CSS untuk mendekatkan kamera ke satu petak.
+ *
+ * Dipasang sebagai inline style pada `<g>` pembungkus yang **tidak punya
+ * atribut transform sendiri**: pada elemen SVG, transform CSS menimpa atribut
+ * transform, dan mencampur keduanya di satu elemen pernah menumpuk seluruh
+ * kota di titik asal.
+ */
+export function getPlotCameraTransform(plotIndex: number | null, scale = CAMERA_ZOOM): string {
+  if (plotIndex === null || plotIndex < 0 || plotIndex >= PLOT_TILE_COORDS.length) {
+    return 'translate(0px, 0px) scale(1)';
+  }
+  const [u, v] = PLOT_TILE_COORDS[plotIndex];
+  const px = (u - v) * 64;
+  // Dibidik sedikit di atas pusat petak, karena bangunan menjulang ke atas.
+  const py = (u + v) * 32 - 19;
+
+  // Diukur langsung di peramban: dengan `transform-box: view-box` dan
+  // `transform-origin: 0 0`, Chrome memakai titik (0,0) ruang pengguna sebagai
+  // porosnya, bukan sudut kiri-atas viewBox. Jadi tidak ada offset viewBox yang
+  // perlu ditambahkan di sini; cukup geser titik bidik ke tengah viewBox.
+  const [cx, cy] = VIEW_CENTER;
+
+  return `translate(${(cx - scale * px).toFixed(2)}px, ${(cy - scale * py).toFixed(2)}px) scale(${scale})`;
+}
 
 export type MayorAssetSpec = {
   mode: MayorPoseMode;
@@ -248,6 +322,16 @@ export type MayorAssetSpec = {
  * seluruh pulau.
  */
 export const MAYOR_ASSETS: Record<MayorPoseMode, MayorAssetSpec> = {
+  inspection: {
+    mode: 'inspection',
+    label: 'Walikota Ecopolis Meninjau Pembangunan dengan Helm Proyek',
+    // Pose ini digambar langsung sebagai vektor di MayorFigurine, bukan dari
+    // berkas tersendiri, jadi src-nya menunjuk ke berkas idle sebagai cadangan.
+    src: '/assets/mayor/mayor-idle.svg',
+    spriteSymbol: '/assets/mayor/mayor-sprite.svg#mayor-idle',
+    width: 72,
+    height: 60,
+  },
   idle: {
     mode: 'idle',
     label: 'Walikota Ecopolis di Mimbar Balai Kota',
@@ -272,11 +356,13 @@ export const MAYOR_ASSETS: Record<MayorPoseMode, MayorAssetSpec> = {
 export function getMayorAsset(mode: MayorPoseMode, avatar?: string): MayorAssetSpec {
   const info = avatarOf(avatar ?? 'rian');
   const base = MAYOR_ASSETS[mode];
+  // Hanya idle dan ceremony yang punya berkas per avatar.
+  const fileMode = mode === 'inspection' ? 'idle' : mode;
   return {
     mode,
     label: `${base.label} (${info.label})`,
-    src: `/assets/mayor/mayor-${mode}-${info.id}.svg`,
-    spriteSymbol: `/assets/mayor/mayor-sprite.svg#mayor-${mode}-${info.id}`,
+    src: `/assets/mayor/mayor-${fileMode}-${info.id}.svg`,
+    spriteSymbol: `/assets/mayor/mayor-sprite.svg#mayor-${fileMode}-${info.id}`,
     width: base.width,
     height: base.height,
   };
@@ -308,7 +394,10 @@ export type MayorWorldPosition = {
  * - Saat suatu petak sedang dalam tahap `'ceremony'`, Walikota bergerak secara
  *   dinamis ke depan karpet merah pintu masuk gedung yang diresmikan.
  */
-export function getMayorWorldPosition(ceremonyPlotIndex: number | null): MayorWorldPosition {
+export function getMayorWorldPosition(
+  ceremonyPlotIndex: number | null,
+  mode: MayorPoseMode = 'ceremony',
+): MayorWorldPosition {
   if (
     ceremonyPlotIndex !== null &&
     ceremonyPlotIndex >= 0 &&
@@ -317,11 +406,13 @@ export function getMayorWorldPosition(ceremonyPlotIndex: number | null): MayorWo
     const [pu, pv] = PLOT_TILE_COORDS[ceremonyPlotIndex];
     const plotX = (pu - pv) * 64;
     const plotY = (pu + pv) * 32;
-    // Posisi Walikota di karpet merah depan pita peresmian pada petak
+    // Saat meninjau, Walikota berdiri di tepi lokasi agar tidak menutupi
+    // crane dan perancah; saat peresmian ia maju ke karpet merah.
+    const inspecting = mode === 'inspection';
     return {
-      x: Number((plotX - 20).toFixed(1)),
-      y: Number((plotY + 4).toFixed(1)),
-      mode: 'ceremony',
+      x: Number((plotX + (inspecting ? 42 : -20)).toFixed(1)),
+      y: Number((plotY + (inspecting ? 16 : 4)).toFixed(1)),
+      mode: inspecting ? 'inspection' : 'ceremony',
       plotIndex: ceremonyPlotIndex,
     };
   }

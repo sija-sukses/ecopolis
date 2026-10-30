@@ -1,4 +1,5 @@
 import {
+  getPlotCameraTransform,
   resolvePlotStage,
   type PlotTransitionStage,
 } from '@/lib/city-effects.ts';
@@ -47,6 +48,18 @@ type Props = {
   satisfaction?: number;
   /** Transisi konstruksi / peresmian yang sedang berlangsung pada salah satu petak. */
   activeTransition?: ActivePlotTransition | null;
+  /** Petak yang sedang disorot kamera, atau null untuk pandangan kota penuh. */
+  cameraPlot?: number | null;
+  /** Pose Walikota saat berada di petak yang disorot. */
+  mayorMode?: 'inspection' | 'ceremony';
+  /**
+   * Isi penuh bingkainya alih-alih dimuat seluruhnya.
+   *
+   * Dipakai selama sinematik supaya peta memenuhi layar, bukan jadi pita tipis
+   * di tengah bidang kosong. Pergantiannya selalu terjadi saat iris menutup,
+   * jadi perubahan bingkainya tidak pernah terlihat.
+   */
+  fill?: boolean;
 };
 
 export function CityMap({
@@ -57,6 +70,9 @@ export function CityMap({
   avatar = 'rian',
   satisfaction = 50,
   activeTransition = null,
+  cameraPlot = null,
+  mayorMode = 'ceremony',
+  fill = false,
 }: Props) {
   const stagger = animate && plots.every(Boolean) && !activeTransition;
   const westPlotStage = resolvePlotStage(plots[1], activeTransition, 1);
@@ -64,19 +80,32 @@ export function CityMap({
     plots[1] === 'tol' && (westPlotStage === 'ceremony' || westPlotStage === 'operational');
   const [tolPlotX, tolPlotY] = PLOT_POS[1];
 
-  const ceremonyPlotIndex =
-    activeTransition && activeTransition.stage === 'ceremony'
-      ? activeTransition.plotIndex
-      : null;
+  // Walikota ikut hadir di lokasi sejak tahap konstruksi, bukan hanya saat
+  // peresmian, karena sinematiknya memperlihatkan dia meninjau lebih dulu.
+  const mayorPlotIndex = activeTransition ? activeTransition.plotIndex : null;
 
   return (
     <svg
       className={className}
       viewBox="-570 -145 1140 610"
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
       role="img"
       aria-label={label}
     >
+      {/* Kamera.
+          Transform dipasang sebagai inline style pada pembungkus yang tidak
+          punya atribut transform sendiri. Pada elemen SVG, transform CSS
+          menimpa atribut transform, dan mencampur keduanya di satu elemen
+          pernah menumpuk seluruh kota di titik asal. */}
+      <g
+        className="city-camera"
+        data-camera-plot={cameraPlot === null ? 'kota' : String(cameraPlot)}
+        style={{
+          transformBox: 'view-box',
+          transformOrigin: '0 0',
+          transform: getPlotCameraTransform(cameraPlot),
+        }}
+      >
       <IslandTerrain plots={plots} />
       {PLOT_POS.map(([x, y], i) => {
         const asset = plots[i];
@@ -125,10 +154,12 @@ export function CityMap({
       )}
       <IslandForeground avatar={avatar} satisfaction={satisfaction} plots={plots} />
       <MayorDynamicLayer
-        ceremonyPlotIndex={ceremonyPlotIndex}
+        ceremonyPlotIndex={mayorPlotIndex}
+        plotMode={mayorMode}
         avatar={avatar}
         protesting={satisfaction < 30}
       />
+      </g>
     </svg>
   );
 }

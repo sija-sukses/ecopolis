@@ -40,6 +40,7 @@ sudah di `main`.
 | 10 aset isometrik | Selesai, masih perlu penyetelan |
 | 6 avatar + animasi | Selesai |
 | Sertifikat PDF | Selesai |
+| Sinematik pembangunan per ronde | Selesai |
 
 **Yang belum selesai, kerjakan ini dulu sebelum menambah fitur:**
 
@@ -158,7 +159,7 @@ File: `components/iso.tsx` (bangunan) dan `components/city-map.tsx` (peta).
   mengikuti lebar kontainer dari 375px sampai 1920px tanpa satu breakpoint pun
   dan tanpa aset yang bisa terpotong.
 
-**Tiga jebakan yang masing-masing memakan waktu berjam-jam. Jangan mengulangi:**
+**Empat jebakan yang masing-masing memakan waktu berjam-jam. Jangan mengulangi:**
 
 1. **`transform` CSS pada elemen SVG menimpa atribut `transform`-nya.**
    Animasi jatuhnya bangunan pernah dipasang pada elemen yang sama dengan
@@ -177,6 +178,12 @@ File: `components/iso.tsx` (bangunan) dan `components/city-map.tsx` (peta).
    menurun `dx/2` juga. Tanpa helper itu, cerobong dan atap tampak melayang
    lepas dari badannya. Jendela dan pintu memakai `facePoints()` supaya
    benar-benar menempel pada bidang miringnya.
+
+4. **`transform-origin: 0 0` dengan `transform-box: view-box` berporos di
+   (0,0) ruang pengguna**, bukan di sudut kiri-atas viewBox seperti yang
+   terbaca dari spesifikasinya. Rumus kamera yang "benar di atas kertas"
+   meleset 1300px karenanya. Kalau menyentuh kamera, ukur dengan
+   `getScreenCTM()` di peramban, jangan percaya turunan di atas kertas.
 
 **Dulu pernah dipakai `<symbol>` + `<use>` dan sudah dibuang:** viewport milik
 `<symbol>` memotong bangunan yang menjulang keluar darinya, sementara satu

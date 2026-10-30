@@ -7,8 +7,10 @@ import {
 import { avatarOf } from '@/lib/avatars.ts';
 
 type Props = {
-  /** Indeks petak (0..4) yang sedang dalam tahap peresmian gunting pita, atau null jika di Balai Kota. */
+  /** Indeks petak (0..4) yang sedang disorot, atau null jika Walikota di Balai Kota. */
   ceremonyPlotIndex?: number | null;
+  /** Pose yang diminta saat berada di petak: meninjau atau meresmikan. */
+  plotMode?: 'inspection' | 'ceremony';
   /** ID avatar pemimpin terpilih. */
   avatar?: string;
   /** Apakah warga sedang berdemo (kepuasan < 30). */
@@ -208,6 +210,7 @@ export function MayorFigurine({
   const cfg = getCharacterConfig(avatar);
   const { id, skin, suit, eyes } = cfg;
   const isCeremony = mode === 'ceremony';
+  const isInspection = mode === 'inspection';
   const isRian = id === 'rian';
 
   return (
@@ -218,17 +221,17 @@ export function MayorFigurine({
       style={{ filter: 'drop-shadow(0px 3px 6px rgba(15,23,42,0.32))' }}
     >
       {/* 1. Alas/Bayangan sesuai mode */}
-      {!isCeremony ? (
+      {isCeremony || isInspection ? (
+        <g data-part="ground-shadow">
+          {/* Bayangan lembut di tanah lokasi */}
+          <ellipse cx="0" cy="3" rx="14" ry="6.5" fill="#0f172a" opacity="0.28" />
+        </g>
+      ) : (
         <g data-part="podium">
           {/* Karpet podium kehormatan merah & emas di Balai Kota */}
           <polygon points="0,-5.4 12,0 0,5.4 -12,0" fill="#b52626" />
           <polygon points="0,-4.2 9.6,0 0,4.2 -9.6,0" fill="#ffd45e" opacity="0.48" />
           <ellipse cx="0" cy="1.8" rx="9" ry="4" fill="#0f172a" opacity="0.24" />
-        </g>
-      ) : (
-        <g data-part="ceremony-shadow">
-          {/* Bayangan lembut di atas karpet merah peresmian */}
-          <ellipse cx="0" cy="3" rx="14" ry="6.5" fill="#0f172a" opacity="0.28" />
         </g>
       )}
 
@@ -257,6 +260,17 @@ export function MayorFigurine({
         <polygon points="-5.2,-21.3 -3.8,-22.1 5.8,-9.4 4.6,-8.6" fill="#fca5a5" opacity="0.65" />
         {/* Medali Emas Walikota */}
         <circle cx="-3.3" cy="-15.9" r="2.0" fill="#fbbf24" stroke="#fef08a" strokeWidth="0.5" />
+
+        {/* Rompi Keselamatan Hi-Vis dengan Pita Pemantul, dipakai di lokasi. */}
+        {isInspection && (
+          <g data-part="hi-vis">
+            <polygon points="-6.6,-9.0 0,-5.6 0,-18.2 -6.6,-21.4" fill="#f2c200" />
+            <polygon points="6.6,-9.0 0,-5.6 0,-18.2 6.6,-21.4" fill="#d9ab00" />
+            <polygon points="0,-24.2 6.6,-21.4 0,-18.2 -6.6,-21.4" fill="#ffe14d" />
+            <polygon points="-6.6,-13.4 0,-10.0 0,-12.4 -6.6,-15.8" fill="#eef1fb" opacity="0.9" />
+            <polygon points="6.6,-13.4 0,-10.0 0,-12.4 6.6,-15.8" fill="#cfd6ec" opacity="0.9" />
+          </g>
+        )}
       </g>
 
       {/* 4. Kepala 3D Clay & Mata */}
@@ -271,10 +285,43 @@ export function MayorFigurine({
 
         {/* Ciri khas masing-masing avatar */}
         <CharacterHeadFeatures id={id} skin={skin} />
+
+        {/* Helm Proyek Kuning, digambar paling akhir agar menutupi rambut
+            dan topi masing-masing avatar. */}
+        {isInspection && (
+          <g data-part="helmet">
+            <polygon points="0,-33.1 7.1,-29.6 0,-26.1 -7.1,-29.6" fill="#e0b236" />
+            <polygon points="-5.6,-30.2 0,-27.4 0,-33.6 -5.6,-36.4" fill="#ffd45e" />
+            <polygon points="5.6,-30.2 0,-27.4 0,-33.6 5.6,-36.4" fill="#e0b236" />
+            <polygon points="0,-39.6 5.6,-36.4 0,-33.6 -5.6,-36.4" fill="#ffe896" />
+            {/* Rusuk tengah helm */}
+            <polygon points="0,-38.4 1.6,-37.5 0,-34.4 -1.6,-35.3" fill="#fff3c4" />
+          </g>
+        )}
       </g>
 
       {/* 5. Lengan & Alat Sesuai Mode */}
-      {!isCeremony ? (
+      {isInspection ? (
+        <g data-part="arms-inspection">
+          {/* Lengan kiri memegang papan jalan berisi gambar kerja */}
+          <polygon points="-6.8,-18.4 -5.2,-12.0 -3.0,-12.4 -4.6,-19.0" fill={suit.left} />
+          <circle cx="-4.0" cy="-11.6" r="1.8" fill={skin.top} />
+          <g transform="translate(-7.6 -11.0) rotate(-16)">
+            <polygon points="0,0 7.6,-3.8 7.6,-12.0 0,-8.2" fill="#d9a066" />
+            <polygon points="0.9,-1.4 6.7,-4.3 6.7,-10.6 0.9,-7.7" fill="#f8fafc" />
+            <line x1="1.8" y1="-5.2" x2="5.8" y2="-7.2" stroke="#94a3b8" strokeWidth="0.6" />
+            <line x1="1.8" y1="-6.8" x2="5.8" y2="-8.8" stroke="#94a3b8" strokeWidth="0.6" />
+            <polygon points="2.6,-1.6 5.0,-2.8 5.0,-4.0 2.6,-2.8" fill="#64748b" />
+          </g>
+
+          {/* Lengan kanan menunjuk ke arah rangka gedung yang sedang naik */}
+          <g className="worker__arm">
+            <polygon points="4.2,-18.6 11.4,-23.8 9.8,-25.9 2.8,-20.8" fill={suit.right} />
+            <circle cx="11.0" cy="-24.9" r="1.9" fill={skin.top} />
+            <polygon points="12.4,-25.6 15.6,-27.6 15.6,-26.4 12.4,-24.4" fill={skin.top} />
+          </g>
+        </g>
+      ) : !isCeremony ? (
         <g data-part="arms-idle">
           {/* Lengan Kiri Santun Menempel di Sisi Tubuh */}
           <polygon points="-6.4,-18.6 -4.8,-11.2 -2.6,-11.2 -4.4,-19.2" fill={suit.left} />
@@ -324,13 +371,14 @@ export function MayorFigurine({
  */
 export const MayorDynamicLayer = memo(function MayorDynamicLayer({
   ceremonyPlotIndex = null,
+  plotMode = 'ceremony',
   avatar = 'rian',
   protesting = false,
 }: Props) {
-  const pos = getMayorWorldPosition(ceremonyPlotIndex);
+  const pos = getMayorWorldPosition(ceremonyPlotIndex, plotMode);
   const info = avatarOf(avatar);
   const asset = getMayorAsset(pos.mode, info.id);
-  const isCeremony = pos.mode === 'ceremony';
+  const onSite = pos.mode === 'ceremony' || pos.mode === 'inspection';
 
   return (
     <g
@@ -348,7 +396,7 @@ export const MayorDynamicLayer = memo(function MayorDynamicLayer({
     >
       <g
         className={
-          isCeremony
+          onSite
             ? 'mayor-sprite mayor-sprite--ceremony'
             : protesting
               ? 'worker worker--wave'

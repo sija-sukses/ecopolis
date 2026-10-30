@@ -378,6 +378,43 @@ Animasinya ada tiga, semuanya CSS dan semuanya mati pada
   menggeleng kalau turun, sekali tiap ronde
 - di halaman laporan, avatar mengambang pelan
 
+## 11b. Sinematik pembangunan
+
+Setiap kali sebuah kawasan dibangun, kamera mendekat ke petaknya dan permainan
+berpindah ke mode sinematik. Adegannya **bukan gambar terpisah**: adegannya
+adalah peta yang sama, didekati kamera, jadi yang diresmikan benar-benar
+bangunan yang tadi dibangun di petak itu dan dunianya tidak pernah terputus.
+
+Enam tahap, total 6,4 detik per ronde (`CUTSCENE_TIMING` di `lib/city-effects.ts`):
+
+`zoom-in` → `iris-in` → `inspect` → `ceremony` → `iris-out` → `zoom-out`
+
+- **Iris** adalah lingkaran hitam yang tumbuh dari sudut kanan bawah. Selain
+  sebagai transisi, ia menyembunyikan dua pergantian yang kalau terlihat akan
+  terasa kasar: Walikota berganti pose ke helm proyek, dan peta berpindah dari
+  `preserveAspectRatio="meet"` (dimuat seluruhnya di dalam grid) ke `slice`
+  (mengisi layar penuh).
+- **Indikator baru diterapkan pada tahap `zoom-out`**, bukan saat kartu diklik
+  dan bukan saat peresmian. Papan indikator disembunyikan sepanjang adegan,
+  jadi kalau angkanya berubah lebih awal, animasi deltanya habis sebelum papan
+  kembali terlihat. Pilihan ditahan di `pendingRef` sampai saat itu.
+- **Selalu bisa dilewati** lewat tombol, Esc, dan klik di mana pun. Pada
+  `prefers-reduced-motion` seluruh sinematik dilewati dan dipakai transisi peta
+  lama yang 3 detik.
+
+### Jebakan kamera yang diukur, bukan ditebak
+
+Kamera adalah satu `<g class="city-camera">` yang transform-nya dipasang
+sebagai inline style, pada elemen yang **tidak punya atribut transform
+sendiri** (lihat §tiga jebakan isometrik di atas).
+
+Dengan `transform-box: view-box` dan `transform-origin: 0 0`, Chrome memakai
+titik **(0,0) ruang pengguna** sebagai porosnya, **bukan** sudut kiri-atas
+viewBox seperti yang terbaca dari spesifikasinya. Ini diukur langsung lewat
+`getScreenCTM()` di peramban setelah rumus yang "benar di atas kertas" meleset
+1300px. Jadi tidak ada offset viewBox yang perlu ditambahkan: cukup geser titik
+bidik ke tengah viewBox, `(0, 160)`.
+
 ## 12. Catatan pelaksanaan
 
 - `framer-motion` **tidak dipasang**, meski disebut di PRD. Pergantian kartu
