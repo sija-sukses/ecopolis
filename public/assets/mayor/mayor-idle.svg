@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-36 -48 72 60" width="72" height="60" fill="none">
+  <!-- Podium karpet kehormatan Walikota -->
+  <polygon points="0,-5.4 12,0 0,5.4 -12,0" fill="#b52626" />
+  <polygon points="0,-4.2 9.6,0 0,4.2 -9.6,0" fill="#ffd45e" opacity="0.48" />
+  <ellipse cx="0" cy="1.8" rx="9" ry="4" fill="#0f172a" opacity="0.24" />
+
+  <!-- Kaki celana formal Dark Navy -->
+  <polygon points="-4.8,0 -0.5,2.0 -0.5,-7.2 -4.8,-9.2" fill="#0f172a" />
+  <polygon points="0.5,1.8 4.8,-0.2 4.8,-9.2 0.5,-7.2" fill="#1e293b" />
+
+  <!-- Jas Formal Dark Navy + Selempang Kehormatan Merah (Honorary Red Sash) -->
+  <polygon points="-7.0,-8.0 0,-4.2 0,-18.2 -7.0,-21.8" fill="#1e293b" />
+  <polygon points="7.0,-8.0 0,-4.2 0,-18.2 7.0,-21.8" fill="#0f172a" />
+  <polygon points="0,-25.2 7.0,-21.8 0,-18.2 -7.0,-21.8" fill="#334155" />
+  <polygon points="-2.0,-21.0 0,-19.4 2.0,-21.0 0,-14.0" fill="#f8fafc" />
+  <polygon points="-5.8,-21.4 -3.0,-22.8 6.4,-9.8 3.8,-8.0" fill="#ef4444" />
+  <polygon points="-5.0,-21.0 -3.6,-21.8 5.6,-9.2 4.4,-8.4" fill="#fca5a5" opacity="0.65" />
+  <circle cx="-3.2" cy="-15.6" r="1.9" fill="#fbbf24" stroke="#fef08a" stroke-width="0.5" />
+
+  <!-- Kepala 3D Clay Stylized -->
+  <polygon points="-5.0,-19.8 0,-17.0 0,-25.8 -5.0,-28.4" fill="#f3be96" />
+  <polygon points="5.0,-19.8 0,-17.0 0,-25.8 5.0,-28.4" fill="#df9e70" />
+  <polygon points="0,-31.0 5.0,-28.4 0,-25.8 -5.0,-28.4" fill="#fde0c6" />
+
+  <!-- Topi Kehormatan Navy-Emas -->
+  <polygon points="-5.4,-26.6 0,-24.0 0,-29.8 -5.4,-32.4" fill="#1e293b" />
+  <polygon points="5.4,-26.6 0,-24.0 0,-29.8 5.4,-32.4" fill="#0f172a" />
+  <polygon points="0,-35.0 5.4,-32.4 0,-29.8 -5.4,-32.4" fill="#334155" />
+  <polygon points="-5.5,-27.0 0,-24.3 5.5,-27.0 5.5,-28.2 0,-25.5 -5.5,-28.2" fill="#fbbf24" />
+
+  <!-- Lengan Melambai Menyapa Warga -->
+  <polygon points="4.2,-18.0 10.2,-22.6 8.6,-24.8 2.8,-20.2" fill="#0f172a" />
+  <circle cx="9.8" cy="-23.8" r="2.0" fill="#fde0c6" />
+</svg>

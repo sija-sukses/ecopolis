@@ -2,10 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import {
+  CONSTRUCTION_DURATION_MS,
+  TOTAL_TRANSITION_MS,
+} from '@/lib/city-effects.ts';
 import { applyEffects, INITIAL_STATS } from '@/lib/reducer.ts';
 import { SCENARIOS } from '@/lib/scenarios.ts';
+import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId, StatKey, Stats } from '@/lib/types.ts';
-import { CityMap } from './city-map.tsx';
+import { CityMap, type ActivePlotTransition } from './city-map.tsx';
+import { PolicyIcon } from './policy-icon.tsx';
 
 /**
  * Satu keputusan ronde 1 yang benar-benar bisa dicoba di landing page, memakai
@@ -72,6 +78,34 @@ function useAnimatedStats(target: Stats): Stats {
 
 export function TryRound() {
   const [picked, setPicked] = useState<OptionId | null>(null);
+  const [activeTransition, setActiveTransition] = useState<ActivePlotTransition | null>(null);
+  const timersRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach((id) => window.clearTimeout(id));
+    };
+  }, []);
+
+  function handlePick(id: OptionId) {
+    timersRef.current.forEach((t) => window.clearTimeout(t));
+    timersRef.current = [];
+
+    setPicked(id);
+    setActiveTransition({ plotIndex: 0, stage: 'construction' });
+    play('construct', false);
+
+    const t1 = window.setTimeout(() => {
+      setActiveTransition({ plotIndex: 0, stage: 'ceremony' });
+      play('ceremony', false);
+    }, CONSTRUCTION_DURATION_MS);
+
+    const t2 = window.setTimeout(() => {
+      setActiveTransition(null);
+    }, TOTAL_TRANSITION_MS);
+
+    timersRef.current.push(t1, t2);
+  }
 
   const option = ROUND_ONE.options.find((o) => o.id === picked);
   const stats = option ? applyEffects(INITIAL_STATS, option.effects) : INITIAL_STATS;
@@ -91,10 +125,15 @@ export function TryRound() {
               type="button"
               className="opt"
               aria-pressed={picked === o.id}
-              onClick={() => setPicked(o.id)}
+              onClick={() => handlePick(o.id)}
             >
-              <b>{o.label}</b>
-              <span>{o.blurb}</span>
+              <span className="opt__row">
+                <PolicyIcon asset={o.asset} />
+                <span className="opt__copy">
+                  <b>{o.label}</b>
+                  <span>{o.blurb}</span>
+                </span>
+              </span>
             </button>
           ))}
         </div>
@@ -105,6 +144,7 @@ export function TryRound() {
           className="tryout__city"
           plots={plots}
           satisfaction={stats.satisfaction}
+          activeTransition={activeTransition}
           animate
           label={
             option

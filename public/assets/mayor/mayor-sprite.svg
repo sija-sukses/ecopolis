@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-36 -48 72 60" width="72" height="60" fill="none">
+  <defs>
+    <!-- Simbol 1: Walikota Berdiri / Patroli di Balai Kota (Formal Navy Suit + Red Sash) -->
+    <g id="mayor-idle">
+      <ellipse cx="0" cy="2.5" rx="12" ry="5.5" fill="#0f172a" opacity="0.26" />
+      <polygon points="-4.8,0 -0.5,2.0 -0.5,-7.2 -4.8,-9.2" fill="#0f172a" />
+      <polygon points="0.5,1.8 4.8,-0.2 4.8,-9.2 0.5,-7.2" fill="#1e293b" />
+      <polygon points="-7.0,-8.0 0,-4.2 0,-18.2 -7.0,-21.8" fill="#1e293b" />
+      <polygon points="7.0,-8.0 0,-4.2 0,-18.2 7.0,-21.8" fill="#0f172a" />
+      <polygon points="0,-25.2 7.0,-21.8 0,-18.2 -7.0,-21.8" fill="#334155" />
+      <!-- Selempang Kehormatan Merah & Lencana Emas -->
+      <polygon points="-5.8,-21.4 -3.0,-22.8 6.4,-9.8 3.8,-8.0" fill="#ef4444" />
+      <circle cx="-3.2" cy="-15.6" r="1.9" fill="#fbbf24" />
+      <!-- Kepala Clay 3D -->
+      <polygon points="-5.0,-19.8 0,-17.0 0,-25.8 -5.0,-28.4" fill="#f3be96" />
+      <polygon points="5.0,-19.8 0,-17.0 0,-25.8 5.0,-28.4" fill="#df9e70" />
+      <polygon points="0,-31.0 5.0,-28.4 0,-25.8 -5.0,-28.4" fill="#fde0c6" />
+      <!-- Topi & Rambut -->
+      <polygon points="-5.4,-26.6 0,-24.0 0,-29.8 -5.4,-32.4" fill="#1e293b" />
+      <polygon points="5.4,-26.6 0,-24.0 0,-29.8 5.4,-32.4" fill="#0f172a" />
+      <polygon points="0,-35.0 5.4,-32.4 0,-29.8 -5.4,-32.4" fill="#334155" />
+      <polygon points="-5.5,-27.0 0,-24.3 5.5,-27.0 5.5,-28.2 0,-25.5 -5.5,-28.2" fill="#fbbf24" />
+      <!-- Lengan Melambai -->
+      <polygon points="4.2,-18.0 10.2,-22.6 8.6,-24.8 2.8,-20.2" fill="#0f172a" />
+      <circle cx="9.8" cy="-23.8" r="2.0" fill="#fde0c6" />
+    </g>
+
+    <!-- Simbol 2: Walikota Memotong Pita Peresmian dengan Gunting Emas Raksasa -->
+    <g id="mayor-cut-ribbon">
+      <ellipse cx="0" cy="3" rx="14" ry="6.5" fill="#0f172a" opacity="0.28" />
+      <polygon points="-5.2,0 -0.6,2.2 -0.6,-7.5 -5.2,-9.5" fill="#0f172a" />
+      <polygon points="0.6,2.0 5.2,-0.2 5.2,-9.5 0.6,-7.5" fill="#1e293b" />
+      <polygon points="-7.4,-8.2 0,-4.4 0,-18.8 -7.4,-22.4" fill="#1e293b" />
+      <polygon points="7.4,-8.2 0,-4.4 0,-18.8 7.4,-22.4" fill="#0f172a" />
+      <polygon points="0,-25.8 7.4,-22.4 0,-18.8 -7.4,-22.4" fill="#334155" />
+      <polygon points="-6.2,-22.0 -3.2,-23.4 6.8,-10.2 4.2,-8.4" fill="#ef4444" />
+      <circle cx="-3.4" cy="-16.2" r="2.1" fill="#fbbf24" />
+      <polygon points="-5.2,-20.4 0,-17.6 0,-26.6 -5.2,-29.2" fill="#f3be96" />
+      <polygon points="5.2,-20.4 0,-17.6 0,-26.6 5.2,-29.2" fill="#df9e70" />
+      <polygon points="0,-31.8 5.2,-29.2 0,-26.6 -5.2,-29.2" fill="#fde0c6" />
+      <polygon points="-5.6,-27.2 0,-24.5 0,-30.5 -5.6,-33.2" fill="#1e293b" />
+      <polygon points="5.6,-27.2 0,-24.5 0,-30.5 5.6,-33.2" fill="#0f172a" />
+      <polygon points="0,-35.8 5.6,-33.2 0,-30.5 -5.6,-33.2" fill="#334155" />
+      <polygon points="-5.7,-27.6 0,-24.9 5.7,-27.6 5.7,-29.0 0,-26.3 -5.7,-29.0" fill="#fbbf24" />
+      <polygon points="6.8,-19.2 10.8,-14.2 8.8,-12.4 4.8,-17.4" fill="#0f172a" />
+      <circle cx="9.8" cy="-13.2" r="2.1" fill="#f3be96" />
+      <g transform="translate(8.5 -12.5) rotate(-14)">
+        <polygon points="0,-1.2 15.5,-6.8 14.2,-2.2 0,1.2" fill="#fde047" />
+        <polygon points="0,1.2 15.8,4.6 14.0,0.4 0,-1.2" fill="#eab308" />
+        <circle cx="2.2" cy="0" r="1.6" fill="#dc2626" />
+        <ellipse cx="-4.2" cy="-2.8" rx="3.8" ry="2.5" fill="none" stroke="#facc15" stroke-width="1.8" />
+        <ellipse cx="-4.2" cy="2.8" rx="3.8" ry="2.5" fill="none" stroke="#eab308" stroke-width="1.8" />
+      </g>
+    </g>
+  </defs>
+  <use href="#mayor-cut-ribbon" />
+</svg>

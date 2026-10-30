@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 44" width="112" height="88" fill="none">
+  <!-- Smooth ambient occlusion contact shadow under bus -->
+  <polygon points="-20,0 -4,-8 21,5 5,13" fill="#0f172a" fill-opacity="0.36" />
+  <!-- Isometric 3D wheels -->
+  <ellipse cx="-10.5" cy="3.8" rx="3.6" ry="2.5" fill="#1e293b" />
+  <ellipse cx="-10.5" cy="3.8" rx="1.6" ry="1.1" fill="#cbd5e1" />
+  <ellipse cx="4.8" cy="11.4" rx="3.6" ry="2.5" fill="#1e293b" />
+  <ellipse cx="4.8" cy="11.4" rx="1.6" ry="1.1" fill="#cbd5e1" />
+  <!-- Main bus body (Emerald Green Electric Public Bus) -->
+  <polygon points="-21,-2.2 1,9.0 1,-2.8 -21,-14.0" fill="#10b981" />
+  <polygon points="1,9.0 19,0.0 19,-11.8 1,-2.8" fill="#059669" />
+  <polygon points="-21,-14.0 -3,-23.0 19,-11.8 1,-2.8" fill="#34d399" />
+  <!-- Clean white zero-emission belt stripe -->
+  <polygon points="-21,-4.8 1,6.4 1,4.6 -21,-6.6" fill="#ecfdf5" fill-opacity="0.9" />
+  <polygon points="1,6.4 19,-2.6 19,-4.4 1,4.6" fill="#d1fae5" fill-opacity="0.85" />
+  <!-- Panoramic tinted passenger windows & front windshield -->
+  <polygon points="-19,-6.8 -0.8,2.5 -0.8,-1.8 -19,-11.1" fill="#1e293b" />
+  <polygon points="-13.5,-4.2 -1.2,2.1 -1.2,-1.4 -13.5,-7.7" fill="#7dd3fc" fill-opacity="0.38" />
+  <polygon points="2.2,6.4 17.5,-1.2 17.5,-6.4 2.2,1.2" fill="#0f172a" />
+  <polygon points="3.5,5.0 15.8,-1.1 15.8,-5.2 3.5,0.9" fill="#bae6fd" fill-opacity="0.42" />
+  <!-- Roof electric battery cooling pod (clean rounded white clay slab) -->
+  <polygon points="-13,-14.2 -2,-8.6 8,-13.6 -3,-19.2" fill="#ffffff" />
+  <polygon points="-13,-12.8 -2,-7.2 -2,-8.6 -13,-14.2" fill="#e2e8f0" />
+  <polygon points="-2,-7.2 8,-12.2 8,-13.6 -2,-8.6" fill="#cbd5e1" />
+  <!-- Crisp LED headlights -->
+  <polygon points="3.2,7.2 6.8,5.4 6.8,3.8 3.2,5.6" fill="#fef08a" />
+  <polygon points="13.2,2.2 16.8,0.4 16.8,-1.2 13.2,0.6" fill="#fef08a" />
+</svg>

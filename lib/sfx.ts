@@ -6,12 +6,14 @@
  * pembuatannya sebelum ada interaksi pengguna.
  */
 
-type Sound = 'click' | 'drop' | 'done';
+type Sound = 'click' | 'drop' | 'construct' | 'ceremony' | 'done';
 
 /** Nada dalam Hz, dan panjangnya dalam detik. */
 const NOTES: Record<Sound, { freq: number[]; dur: number; type: OscillatorType }> = {
   click: { freq: [660], dur: 0.06, type: 'triangle' },
   drop: { freq: [240, 150], dur: 0.17, type: 'sine' },
+  construct: { freq: [330, 440, 392], dur: 0.24, type: 'triangle' },
+  ceremony: { freq: [523, 659, 784, 1046], dur: 0.48, type: 'triangle' },
   done: { freq: [523, 659, 784], dur: 0.42, type: 'triangle' },
 };
 

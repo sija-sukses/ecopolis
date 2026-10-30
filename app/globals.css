@@ -73,9 +73,9 @@
   --terracotta-top: #df7b58;
   --terracotta-left: #be5d3e;
   --terracotta-right: #9d482d;
-  --river-top: #8ec8f6;
-  --river-mid: #6eb2ea;
-  --river-deep: #5598d4;
+  --river-top: #58c4f6;
+  --river-mid: #3aa8e8;
+  --river-deep: #2389cc;
   --water-aura: #d8e2fa;
   --path-top: #f2cf92;
   --path-edge: #ddb16e;
@@ -463,6 +463,55 @@ a { color: inherit; }
 .opt:hover { transform: translateX(6px); }
 .opt[aria-pressed='true'] { background: var(--ink); color: var(--field-paper); }
 
+.opt__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.opt__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  margin-top: 2px;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.opt__icon--pltu,
+.opt__icon--tol,
+.opt__icon--industri,
+.opt__icon--tpa,
+.opt__icon--perumahan {
+  background: #ffe3d6;
+  color: #b5381a;
+}
+
+.opt__icon--plts,
+.opt__icon--brt,
+.opt__icon--hutan,
+.opt__icon--daurulang,
+.opt__icon--apartemen {
+  background: #dcf5d0;
+  color: #216e39;
+}
+
+.opt[aria-pressed='true'] .opt__icon {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--field-paper);
+}
+
+.opt__copy {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+
 .opt b {
   display: block;
   font-size: var(--step-lead);
@@ -471,7 +520,7 @@ a { color: inherit; }
   text-transform: uppercase;
 }
 
-.opt span { display: block; margin-top: 6px; font-size: var(--step-small); }
+.opt span:not(.opt__row):not(.opt__icon):not(.opt__copy) { display: block; margin-top: 6px; font-size: var(--step-small); }
 
 .tryout__panel { display: grid; gap: 20px; }
 
@@ -950,6 +999,315 @@ a { color: inherit; }
   animation: emoteAngry 1.25s ease-in-out infinite;
 }
 
+/* Animasi kepulan asap PLTU, asap periodik kawasan industri & sampah, serta kabut polusi kota */
+@keyframes smokeBillow {
+  0% {
+    transform: translate(0, 4px) scale(0.42);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.82;
+  }
+  75% {
+    opacity: 0.48;
+  }
+  100% {
+    transform: translate(-18px, -42px) scale(1.55);
+    opacity: 0;
+  }
+}
+
+@keyframes smokePeriodic {
+  0%, 12% {
+    transform: translate(0, 3px) scale(0.35);
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.72;
+  }
+  72% {
+    transform: translate(-14px, -34px) scale(1.38);
+    opacity: 0.35;
+  }
+  88%, 100% {
+    transform: translate(-20px, -44px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes smokeTrash {
+  0%, 18% {
+    transform: translate(0, 2px) scale(0.4);
+    opacity: 0;
+  }
+  38% {
+    opacity: 0.62;
+  }
+  78% {
+    transform: translate(-8px, -22px) scale(1.32);
+    opacity: 0.28;
+  }
+  92%, 100% {
+    transform: translate(-12px, -30px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes smogDrift {
+  0%, 100% {
+    transform: translateX(-10px) translateY(0) scale(0.96);
+  }
+  50% {
+    transform: translateX(12px) translateY(-3px) scale(1.05);
+  }
+}
+
+.smoke-puff {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.smoke-puff--1 {
+  animation: smokeBillow 2.6s ease-out infinite;
+}
+
+.smoke-puff--2 {
+  animation: smokeBillow 2.6s ease-out infinite;
+  animation-delay: -0.65s;
+}
+
+.smoke-puff--3 {
+  animation: smokeBillow 2.6s ease-out infinite;
+  animation-delay: -1.3s;
+}
+
+.smoke-puff--4 {
+  animation: smokeBillow 2.6s ease-out infinite;
+  animation-delay: -1.95s;
+}
+
+.smoke-puff--per-1 {
+  animation: smokePeriodic 3.6s ease-out infinite;
+}
+
+.smoke-puff--per-2 {
+  animation: smokePeriodic 3.6s ease-out infinite;
+  animation-delay: -1.2s;
+}
+
+.smoke-puff--per-3 {
+  animation: smokePeriodic 3.6s ease-out infinite;
+  animation-delay: -2.4s;
+}
+
+.smoke-puff--trash-1 {
+  animation: smokeTrash 3.9s ease-out infinite;
+}
+
+.smoke-puff--trash-2 {
+  animation: smokeTrash 3.9s ease-out infinite;
+  animation-delay: -1.3s;
+}
+
+.smoke-puff--trash-3 {
+  animation: smokeTrash 3.9s ease-out infinite;
+  animation-delay: -2.6s;
+}
+
+.smog-wisp {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: smogDrift 5.4s ease-in-out infinite;
+}
+
+.smog-wisp--2 { animation-delay: -1.4s; }
+.smog-wisp--3 { animation-delay: -2.8s; }
+.smog-wisp--4 { animation-delay: -0.9s; }
+.smog-wisp--5 { animation-delay: -2.1s; }
+.smog-wisp--6 { animation-delay: -3.5s; }
+
+@keyframes cloudFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4.5px);
+  }
+}
+
+.cloud-float {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: cloudFloat 5.2s ease-in-out infinite;
+}
+
+.cloud-float--slow {
+  animation-duration: 6.8s;
+  animation-delay: -1.8s;
+}
+
+.cloud-float--alt {
+  animation-duration: 5.8s;
+  animation-delay: -3.1s;
+}
+
+/* Animasi aliran kendaraan dinamis di kedua lajur Jalan Tol Layang Dalam Kota */
+@keyframes tolLaneSE {
+  0% {
+    opacity: 0;
+    transform: translate(-64.7px, -47.8px) rotate(-8deg);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(-54.1px, -50.4px) rotate(-5deg);
+  }
+  28% {
+    opacity: 1;
+    transform: translate(-29.7px, -51.2px) rotate(8deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-5.6px, -40.8px) rotate(22deg);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(12.2px, -17.0px) rotate(32deg);
+  }
+  92% {
+    opacity: 1;
+    transform: translate(22.2px, 11.8px) rotate(36deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(24.9px, 25.3px) rotate(38deg);
+  }
+}
+
+@keyframes tolLaneNW {
+  0% {
+    opacity: 0;
+    transform: translate(44.8px, 19.2px) rotate(38deg);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(42.0px, 5.7px) rotate(36deg);
+  }
+  28% {
+    opacity: 1;
+    transform: translate(32.1px, -23.1px) rotate(32deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(14.2px, -46.9px) rotate(22deg);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(-9.9px, -57.3px) rotate(8deg);
+  }
+  92% {
+    opacity: 1;
+    transform: translate(-34.2px, -56.5px) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-44.9px, -54.0px) rotate(-8deg);
+  }
+}
+
+.tol-mover {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.tol-mover--se-1 {
+  animation: tolLaneSE 7.2s linear infinite;
+  animation-delay: -0.9s;
+}
+
+.tol-mover--se-2 {
+  animation: tolLaneSE 7.2s linear infinite;
+  animation-delay: -3.3s;
+}
+
+.tol-mover--se-3 {
+  animation: tolLaneSE 7.2s linear infinite;
+  animation-delay: -5.7s;
+}
+
+.tol-mover--nw-1 {
+  animation: tolLaneNW 7.2s linear infinite;
+  animation-delay: -1.3s;
+}
+
+.tol-mover--nw-2 {
+  animation: tolLaneNW 7.2s linear infinite;
+  animation-delay: -3.7s;
+}
+
+.tol-mover--nw-3 {
+  animation: tolLaneNW 7.2s linear infinite;
+  animation-delay: -6.1s;
+}
+
+/* Animasi konstruksi (tower crane mengangkat panel surya) & peresmian (confetti + gunting pita Walikota) */
+@keyframes craneSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+@keyframes craneHoist {
+  0%, 100% { transform: translate(-38px, -59px) translateY(0); }
+  50% { transform: translate(-38px, -59px) translateY(-4.5px); }
+}
+
+@keyframes confettiFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.4) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1) rotate(45deg);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translateY(4px) scale(1) rotate(140deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.7) rotate(220deg);
+  }
+}
+
+@keyframes mayorCeremonyCut {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-3px) scale(1.06); }
+  70% { transform: translateY(-1px) scale(1.02); }
+}
+
+.crane-jib {
+  transform-box: fill-box;
+  transform-origin: 80% 90%;
+  animation: craneSway 2.2s ease-in-out infinite;
+}
+
+.crane-load {
+  animation: craneHoist 1.4s ease-in-out infinite;
+}
+
+.confetti-piece {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: confettiFloat 1.25s ease-out infinite;
+}
+
+.mayor-sprite--ceremony {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: mayorCeremonyCut 0.65s ease-in-out infinite;
+}
+
 .panel__pic { animation: driftin linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
 
 /* Masuk per bagian, dipicu oleh posisi gulir.
@@ -985,10 +1343,19 @@ a { color: inherit; }
   .worker__arm,
   .worker__drops,
   .worker__spark,
-  .emote-angry {
+  .emote-angry,
+  .smoke-puff,
+  .smog-wisp,
+  .crane-jib,
+  .crane-load,
+  .confetti-piece,
+  .mayor-sprite--ceremony {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+  .tol-mover {
+    animation-play-state: paused;
   }
   .btn:hover, .opt:hover { transform: none; }
 }

@@ -4,11 +4,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { generateReview } from '@/app/actions/generateReview.ts';
-import { CityMap } from '@/components/city-map.tsx';
+import { CityMap, type ActivePlotTransition } from '@/components/city-map.tsx';
 import { Hud } from '@/components/hud.tsx';
 import { Onboarding } from '@/components/onboarding.tsx';
 import { ScenarioCard } from '@/components/scenario-card.tsx';
 import { DEFAULT_AVATAR } from '@/lib/avatars.ts';
+import {
+  CEREMONY_DURATION_MS,
+  CONSTRUCTION_DURATION_MS,
+  TOTAL_TRANSITION_MS,
+} from '@/lib/city-effects.ts';
 import { fallbackReview } from '@/lib/fallback.ts';
 import { countFinishedSession, useGame } from '@/lib/game-context.tsx';
 import { isFinished } from '@/lib/reducer.ts';
@@ -16,17 +21,25 @@ import { ROUNDS, scenarioFor } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { OptionId } from '@/lib/types.ts';
 
-/** Selama animasi bangunan jatuh, kartu dikunci agar tidak terklik dua kali. */
+/** Selama animasi awal konstruksi, kartu dikunci sejenak agar tidak terklik ganda. */
 const DROP_MS = 760;
 
 export function Game() {
   const { state, dispatch, ready } = useGame();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [activeTransition, setActiveTransition] = useState<ActivePlotTransition | null>(null);
+  const timersRef = useRef<number[]>([]);
   const asked = useRef(false);
 
   const done = isFinished(state);
   const scenario = scenarioFor(state.round);
+
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach((id) => window.clearTimeout(id));
+    };
+  }, []);
 
   // Satu-satunya panggilan jaringan di seluruh permainan, dijalankan tepat
   // sekali. Kalau pemanggilannya sendiri gagal (juri sedang offline), narasi
@@ -89,11 +102,33 @@ export function Game() {
   }
 
   function choose(option: OptionId) {
-    if (busy) return;
+    if (busy || !scenario) return;
+    const targetPlot = scenario.plot;
+    const isFinalRound = scenario.round === ROUNDS;
+
+    timersRef.current.forEach((id) => window.clearTimeout(id));
+    timersRef.current = [];
+
     setBusy(true);
-    play('drop', state.muted);
+    setActiveTransition({ plotIndex: targetPlot, stage: 'construction' });
+    play('construct', state.muted);
     dispatch({ type: 'choose', option });
-    setTimeout(() => setBusy(false), DROP_MS);
+
+    const ceremonyTimer = window.setTimeout(() => {
+      setActiveTransition({ plotIndex: targetPlot, stage: 'ceremony' });
+      play('ceremony', state.muted);
+    }, CONSTRUCTION_DURATION_MS);
+
+    const operationalTimer = window.setTimeout(() => {
+      setActiveTransition(null);
+    }, TOTAL_TRANSITION_MS);
+
+    const unlockDelay = isFinalRound ? TOTAL_TRANSITION_MS : DROP_MS;
+    const unlockTimer = window.setTimeout(() => {
+      setBusy(false);
+    }, unlockDelay);
+
+    timersRef.current.push(ceremonyTimer, operationalTimer, unlockTimer);
   }
 
   return (
@@ -113,6 +148,7 @@ export function Game() {
             plots={state.plots}
             avatar={state.leader.avatar}
             satisfaction={state.stats.satisfaction}
+            activeTransition={activeTransition}
             animate
             label={`Peta Ecopolis, ${state.plots.filter(Boolean).length} dari ${ROUNDS} kawasan terbangun.`}
           />
@@ -136,3 +172,4 @@ export function Game() {
     </div>
   );
 }
+

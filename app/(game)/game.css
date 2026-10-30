@@ -432,12 +432,24 @@
   border-radius: calc(var(--r) - 8px);
 }
 
+.card .opt__row {
+  align-items: center;
+  gap: 12px;
+}
+
+.card .opt__icon {
+  width: clamp(36px, 4.6vh, 42px);
+  height: clamp(36px, 4.6vh, 42px);
+  margin-top: 0;
+  border-radius: 12px;
+}
+
 .card .opt b {
   font-size: clamp(0.95rem, 0.82rem + 0.65vh, 1.2rem);
   line-height: 1.15;
 }
 
-.card .opt span {
+.card .opt__copy > span {
   margin-top: clamp(3px, 0.5vh, 5px);
   font-size: clamp(0.8rem, 0.75rem + 0.25vh, 0.9rem);
   line-height: 1.32;
@@ -799,11 +811,16 @@
     padding: 10px 14px;
   }
 
+  .card .opt__icon {
+    width: 34px;
+    height: 34px;
+  }
+
   .card .opt b {
     font-size: 0.98rem;
   }
 
-  .card .opt span {
+  .card .opt__copy > span {
     margin-top: 3px;
     font-size: 0.78rem;
   }
@@ -1051,7 +1068,11 @@
   .worker__arm,
   .worker__drops,
   .worker__spark,
-  .emote-angry {
+  .emote-angry,
+  .crane-jib,
+  .crane-load,
+  .confetti-piece,
+  .mayor-sprite--ceremony {
     animation: none;
   }
 
