@@ -231,6 +231,27 @@ export const CEREMONY_DURATION_MS = 1500;
 /** Total durasi transisi konstruksi + peresmian (3.0 detik). */
 export const TOTAL_TRANSITION_MS = CONSTRUCTION_DURATION_MS + CEREMONY_DURATION_MS;
 
+/**
+ * Skala dan ketinggian kelompok bangunan di atas petak.
+ *
+ * Ditaruh di sini, bukan di `iso.tsx`, karena posisi Walikota di layar
+ * terpisah harus diturunkan dari angka yang sama. Sebelumnya keduanya ditulis
+ * terpisah dan offset Walikota ditebak dengan tangan, sehingga ia berdiri
+ * jauh dari pita yang harus dipotongnya. `iso.tsx` mengekspor ulang keduanya.
+ */
+export const BUILDING_LIFT = -14;
+export const BUILDING_SCALE = 0.88;
+
+/** Jangkar halaman peresmian, dalam satuan ubin pada ruang bangunan. */
+export const CEREMONY_ANCHOR = { u: 0.18, v: 0.72, lift: 4 };
+
+/** Menerjemahkan titik di ruang bangunan ke offset relatif terhadap petak. */
+export function buildingPointToPlot(u: number, v: number, lift = 0): [number, number] {
+  const lx = (u - v) * 64;
+  const ly = (u + v) * 32 - lift;
+  return [BUILDING_SCALE * lx, -BUILDING_LIFT + BUILDING_SCALE * ly];
+}
+
 export type MayorPoseMode = 'idle' | 'ceremony' | 'inspection';
 
 /**
@@ -296,7 +317,7 @@ export function getPlotCameraTransform(plotIndex: number | null, scale = CAMERA_
   const [u, v] = PLOT_TILE_COORDS[plotIndex];
   const px = (u - v) * 64;
   // Dibidik sedikit di atas pusat petak, karena bangunan menjulang ke atas.
-  const py = (u + v) * 32 - 19;
+  const py = (u + v) * 32 + 4;
 
   // Diukur langsung di peramban: dengan `transform-box: view-box` dan
   // `transform-origin: 0 0`, Chrome memakai titik (0,0) ruang pengguna sebagai
@@ -409,10 +430,29 @@ export function getMayorWorldPosition(
     // Saat meninjau, Walikota berdiri di tepi lokasi agar tidak menutupi
     // crane dan perancah; saat peresmian ia maju ke karpet merah.
     const inspecting = mode === 'inspection';
+
+    if (inspecting) {
+      // Meninjau dari tepi lokasi, agar tidak menutupi crane dan perancah.
+      const [dx, dy] = buildingPointToPlot(0.62, -0.1, 4);
+      return {
+        x: Number((plotX + dx).toFixed(1)),
+        y: Number((plotY + dy).toFixed(1)),
+        mode: 'inspection',
+        plotIndex: ceremonyPlotIndex,
+      };
+    }
+
+    // Berdiri tepat di ujung karpet merah, di sebelah kiri pitanya. Diturunkan
+    // dari jangkar yang sama dengan karpetnya, bukan ditebak.
+    const [ax, ay] = buildingPointToPlot(
+      CEREMONY_ANCHOR.u,
+      CEREMONY_ANCHOR.v,
+      CEREMONY_ANCHOR.lift,
+    );
     return {
-      x: Number((plotX + (inspecting ? 42 : -20)).toFixed(1)),
-      y: Number((plotY + (inspecting ? 16 : 4)).toFixed(1)),
-      mode: inspecting ? 'inspection' : 'ceremony',
+      x: Number((plotX + ax + BUILDING_SCALE * -21).toFixed(1)),
+      y: Number((plotY + ay + BUILDING_SCALE * 1).toFixed(1)),
+      mode: 'ceremony',
       plotIndex: ceremonyPlotIndex,
     };
   }

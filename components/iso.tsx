@@ -1,5 +1,6 @@
 import { avatarOf } from '@/lib/avatars.ts';
 import {
+  CEREMONY_ANCHOR,
   getPollutionLevel,
   getRiverPalette,
   getWaterTurbidity,
@@ -200,8 +201,7 @@ const C = {
  * rumput alami yang lembut.
  */
 export const PAD_H = 0;
-export const BUILDING_LIFT = -14;
-export const BUILDING_SCALE = 0.88;
+export { BUILDING_LIFT, BUILDING_SCALE } from '@/lib/city-effects.ts';
 
 export function PlotPad({ built = false }: { built?: boolean }) {
   if (built) return null;
@@ -3013,63 +3013,54 @@ export function OpeningCeremony({ id }: { id: AssetId }) {
       {/* Gedung utama di latar belakang */}
       <Building id={id} />
 
-      {/* Paviliun Fasad Sambutan Eco-Building (Solar Glass Windows, Vertical Green Walls & Warm Interior Lights) */}
-      <g transform={at(-0.08, -0.02, 14.5)}>
-        <Box h={26} inset={36} top="#f8fafc" left="#e2e8f0" right="#cbd5e1" />
-        {/* Dinding Taman Hijau Vertikal (Vertical Green Garden Walls) */}
-        <polygon points="-28,-4 -18,1 -18,-21 -28,-26" fill="#22c55e" />
-        <polygon points="18,1 28,-4 28,-26 18,-21" fill="#16a34a" />
-        {/* Jendela Kaca Surya dengan Cahaya Interior Hangat (Warm Welcoming Interior Lights) */}
-        <polygon points="-15,2.5 -2,9 -2,-14 -15,-20.5" fill="#fef08a" stroke="#38bdf8" strokeWidth="1" />
-        <polygon points="2,9 15,2.5 15,-20.5 2,-14" fill="#fde047" stroke="#0284c7" strokeWidth="1" />
-        {/* Atap Panel Kaca Surya (Solar Glass Roof) */}
-        <polygon points="-24,-26 0,-14 24,-26 0,-38" fill="#1e3a8a" stroke="#93c5fd" strokeWidth="1.1" />
-      </g>
+      {/*
+        Prosesi peresmian sengaja diturunkan ke tanah di depan-kiri petak,
+        bukan di atas petaknya.
 
-      {/* Pendar cahaya hangat lampu penyambutan di halaman peresmian */}
-      <ellipse cx="-18" cy="-4" rx="32" ry="15" fill="#fef08a" opacity="0.34" />
-
-      {/* Jalur Karpet Merah Peresmian (Miniature Red Carpet Path) menuju tangga pintu masuk */}
-      <g transform={at(-0.26, 0.24, 14.8)}>
-        {/* Tangga sambutan masuk gedung (Entrance Steps) */}
-        <polygon points="-6,-14 8,-21 16,-17 2,-10" fill="#e2e8f0" />
-        <polygon points="-10,-11 4,-18 12,-14 -2,-7" fill="#cbd5e1" />
+        Sebelumnya ada paviliun kaca yang digambar tepat di atas gedung
+        aslinya, lalu karpet, pita, Walikota, dan kerumunan semuanya ditumpuk
+        di satu ubin yang sama, sehingga saling menimpa. Satu ubin memang tidak
+        cukup untuk menampung gedung sekaligus acaranya. Sekarang gedungnya
+        berdiri di atas petak, acaranya berlangsung di halaman depannya, persis
+        seperti peresmian sungguhan.
+      */}
+      <g transform={at(CEREMONY_ANCHOR.u, CEREMONY_ANCHOR.v, CEREMONY_ANCHOR.lift)}>
+        {/* Pendar cahaya hangat lampu penyambutan di halaman */}
+        <ellipse cx="-2" cy="2" rx="40" ry="18" fill="#fef08a" opacity="0.3" />
 
         {/* Alas bingkai emas karpet merah */}
-        <polygon points="-22,2 4,-11 20,-3 -6,10" fill="#fbbf24" />
+        <polygon points="-26,2 2,-12 24,-1 -4,13" fill="#fbbf24" />
         {/* Karpet satin merah menyala */}
-        <polygon points="-19,2 4,-9.5 17,-3 -6,8.5" fill="#dc2626" />
+        <polygon points="-22,2 2,-10 20,-1 -4,11" fill="#dc2626" />
 
-        {/* Dua Tiang Pembatas Perak (Silver Stanchion Posts) & Pita Satin Merah (Red Satin Ribbon) */}
-        {/* Tiang Perak Kiri */}
-        <ellipse cx="-14" cy="-1" rx="3" ry="1.5" fill="#64748b" />
-        <line x1="-14" y1="-1" x2="-14" y2="-14" stroke="#f1f5f9" strokeWidth="2.2" strokeLinecap="round" />
-        <circle cx="-14" cy="-14.5" r="2.2" fill="#ffffff" stroke="#94a3b8" strokeWidth="0.7" />
+        {/* Dua Tiang Pembatas Perak & Pita Satin Merah di ujung karpet */}
+        <ellipse cx="-16" cy="-1" rx="3" ry="1.5" fill="#64748b" />
+        <line x1="-16" y1="-1" x2="-16" y2="-15" stroke="#f1f5f9" strokeWidth="2.2" strokeLinecap="round" />
+        <circle cx="-16" cy="-15.5" r="2.2" fill="#ffffff" stroke="#94a3b8" strokeWidth="0.7" />
 
-        {/* Tiang Perak Kanan */}
-        <ellipse cx="6" cy="8" rx="3" ry="1.5" fill="#64748b" />
-        <line x1="6" y1="8" x2="6" y2="-5" stroke="#f1f5f9" strokeWidth="2.2" strokeLinecap="round" />
-        <circle cx="6" cy="-5.5" r="2.2" fill="#ffffff" stroke="#94a3b8" strokeWidth="0.7" />
+        <ellipse cx="10" cy="5" rx="3" ry="1.5" fill="#64748b" />
+        <line x1="10" y1="5" x2="10" y2="-9" stroke="#f1f5f9" strokeWidth="2.2" strokeLinecap="round" />
+        <circle cx="10" cy="-9.5" r="2.2" fill="#ffffff" stroke="#94a3b8" strokeWidth="0.7" />
 
-        {/* Pita Satin Merah Cerah yang Direntangkan di Antara Dua Tiang Perak */}
+        {/* Pita Satin Merah yang Direntangkan di Antara Kedua Tiang */}
         <path
-          d="M -14,-12 Q -4,-7 6,-3.5"
+          d="M -16,-13 Q -3,-8 10,-7"
           fill="none"
           stroke="#ef4444"
           strokeWidth="3.4"
           strokeLinecap="round"
           className="ceremony-ribbon"
         />
-        {/* Simpul Pita Merah-Emas Besar di Tengah */}
-        <polygon points="-8.5,-10.5 -4,-7.5 -8.5,-4.5" fill="#f43f5e" />
-        <polygon points="0.5,-10.5 -4,-7.5 0.5,-4.5" fill="#f43f5e" />
-        <circle cx="-4" cy="-7.5" r="2.2" fill="#fbbf24" stroke="#fef08a" strokeWidth="0.6" />
+        {/* Simpul Pita Merah-Emas di Tengah */}
+        <polygon points="-7.5,-12.5 -3,-9.5 -7.5,-6.5" fill="#f43f5e" />
+        <polygon points="1.5,-12.5 -3,-9.5 1.5,-6.5" fill="#f43f5e" />
+        <circle cx="-3" cy="-9.5" r="2.2" fill="#fbbf24" stroke="#fef08a" strokeWidth="0.6" />
       </g>
 
-      {/* Staf Kota & Warga Miniatur Bersorak & Bertepuk Tangan di Sisi Karpet Merah */}
-      <IsoWorker u={-0.54} v={0.18} lift={14.8} shirt="blue" hat="hair-dark" tool="none" action="wave" scale={1.12} />
-      <IsoWorker u={0.14} v={0.44} lift={14.8} shirt="green" hat="cap-green" tool="flag" action="wave" scale={1.12} delay={0.15} flip />
-      <IsoWorker u={-0.46} v={-0.18} lift={14.8} shirt="warm" hat="hair-dark" tool="none" action="bob" scale={1.08} delay={0.3} />
+      {/* Warga bersorak mengapit karpet, juga di tanah, bukan di atas petak */}
+      <IsoWorker u={-0.16} v={0.92} lift={2} shirt="blue" hat="hair-dark" tool="none" action="wave" scale={1.12} />
+      <IsoWorker u={0.62} v={1.1} lift={2} shirt="green" hat="cap-green" tool="flag" action="wave" scale={1.12} delay={0.15} flip />
+      <IsoWorker u={0.04} v={1.26} lift={2} shirt="warm" hat="hair-dark" tool="none" action="bob" scale={1.08} delay={0.3} />
 
       {/* Efek Partikel Confetti Geometris Berterbangan */}
       <ConfettiBurst />

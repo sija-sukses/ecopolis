@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import {
+  BUILDING_SCALE,
   getMayorAsset,
   getMayorWorldPosition,
   type MayorPoseMode,
@@ -342,7 +343,7 @@ export function MayorFigurine({
           <circle cx="-1.0" cy="-14.4" r="2.0" fill={skin.top} />
 
           {/* Gunting Seremonial Emas Raksasa (Oversized Golden Ceremonial Scissors) */}
-          <g transform="translate(8.5 -12.5) rotate(-14)" className="mayor-scissors">
+          <g transform="translate(8.5 -12.5) rotate(-14) scale(0.72)" className="mayor-scissors">
             {/* Bilah Gunting Emas Atas & Bawah Aktif Memotong Pita */}
             <polygon points="0,-1.2 15.5,-6.8 14.2,-2.2 0,1.2" fill="#fde047" stroke="#ca8a04" strokeWidth="0.6" />
             <polygon points="0,1.2 15.8,4.6 14.0,0.4 0,-1.2" fill="#eab308" stroke="#a16207" strokeWidth="0.6" />
@@ -402,6 +403,9 @@ export const MayorDynamicLayer = memo(function MayorDynamicLayer({
               ? 'worker worker--wave'
               : 'worker worker--bob'
         }
+        // Di atas petak ia memakai skala yang sama dengan adegannya, supaya
+        // tidak tampak lebih besar daripada para pekerja di sekitarnya.
+        transform={onSite ? `scale(${BUILDING_SCALE})` : undefined}
       >
         <MayorFigurine avatar={info.id} mode={pos.mode} />
       </g>

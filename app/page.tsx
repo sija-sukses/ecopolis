@@ -1,9 +1,18 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
+import { CityMap } from '@/components/city-map.tsx';
 import { TryRound } from '@/components/try-round.tsx';
-import referenceIsland from '@/public/images/ecopolis-reference.png';
+import type { AssetId } from '@/lib/types.ts';
 import styles from './page.module.css';
+
+/**
+ * Kota contoh di landing page: jalur paling hijau, kelima kawasan terbangun.
+ *
+ * Dipakai peta hidup yang sama persis dengan yang ada di `/play`, bukan gambar
+ * diam, supaya sungainya mengalir, pekerjanya bergerak, dan Walikota berdiri
+ * di Balai Kota seperti di dalam permainannya.
+ */
+const SHOWCASE: AssetId[] = ['plts', 'brt', 'hutan', 'daurulang', 'apartemen'];
 
 const DILEMMAS = [
   ['Energi', 'Batu bara atau matahari?', 'Jaga listrik tetap menyala tanpa mewariskan langit yang gelap.'],
@@ -38,7 +47,14 @@ export default function Home() {
   return (
     <main className={styles.page} id="atas">
       <section className={styles.hero} aria-labelledby="hero-title">
-        <Image className={styles.heroImage} src={referenceIsland} alt="Pulau kota Ecopolis bergaya 3D low-poly isometrik, dengan balai kota, bus listrik, panel surya, hutan, sungai, dan turbin angin." fill priority sizes="100vw" />
+        <CityMap
+          className={styles.heroCity}
+          plots={SHOWCASE}
+          avatar="rian"
+          animate
+          fill
+          label="Pulau kota Ecopolis bergaya isometrik: balai kota, panel surya, halte bus listrik, hutan kota, pusat daur ulang, apartemen hijau, dan sungai yang mengalir."
+        />
         <div className={styles.heroWash} />
         <header className={styles.header}>
           <Brand />
@@ -109,7 +125,14 @@ export default function Home() {
       </section>
 
       <section className={styles.finalCta} aria-labelledby="cta-title">
-        <Image className={styles.finalImage} src={referenceIsland} alt="" fill sizes="100vw" /><div className={styles.finalShade} />
+        <CityMap
+          className={styles.finalCity}
+          plots={SHOWCASE}
+          avatar="rian"
+          fill
+          label=""
+        />
+        <div className={styles.finalShade} />
         <div className={styles.finalContent}>
           <p className={styles.sectionTag}>Pulau Anda menunggu</p><h2 id="cta-title">Kota seperti apa yang Anda tinggalkan?</h2>
           <p>Lima ronde. Satu kota. Semua pilihan ada di tangan Anda.</p><Link className={styles.primaryButton} href="/play">Mulai membangun</Link>

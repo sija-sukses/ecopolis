@@ -402,6 +402,21 @@ Enam tahap, total 6,4 detik per ronde (`CUTSCENE_TIMING` di `lib/city-effects.ts
   `prefers-reduced-motion` seluruh sinematik dilewati dan dipakai transisi peta
   lama yang 3 detik.
 
+### Prosesi peresmian berada di halaman, bukan di atas petak
+
+Satu ubin tidak cukup untuk menampung gedung sekaligus acaranya. Versi
+pertamanya menggambar paviliun kaca tepat di atas gedung aslinya, lalu karpet,
+pita, Walikota, dan kerumunan ditumpuk di ubin yang sama sehingga saling
+menimpa. Sekarang gedungnya berdiri di atas petak dan acaranya berlangsung di
+halaman depannya, di tanah.
+
+Jangkarnya (`CEREMONY_ANCHOR`) dan fungsi penerjemahnya
+(`buildingPointToPlot`) ada di `lib/city-effects.ts`, dipakai bersama oleh
+`OpeningCeremony` **dan** oleh posisi Walikota. Sebelumnya keduanya ditulis
+terpisah dan offset Walikota ditebak dengan tangan, sehingga ia berdiri jauh
+dari pita yang harus dipotongnya. `BUILDING_SCALE` dan `BUILDING_LIFT` ikut
+pindah ke sana agar tidak ada dua sumber angka yang bisa berbeda.
+
 ### Jebakan kamera yang diukur, bukan ditebak
 
 Kamera adalah satu `<g class="city-camera">` yang transform-nya dipasang
@@ -414,6 +429,17 @@ viewBox seperti yang terbaca dari spesifikasinya. Ini diukur langsung lewat
 `getScreenCTM()` di peramban setelah rumus yang "benar di atas kertas" meleset
 1300px. Jadi tidak ada offset viewBox yang perlu ditambahkan: cukup geser titik
 bidik ke tengah viewBox, `(0, 160)`.
+
+## 11c. Landing page
+
+Hero dan bagian ajakan terakhir memakai **peta hidup yang sama** dengan yang
+ada di `/play`, bukan gambar diam, sehingga sungainya mengalir, pekerjanya
+bergerak, dan Walikota berdiri di Balai Kota persis seperti di dalam
+permainannya. `CityMap` adalah komponen server, jadi ini tidak menambah
+JavaScript yang dikirim ke peramban.
+
+Prop `fill` membuatnya memakai `preserveAspectRatio="slice"`, yang menutupi
+bingkainya persis seperti `object-fit: cover` pada gambar yang digantikannya.
 
 ## 12. Catatan pelaksanaan
 
