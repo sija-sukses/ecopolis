@@ -292,3 +292,204 @@ export async function downloadCertificate(
     leader.name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase() || 'pemimpin';
   doc.save(`ecopolis-${safe}-2050.pdf`);
 }
+
+function drawRoundedRect(
+  g: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+  fill: string,
+) {
+  g.fillStyle = fill;
+  g.beginPath();
+  g.roundRect(x, y, w, h, r);
+  g.fill();
+}
+
+async function loadImage(src: string): Promise<HTMLImageElement | null> {
+  const img = new Image();
+  const ok = await new Promise<boolean>((resolve) => {
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src;
+  });
+  return ok ? img : null;
+}
+
+/**
+ * Menghasilkan Kartu Story Sosial Media (1080 × 1350 PNG) berisi pulau 2050,
+ * avatar pemimpin, gelar kota, dan skor 4 indikator untuk diunduh atau
+ * dibagikan lewat Web Share API.
+ */
+export async function downloadStoryCard(
+  state: GameState,
+  mapSvg: SVGSVGElement | null,
+  faceImg: HTMLImageElement | null = null,
+) {
+  const { leader, stats, review, choices } = state;
+  if (!leader || !review) return;
+
+  const cw = 1080;
+  const ch = 1350;
+  const canvas = document.createElement('canvas');
+  canvas.width = cw;
+  canvas.height = ch;
+  const g = canvas.getContext('2d');
+  if (!g) return;
+
+  // Latar bingkai luar & kartu utama
+  g.fillStyle = '#16193a';
+  g.fillRect(0, 0, cw, ch);
+
+  drawRoundedRect(g, 42, 54, cw - 84, ch - 96, 40, '#090b1c');
+  drawRoundedRect(g, 42, 42, cw - 84, ch - 96, 40, '#c3cef6');
+
+  // Lencana atas
+  drawRoundedRect(g, 88, 86, 330, 44, 14, '#16193a');
+  g.fillStyle = '#ffffff';
+  g.font = '900 18px system-ui, sans-serif';
+  g.textBaseline = 'middle';
+  g.fillText('ECOPOLIS · KOTA 2050', 112, 109);
+
+  // Avatar & Nama Pemimpin
+  const facePng = faceImg ? await faceToPng(faceImg) : null;
+  const faceLoaded = facePng ? await loadImage(facePng) : null;
+  let nameX = 88;
+  if (faceLoaded) {
+    drawRoundedRect(g, 88, 152, 88, 88, 22, '#16193a');
+    drawRoundedRect(g, 92, 156, 80, 80, 18, '#d8dff9');
+    g.imageSmoothingEnabled = false;
+    g.drawImage(faceLoaded, 96, 160, 72, 72);
+    g.imageSmoothingEnabled = true;
+    nameX = 194;
+  }
+
+  g.fillStyle = '#474e7d';
+  g.font = '800 20px system-ui, sans-serif';
+  g.fillText('LAPORAN KEPEMIMPINAN WALI KOTA', nameX, 174);
+
+  g.fillStyle = '#16193a';
+  g.font = '900 48px system-ui, sans-serif';
+  g.fillText(leader.name, nameX, 218);
+
+  // Pita Judul 2050
+  drawRoundedRect(g, 88, 266, cw - 176, 78, 20, '#b83712');
+  drawRoundedRect(g, 88, 258, cw - 176, 78, 20, '#ff6b3d');
+  g.fillStyle = '#ffffff';
+  g.font = '900 32px system-ui, sans-serif';
+  g.fillText(review.title.toUpperCase(), 116, 298, cw - 232);
+
+  // Peta Isometrik Kota 2050
+  drawRoundedRect(g, 88, 362, cw - 176, 440, 28, '#d8dff9');
+  const mapPng = mapSvg ? await mapToPng(mapSvg, 960) : null;
+  const mapLoaded = mapPng ? await loadImage(mapPng) : null;
+  if (mapLoaded) {
+    const boxW = cw - 216;
+    const boxH = 408;
+    const scale = Math.min(boxW / mapLoaded.width, boxH / mapLoaded.height);
+    const mw = mapLoaded.width * scale;
+    const mh = mapLoaded.height * scale;
+    g.drawImage(
+      mapLoaded,
+      88 + (cw - 176 - mw) / 2,
+      362 + (440 - mh) / 2,
+      mw,
+      mh,
+    );
+  }
+
+  // Grid 4 Indikator (2 × 2)
+  const keys: StatKey[] = ['economy', 'environment', 'satisfaction', 'energy'];
+  const cardW = (cw - 176 - 24) / 2;
+  const cardH = 120;
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const x = 88 + col * (cardW + 24);
+    const y = 828 + row * (cardH + 20);
+    const val = stats[k];
+
+    drawRoundedRect(g, x, y + 6, cardW, cardH, 20, '#090b1c');
+    drawRoundedRect(g, x, y, cardW, cardH, 20, '#16193a');
+
+    g.fillStyle = '#c9cde8';
+    g.font = '800 18px system-ui, sans-serif';
+    g.fillText(STAT_LABELS[k].toUpperCase(), x + 24, y + 36);
+
+    g.fillStyle = '#ffffff';
+    g.font = '900 38px system-ui, sans-serif';
+    g.textAlign = 'right';
+    g.fillText(`${val}/100`, x + cardW - 24, y + 40);
+    g.textAlign = 'left';
+
+    const barX = x + 24;
+    const barY = y + 76;
+    const barW = cardW - 48;
+    drawRoundedRect(g, barX, barY, barW, 18, 9, '#242a52');
+    if (val > 0) {
+      const fillW = Math.max(18, (val / 100) * barW);
+      drawRoundedRect(
+        g,
+        barX,
+        barY,
+        fillW,
+        18,
+        9,
+        val >= 50 ? '#86c45a' : '#ff6b3d',
+      );
+    }
+  }
+
+  // Ringkasan Kebijakan & Kaki
+  drawRoundedRect(g, 88, 1132, cw - 176, 124, 20, '#ffffff');
+  g.fillStyle = '#16193a';
+  g.font = '900 18px system-ui, sans-serif';
+  g.fillText('5 KEBIJAKAN KOTA:', 114, 1166);
+
+  g.fillStyle = '#474e7d';
+  g.font = '700 19px system-ui, sans-serif';
+  const summary = choices.map((c) => c.label).join('  ·  ');
+  g.fillText(summary, 114, 1200, cw - 228);
+
+  g.fillStyle = '#8a5b19';
+  g.font = '900 16px system-ui, sans-serif';
+  g.fillText('Simulator Kebijakan Iklim Ecopolis · INVOFEST 2026', 114, 1232);
+
+  const safe =
+    leader.name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase() || 'pemimpin';
+  const fileName = `ecopolis-story-${safe}-2050.png`;
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob((b) => resolve(b), 'image/png'),
+  );
+  if (!blob) return;
+
+  // Unduh langsung berkas PNG
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+  // Jika perangkat mendukung Web Share API dengan berkas gambar, buka share sheet.
+  try {
+    const file = new File([blob], fileName, { type: 'image/png' });
+    if (
+      typeof navigator !== 'undefined' &&
+      typeof navigator.canShare === 'function' &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        title: `Ecopolis 2050 — ${review.title}`,
+        text: `Inilah masa depan kota Ecopolis di bawah kepemimpinan ${leader.name}: "${review.title}"!`,
+        files: [file],
+      });
+    }
+  } catch {
+    // Pengguna menutup dialog share; unduhan PNG tetap sudah tersimpan.
+  }
+}

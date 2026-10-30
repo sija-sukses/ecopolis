@@ -67,12 +67,109 @@
 .sectionHeading { display: grid; grid-template-columns: 1.4fr .6fr; gap: 8vw; align-items: end; }
 .sectionHeading h2 { max-width: 12ch; margin-top: 22px!important; }
 .sectionHeading>p { max-width: 39ch; color: #286346; line-height: 1.6; }
-.dilemmaList { margin-top: 72px; border-top: 2px solid rgb(20 78 55 / 28%); }
-.dilemma { display: grid; min-height: 126px; grid-template-columns: 62px .75fr 1fr; gap: 24px; align-items: center; border-bottom: 2px solid rgb(20 78 55 / 28%); }
-.dilemma>span { display: grid; width: 39px; height: 39px; place-items: center; border-radius: 8px; background: #fff4b8; color: #8a5b19; font-size: .76rem; font-weight: 900; box-shadow: 0 5px 0 #dfa84c; }
-.dilemma div>p { margin-bottom: 5px; color: #286346; font-size: .72rem; font-weight: 900; }
-.dilemma h3 { font-size: clamp(1.35rem,2.2vw,2.2rem); letter-spacing: -.04em; }
-.dilemma>p { max-width: 52ch; color: #286346; line-height: 1.55; }
+.dilemmaList { display: grid; gap: 28px; margin-top: 64px; }
+.dilemma {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.45fr);
+  gap: 28px;
+  align-items: center;
+  padding: clamp(22px, 3vw, 32px);
+  border: 2px solid rgb(20 78 55 / 22%);
+  border-radius: 22px;
+  background: #e9fbe0;
+  box-shadow: 0 9px 0 #489d3a, 0 18px 36px rgb(16 64 36 / 14%);
+}
+.dilemmaHead { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.dilemmaMeta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dilemmaNum {
+  display: inline-grid;
+  place-items: center;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background: #fff4b8;
+  color: #8a5b19;
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .02em;
+  box-shadow: 0 4px 0 #dfa84c;
+}
+.dilemmaSector {
+  padding: 5px 12px;
+  border-radius: 9px;
+  background: #c8f0b7;
+  color: #195938;
+  font-size: .76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.dilemmaHead h3 { font-size: clamp(1.5rem, 2.3vw, 2.25rem); line-height: 1.04; letter-spacing: -.045em; color: #13344a; }
+.dilemmaHead p { max-width: 38ch; color: #2a5d47; font-size: .96rem; line-height: 1.55; }
+.dilemmaDuel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.duelCard {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 2px solid rgb(19 52 74 / 14%);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 6px 0 #b8d8ab;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.duelCard:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #b8d8ab; }
+.duelCardA .duelVisual { background: linear-gradient(180deg, #ffe9d6, #ffd4b8); }
+.duelCardB .duelVisual { background: linear-gradient(180deg, #d8f3ff, #b8e8ca); }
+.duelVisual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 132px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.duelBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 9px;
+  border-radius: 7px;
+  background: rgb(19 52 74 / 82%);
+  color: #ffffff;
+  font-size: .68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.miniSvg { width: 126px; height: 118px; overflow: visible; }
+.duelInfo { display: flex; flex: 1; flex-direction: column; margin-top: 12px; }
+.duelInfo h4 { margin: 0; font-size: 1.05rem; font-weight: 900; letter-spacing: -.03em; color: #13344a; }
+.duelInfo p { margin-top: 5px!important; font-size: .82rem; line-height: 1.42; color: #45657a; }
+.vsBadge {
+  align-self: center;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 2px solid #ffffff;
+  border-radius: 11px;
+  background: var(--solar);
+  color: #ffffff;
+  font-size: .78rem;
+  font-weight: 900;
+  box-shadow: 0 5px 0 #0e285b;
+}
+.effectRow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 12px; }
+.chipUp, .chipDown {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: .7rem;
+  font-weight: 900;
+}
+.chipUp { background: #d4f7c5; color: #1b6633; }
+.chipDown { background: #ffe0d4; color: #a83216; }
 
 .playground { position: relative; padding-block: clamp(100px,11vw,165px); background: #fff5d8; }
 .playground .sectionTag { margin-bottom: 30px; color: #b56624; }
@@ -100,7 +197,7 @@
   .heroCopy { justify-content: flex-start; padding-block: 64px 360px; }.hero h1 { max-width: 8.5ch; font-size: clamp(3.4rem,13vw,5.6rem); }.heroLead { max-width: 36ch; }
   .heroHud { right: 20px; bottom: 20px; left: 20px; }.heroHud span { min-width: 0; flex: 1; padding: 12px; }
   .introGrid { grid-template-columns: 1fr; padding-left: 10%; }.sectionHeading { grid-template-columns: 1fr; gap: 34px; }
-  .dilemma { grid-template-columns: 48px 1fr; padding-block: 24px; }.dilemma>p { grid-column: 2; }
+  .dilemma { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
   .steps { grid-template-columns: 1fr; }.steps article { min-height: 220px; }
   .footer { flex-wrap: wrap; padding-block: 30px; }.footer p { order: 3; width: 100%; margin-left: 0; }.footer>span { margin-left: auto; }
   .islandOne { right: -32px; }.islandTwo { left: -40px; }
@@ -111,7 +208,10 @@
   .heroActions { width: 100%; flex-direction: column; align-items: flex-start; gap: 18px; }.primaryButton { width: 100%; }
   .heroHud span { font-size: .57rem; }.heroHud b { font-size: 1.05rem; }.heroHud span:nth-child(2) { display: none; }
   .intro h2,.sectionHeading h2,.how h2,.finalContent h2 { font-size: clamp(2.55rem,12vw,3.6rem); }.introGrid { padding-left: 0; }
-  .floatingIsland { opacity: .7; transform: scale(.6); }.dilemma { gap: 12px; }.dilemma h3 { font-size: 1.45rem; }.dilemma>p { font-size: .94rem; }
+  .floatingIsland { opacity: .7; transform: scale(.6); }
+  .dilemma { padding: 18px; gap: 16px; }
+  .dilemmaDuel { grid-template-columns: 1fr; gap: 10px; }
+  .vsBadge { justify-self: center; }
   .steps article { padding: 25px 22px; }.footer .brand { width: 100%; }.footer>span { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .heroCity,.heroImage,.floatingIsland { animation: none; }.primaryButton { transition: none; }.primaryButton:hover { transform: none; } }

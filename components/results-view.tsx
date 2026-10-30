@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { CityMap } from '@/components/city-map.tsx';
 import { Avatar } from '@/components/avatars.tsx';
 import { useGame } from '@/lib/game-context.tsx';
-import { downloadCertificate } from '@/lib/pdf.ts';
+import { downloadCertificate, downloadStoryCard } from '@/lib/pdf.ts';
 import { play } from '@/lib/sfx.ts';
 import type { StatKey } from '@/lib/types.ts';
 
@@ -23,6 +23,7 @@ export function ResultsView() {
   const router = useRouter();
   const mapBox = useRef<HTMLDivElement>(null);
   const [making, setMaking] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const { leader, review, stats, choices, plots } = state;
 
@@ -44,6 +45,20 @@ export function ResultsView() {
       );
     } finally {
       setMaking(false);
+    }
+  }
+
+  async function bagikanStory() {
+    setSharing(true);
+    play('click', state.muted);
+    try {
+      await downloadStoryCard(
+        state,
+        mapBox.current?.querySelector('svg') ?? null,
+        document.querySelector<HTMLImageElement>('img.result__face'),
+      );
+    } finally {
+      setSharing(false);
     }
   }
 
@@ -122,6 +137,14 @@ export function ResultsView() {
         <div className="result__actions">
           <button className="btn" type="button" onClick={unduh} disabled={making}>
             {making ? 'Menyiapkan PDF' : 'Unduh laporan PDF'}
+          </button>
+          <button
+            className="btn btn--paper"
+            type="button"
+            onClick={bagikanStory}
+            disabled={sharing}
+          >
+            {sharing ? 'Menyiapkan gambar' : 'Simpan kartu Story (PNG)'}
           </button>
           <button
             className="btn btn--ink"

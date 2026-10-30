@@ -45,10 +45,23 @@ const IRIS: Partial<Record<CutscenePhase, 'close' | 'open'>> = {
 const FRAMED: CutscenePhase[] = ['inspect', 'ceremony'];
 
 export function Cutscene({ phase, caption, onSkip }: Props) {
-  // Esc melewati adegan; klik di mana pun juga, lewat lapisan penangkap.
+  // Esc atau Spasi melewati adegan; klik di mana pun juga, lewat lapisan penangkap.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onSkip();
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault();
+        onSkip();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -86,7 +99,7 @@ export function Cutscene({ phase, caption, onSkip }: Props) {
             aria-hidden="true"
           />
           <button type="button" className="cut__skip" onClick={onSkip}>
-            Lewati
+            Lewati [Spasi]
           </button>
         </>
       )}

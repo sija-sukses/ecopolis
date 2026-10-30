@@ -28,6 +28,27 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
   const deltas = useDeltas(stats);
   const animatedStats = useAnimatedStats(stats);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        onToggleMute();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onToggleMute]);
+
   // Avatar ikut bereaksi terhadap kepuasan warga: melompat kecil kalau naik,
   // menggeleng kalau turun. Kuncinya ikut berganti supaya animasinya mengulang.
   const mood = deltas.satisfaction > 0 ? 'senang' : deltas.satisfaction < 0 ? 'kecewa' : '';
@@ -50,9 +71,9 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
           className="hud__mute"
           onClick={onToggleMute}
           aria-pressed={muted}
-          title={muted ? 'Nyalakan suara' : 'Matikan suara'}
+          title={muted ? 'Nyalakan suara (Tombol M)' : 'Matikan suara (Tombol M)'}
         >
-          {muted ? 'Suara mati' : 'Suara nyala'}
+          {muted ? 'Suara mati [M]' : 'Suara nyala [M]'}
         </button>
       </div>
 

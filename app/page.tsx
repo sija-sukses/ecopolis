@@ -1,8 +1,10 @@
 import Link from 'next/link';
 
 import { CityMap } from '@/components/city-map.tsx';
+import { Building } from '@/components/iso.tsx';
 import { TryRound } from '@/components/try-round.tsx';
-import type { AssetId } from '@/lib/types.ts';
+import { SCENARIOS } from '@/lib/scenarios.ts';
+import type { AssetId, StatKey, Stats } from '@/lib/types.ts';
 import styles from './page.module.css';
 
 /**
@@ -21,6 +23,50 @@ const DILEMMAS = [
   ['Sampah', 'Tumpuk atau olah kembali?', 'Pilihan termurah hari ini dapat menjadi tagihan terbesar besok.'],
   ['Hunian', 'Melebar atau meninggi?', 'Tampung warga baru tanpa menelan seluruh daerah resapan.'],
 ];
+
+const STAT_SHORT: { key: StatKey; label: string }[] = [
+  { key: 'economy', label: 'Ekonomi' },
+  { key: 'environment', label: 'Lingkungan' },
+  { key: 'satisfaction', label: 'Kepuasan' },
+  { key: 'energy', label: 'Energi' },
+];
+
+function PlotMiniature({ asset }: { asset: AssetId }) {
+  return (
+    <svg
+      className={styles.miniSvg}
+      viewBox="-72 -92 144 134"
+      aria-hidden="true"
+    >
+      <polygon points="0,-32 64,0 0,32 -64,0" fill="#9be28b" />
+      <polygon points="-64,0 0,32 0,46 -64,14" fill="#d68549" />
+      <polygon points="64,0 0,32 0,46 64,14" fill="#b86835" />
+      <g transform="translate(0 -4) scale(0.84)">
+        <Building id={asset} />
+      </g>
+    </svg>
+  );
+}
+
+function EffectChips({ effects }: { effects: Partial<Stats> }) {
+  return (
+    <span className={styles.effectRow}>
+      {STAT_SHORT.map(({ key, label }) => {
+        const val = effects[key];
+        if (!val) return null;
+        const up = val > 0;
+        return (
+          <b
+            key={key}
+            className={up ? styles.chipUp : styles.chipDown}
+          >
+            {label} {up ? `+${val}` : val}
+          </b>
+        );
+      })}
+    </span>
+  );
+}
 
 function FloatingIsland({ className }: { className: string }) {
   return (
@@ -98,12 +144,54 @@ export default function Home() {
             <p>Isi satu petak setiap ronde. Lihat kota tumbuh, indikator bergerak, dan masa depan berubah langsung di depan Anda.</p>
           </div>
           <div className={styles.dilemmaList}>
-            {DILEMMAS.map(([name, question, copy], index) => (
-              <article className={styles.dilemma} key={name}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <div><p>{name}</p><h3>{question}</h3></div><p>{copy}</p>
-              </article>
-            ))}
+            {DILEMMAS.map(([name, question, copy], index) => {
+              const scenario = SCENARIOS[index];
+              const [optA, optB] = scenario.options;
+              return (
+                <article className={styles.dilemma} key={name}>
+                  <div className={styles.dilemmaHead}>
+                    <div className={styles.dilemmaMeta}>
+                      <span className={styles.dilemmaNum}>
+                        PETAK {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span className={styles.dilemmaSector}>{name}</span>
+                    </div>
+                    <h3>{question}</h3>
+                    <p>{copy}</p>
+                  </div>
+
+                  <div className={styles.dilemmaDuel}>
+                    <div className={`${styles.duelCard} ${styles.duelCardA}`}>
+                      <div className={styles.duelVisual}>
+                        <span className={styles.duelBadge}>Opsi A</span>
+                        <PlotMiniature asset={optA.asset} />
+                      </div>
+                      <div className={styles.duelInfo}>
+                        <h4>{optA.label}</h4>
+                        <p>{optA.blurb}</p>
+                        <EffectChips effects={optA.effects} />
+                      </div>
+                    </div>
+
+                    <span className={styles.vsBadge} aria-hidden="true">
+                      VS
+                    </span>
+
+                    <div className={`${styles.duelCard} ${styles.duelCardB}`}>
+                      <div className={styles.duelVisual}>
+                        <span className={styles.duelBadge}>Opsi B</span>
+                        <PlotMiniature asset={optB.asset} />
+                      </div>
+                      <div className={styles.duelInfo}>
+                        <h4>{optB.label}</h4>
+                        <p>{optB.blurb}</p>
+                        <EffectChips effects={optB.effects} />
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

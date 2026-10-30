@@ -21,6 +21,33 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
     heading.current?.focus();
   }, [scenario.round]);
 
+  // Pintasan papan ketik ala konsol game: A / 1 untuk opsi A, B / 2 untuk opsi B.
+  useEffect(() => {
+    if (busy) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const k = e.key.toLowerCase();
+      if (k === 'a' || k === '1') {
+        e.preventDefault();
+        onChoose('a');
+      } else if (k === 'b' || k === '2') {
+        e.preventDefault();
+        onChoose('b');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [busy, onChoose]);
+
   return (
     // key membuat kartu dipasang ulang tiap ronde, jadi animasi masuknya
     // berjalan lagi tanpa pustaka animasi apa pun.
@@ -54,7 +81,7 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
       </div>
 
       <p className="card__hint">
-        Dampaknya baru terlihat di indikator setelah Anda memilih.
+        Tekan tombol <b>[A]</b> atau <b>[B]</b> di keyboard, atau klik langsung pilihan Anda.
       </p>
     </article>
   );
