@@ -1,3 +1,4 @@
+import { avatarOf } from './avatars.ts';
 import type { AssetId } from './types.ts';
 
 export type PollutionLevel = 'bersih' | 'sedang' | 'parah';
@@ -264,6 +265,22 @@ export const MAYOR_ASSETS: Record<MayorPoseMode, MayorAssetSpec> = {
     height: 65,
   },
 };
+
+/**
+ * Mendapatkan spesifikasi aset Walikota sesuai mode pose dan avatar pilihan pemain.
+ */
+export function getMayorAsset(mode: MayorPoseMode, avatar?: string): MayorAssetSpec {
+  const info = avatarOf(avatar ?? 'rian');
+  const base = MAYOR_ASSETS[mode];
+  return {
+    mode,
+    label: `${base.label} (${info.label})`,
+    src: `/assets/mayor/mayor-${mode}-${info.id}.svg`,
+    spriteSymbol: `/assets/mayor/mayor-sprite.svg#mayor-${mode}-${info.id}`,
+    width: base.width,
+    height: base.height,
+  };
+}
 
 /** Koordinat ubin 5 petak pembangunan di pulau Ecopolis. */
 const PLOT_TILE_COORDS: [number, number][] = [

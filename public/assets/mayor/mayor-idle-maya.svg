@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-36 -48 72 60" width="72" height="60" fill="none" data-mayor-avatar="maya" data-mayor-mode="idle">
+  <!-- Podium karpet kehormatan Walikota -->
+  <polygon points="0,-5.4 12,0 0,5.4 -12,0" fill="#b52626" />
+  <polygon points="0,-4.2 9.6,0 0,4.2 -9.6,0" fill="#ffd45e" opacity="0.48" />
+  <ellipse cx="0" cy="1.8" rx="9" ry="4" fill="#0f172a" opacity="0.24" />
+
+  <!-- Kaki celana formal Dark Navy -->
+  <polygon points="-4.8,0 -0.5,2.0 -0.5,-7.2 -4.8,-9.2" fill="#0f172a" />
+  <polygon points="0.5,1.8 4.8,-0.2 4.8,-9.2 0.5,-7.2" fill="#1e293b" />
+  <ellipse cx="-2.8" cy="0.8" rx="2.6" ry="1.4" fill="#090d16" />
+  <ellipse cx="2.8" cy="0.6" rx="2.6" ry="1.4" fill="#090d16" />
+
+  <!-- Jas Formal Karakter + Selempang Kehormatan Merah -->
+  <polygon points="-7.0,-8.0 0,-4.2 0,-18.2 -7.0,-21.8" fill="#15803d" />
+  <polygon points="7.0,-8.0 0,-4.2 0,-18.2 7.0,-21.8" fill="#166534" />
+  <polygon points="0,-25.2 7.0,-21.8 0,-18.2 -7.0,-21.8" fill="#22c55e" />
+
+  <!-- Kemeja kerah putih / dalaman formal -->
+  <polygon points="-2.0,-21.0 0,-19.4 2.0,-21.0 0,-14.0" fill="#f8fafc" />
+  
+
+  <!-- Selempang Kehormatan Merah Walikota -->
+  <polygon points="-5.8,-21.4 -3.0,-22.8 6.4,-9.8 3.8,-8.0" fill="#ef4444" />
+  <polygon points="-5.0,-21.0 -3.6,-21.8 5.6,-9.2 4.4,-8.4" fill="#fca5a5" opacity="0.65" />
+  <!-- Medali Emas Walikota -->
+  <circle cx="-3.2" cy="-15.6" r="2.0" fill="#fbbf24" stroke="#fef08a" stroke-width="0.5" />
+
+  <!-- Kepala 3D Clay Stylized -->
+  <polygon points="-5.0,-19.8 0,-17.0 0,-25.8 -5.0,-28.4" fill="#f59e0b" />
+  <polygon points="5.0,-19.8 0,-17.0 0,-25.8 5.0,-28.4" fill="#d97706" />
+  <polygon points="0,-31.0 5.0,-28.4 0,-25.8 -5.0,-28.4" fill="#fbbf24" />
+
+  <!-- Mata piksel ramah -->
+  <rect x="-3.2" y="-23.6" width="1.4" height="2.2" rx="0.5" fill="#0f172a" />
+  <rect x="1.8" y="-23.6" width="1.4" height="2.2" rx="0.5" fill="#0f172a" />
+
+  
+    <!-- Rambut Hitam Panjang Bergelombang & Anting Sian Maya -->
+    <polygon points="-6.4,-17.4 -4.2,-16.0 -4.2,-28.4 -6.4,-30.0" fill="#0f172a" />
+    <polygon points="6.4,-17.4 4.2,-16.0 4.2,-28.4 6.4,-30.0" fill="#0f172a" />
+    <!-- Anting Bulat Sian/Teal di Kedua Telinga -->
+    <circle cx="-5.2" cy="-20.5" r="1.3" fill="#14b8a6" stroke="#0d9488" stroke-width="0.4" />
+    <circle cx="5.2" cy="-20.5" r="1.3" fill="#14b8a6" stroke="#0d9488" stroke-width="0.4" />
+    <!-- Beanie (Kupluk) Biru Sian Maya -->
+    <polygon points="-5.6,-27.0 0,-24.4 0,-31.0 -5.6,-33.6" fill="#0284c7" />
+    <polygon points="5.6,-27.0 0,-24.4 0,-31.0 5.6,-33.6" fill="#0369a1" />
+    <polygon points="0,-36.0 5.6,-33.6 0,-31.0 -5.6,-33.6" fill="#38bdf8" />
+    <!-- Lipatan Bawah Beanie -->
+    <polygon points="-5.8,-27.4 0,-24.7 5.8,-27.4 5.8,-29.0 0,-26.3 -5.8,-29.0" fill="#38bdf8" />
+      
+
+  <!-- Lengan Kiri Santun & Lengan Kanan Melambai Menyapa Warga -->
+  <polygon points="-6.4,-18.6 -4.8,-11.2 -2.6,-11.2 -4.4,-19.2" fill="#15803d" />
+  <circle cx="-3.8" cy="-10.6" r="1.8" fill="#fbbf24" />
+
+  <polygon points="4.2,-18.0 10.2,-22.6 8.6,-24.8 2.8,-20.2" fill="#166534" />
+  <circle cx="9.8" cy="-23.8" r="2.0" fill="#fbbf24" />
+</svg>

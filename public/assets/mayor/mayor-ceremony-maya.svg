@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-36 -48 72 60" width="72" height="60" fill="none" data-mayor-avatar="maya" data-mayor-mode="ceremony">
+  <!-- Bayangan kontak di atas karpet merah -->
+  <ellipse cx="0" cy="3" rx="14" ry="6.5" fill="#0f172a" opacity="0.28" />
+
+  <!-- Kaki celana formal & sepatu pantofel hitam -->
+  <polygon points="-5.2,0 -0.6,2.2 -0.6,-7.5 -5.2,-9.5" fill="#0f172a" />
+  <polygon points="0.6,2.0 5.2,-0.2 5.2,-9.5 0.6,-7.5" fill="#1e293b" />
+  <ellipse cx="-3.2" cy="1.2" rx="3.2" ry="1.6" fill="#090d16" />
+  <ellipse cx="3.2" cy="1.0" rx="3.2" ry="1.6" fill="#090d16" />
+
+  <!-- Jas Formal Karakter -->
+  <polygon points="-7.4,-8.2 0,-4.4 0,-18.8 -7.4,-22.4" fill="#15803d" />
+  <polygon points="7.4,-8.2 0,-4.4 0,-18.8 7.4,-22.4" fill="#166534" />
+  <polygon points="0,-25.8 7.4,-22.4 0,-18.8 -7.4,-22.4" fill="#22c55e" />
+
+  <!-- Kemeja kerah putih formal -->
+  <polygon points="-2.2,-21.5 0,-19.8 2.2,-21.5 0,-14.2" fill="#f8fafc" />
+  
+
+  <!-- Selempang Kehormatan Merah Walikota -->
+  <polygon points="-6.2,-22.0 -3.2,-23.4 6.8,-10.2 4.2,-8.4" fill="#ef4444" />
+  <polygon points="-5.4,-21.6 -4.0,-22.4 6.0,-9.6 4.8,-8.8" fill="#fca5a5" opacity="0.65" />
+  <!-- Medali Emas Walikota -->
+  <circle cx="-3.4" cy="-16.2" r="2.1" fill="#fbbf24" stroke="#fef08a" stroke-width="0.6" />
+
+  <!-- Kepala 3D Clay Stylized -->
+  <polygon points="-5.2,-20.4 0,-17.6 0,-26.6 -5.2,-29.2" fill="#f59e0b" />
+  <polygon points="5.2,-20.4 0,-17.6 0,-26.6 5.2,-29.2" fill="#d97706" />
+  <polygon points="0,-31.8 5.2,-29.2 0,-26.6 -5.2,-29.2" fill="#fbbf24" />
+
+  <!-- Mata fokus peresmian -->
+  <rect x="-3.4" y="-24.2" width="1.5" height="2.2" rx="0.5" fill="#0f172a" />
+  <rect x="1.9" y="-24.2" width="1.5" height="2.2" rx="0.5" fill="#0f172a" />
+
+  
+    <!-- Rambut Hitam Panjang Bergelombang & Anting Sian Maya -->
+    <polygon points="-6.4,-17.4 -4.2,-16.0 -4.2,-28.4 -6.4,-30.0" fill="#0f172a" />
+    <polygon points="6.4,-17.4 4.2,-16.0 4.2,-28.4 6.4,-30.0" fill="#0f172a" />
+    <!-- Anting Bulat Sian/Teal di Kedua Telinga -->
+    <circle cx="-5.2" cy="-20.5" r="1.3" fill="#14b8a6" stroke="#0d9488" stroke-width="0.4" />
+    <circle cx="5.2" cy="-20.5" r="1.3" fill="#14b8a6" stroke="#0d9488" stroke-width="0.4" />
+    <!-- Beanie (Kupluk) Biru Sian Maya -->
+    <polygon points="-5.6,-27.0 0,-24.4 0,-31.0 -5.6,-33.6" fill="#0284c7" />
+    <polygon points="5.6,-27.0 0,-24.4 0,-31.0 5.6,-33.6" fill="#0369a1" />
+    <polygon points="0,-36.0 5.6,-33.6 0,-31.0 -5.6,-33.6" fill="#38bdf8" />
+    <!-- Lipatan Bawah Beanie -->
+    <polygon points="-5.8,-27.4 0,-24.7 5.8,-27.4 5.8,-29.0 0,-26.3 -5.8,-29.0" fill="#38bdf8" />
+      
+
+  <!-- Lengan Kiri & Kanan Memegang Gunting Seremonial Emas Raksasa -->
+  <polygon points="-6.8,-19.2 -1.5,-13.8 -0.2,-15.6 -5.2,-21.0" fill="#15803d" />
+  <polygon points="6.8,-19.2 10.8,-14.2 8.8,-12.4 4.8,-17.4" fill="#166534" />
+  <circle cx="9.8" cy="-13.2" r="2.1" fill="#f59e0b" />
+  <circle cx="-1.0" cy="-14.4" r="2.0" fill="#fbbf24" />
+
+  <!-- Gunting Seremonial Emas Raksasa Memotong Pita Merah -->
+  <g transform="translate(8.5 -12.5) rotate(-14)">
+    <polygon points="0,-1.2 15.5,-6.8 14.2,-2.2 0,1.2" fill="#fde047" stroke="#ca8a04" stroke-width="0.6" />
+    <polygon points="0,1.2 15.8,4.6 14.0,0.4 0,-1.2" fill="#eab308" stroke="#a16207" stroke-width="0.6" />
+    <circle cx="2.2" cy="0" r="1.6" fill="#dc2626" stroke="#fef08a" stroke-width="0.6" />
+    <ellipse cx="-4.2" cy="-2.8" rx="3.8" ry="2.5" fill="none" stroke="#facc15" stroke-width="1.8" />
+    <ellipse cx="-4.2" cy="2.8" rx="3.8" ry="2.5" fill="none" stroke="#eab308" stroke-width="1.8" />
+    <polygon points="16.5,-5.5 18,-8.5 19.5,-5.5 22.5,-4 19.5,-2.5 18,0.5 16.5,-2.5 13.5,-4" fill="#fef9c3" />
+  </g>
+</svg>
