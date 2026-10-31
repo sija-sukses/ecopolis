@@ -109,9 +109,13 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
               <span className="stat__num">
                 {animatedStats[k]}
                 {d !== 0 && (
-                  <b className={d > 0 ? 'stat__delta stat__delta--up' : 'stat__delta stat__delta--down'}>
+                  <span
+                    key={`${round}-${k}-${d}`}
+                    className={`stat__delta stat__delta--float ${d > 0 ? 'stat__delta--up' : 'stat__delta--down'}`}
+                    aria-label={`${d > 0 ? 'naik' : 'turun'} ${Math.abs(d)}`}
+                  >
                     {d > 0 ? `+${d}` : d}
-                  </b>
+                  </span>
                 )}
               </span>
             </div>

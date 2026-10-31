@@ -386,12 +386,52 @@
   font-weight: 900;
 }
 
+.stat__delta--float {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 900;
+  line-height: 1.1;
+  padding: 1px 6px;
+  border-radius: 6px;
+  animation: deltaFloat 1800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  white-space: nowrap;
+}
+
 .stat__delta--up {
-  color: var(--field-grass);
+  color: #178a53;
+  background: rgba(46, 175, 119, 0.16);
+  border: 1px solid rgba(46, 175, 119, 0.38);
 }
 
 .stat__delta--down {
-  color: var(--accent);
+  color: #d9381e;
+  background: rgba(235, 77, 45, 0.16);
+  border: 1px solid rgba(235, 77, 45, 0.38);
+}
+
+@keyframes deltaFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.82);
+  }
+  16% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.1);
+  }
+  32% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.92);
+  }
 }
 
 /* --- Peta dan kartu keputusan --- */
@@ -486,6 +526,37 @@
   min-height: 0;
   padding: clamp(11px, 1.5vh, 16px) clamp(14px, 1.6vw, 20px);
   border-radius: calc(var(--r) - 8px);
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    opacity 180ms ease;
+}
+
+.card .opt:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(64, 46, 32, 0.35);
+}
+
+.card .opt--selected {
+  border-color: #2eaf77 !important;
+  background: #f0faf4 !important;
+  box-shadow: 0 0 0 3px rgba(46, 175, 119, 0.35), 0 3px 0 #1b7a4f !important;
+  transform: translateY(2px) scale(0.99) !important;
+}
+
+.card .opt--selected .opt__key {
+  background: #2eaf77 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 0 #1b7a4f !important;
+}
+
+.card .opt--dimmed {
+  opacity: 0.38 !important;
+  transform: scale(0.98);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
 .card .opt__row {
