@@ -98,7 +98,7 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
           Tekan tombol <b>[A]</b> atau <b>[B]</b> di keyboard, atau klik langsung pilihan Anda.
         </span>
         <span className="card__hint-compact" aria-hidden="true">
-          Ketuk salah satu pilihan di atas untuk membangun kota.
+          Ketuk salah satu pilihan untuk membangun kota
         </span>
       </p>
     </article>

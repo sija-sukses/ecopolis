@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={chivo.variable}>
+    <html lang="id" className={chivo.variable} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

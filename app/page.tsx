@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { CityMap } from '@/components/city-map.tsx';
 import { Building } from '@/components/iso.tsx';
+import { Navbar } from '@/components/navbar.tsx';
 import { TryRound } from '@/components/try-round.tsx';
 import { SCENARIOS } from '@/lib/scenarios.ts';
 import type { AssetId, StatKey, Stats } from '@/lib/types.ts';
@@ -92,6 +93,7 @@ function Brand() {
 export default function Home() {
   return (
     <main className={styles.page} id="atas">
+      <Navbar />
       <section className={styles.hero} aria-labelledby="hero-title">
         <CityMap
           className={styles.heroCity}
@@ -102,13 +104,8 @@ export default function Home() {
           label="Pulau kota Ecopolis bergaya isometrik: balai kota, panel surya, halte bus listrik, hutan kota, pusat daur ulang, apartemen hijau, dan sungai yang mengalir."
         />
         <div className={styles.heroWash} />
-        <header className={styles.header}>
-          <Brand />
-          <nav className={styles.nav} aria-label="Navigasi utama">
-            <a href="#tentang">Tentang</a><a href="#dilema">Lima dilema</a><a href="#coba">Coba</a>
-          </nav>
-          <Link className={styles.navCta} href="/play">Main sekarang</Link>
-        </header>
+        <div className={styles.headerSpacer} aria-hidden="true" />
+
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>Simulator kebijakan iklim Indonesia</p>
           <h1 id="hero-title">Bangun kota. Tentukan masa depannya.</h1>
