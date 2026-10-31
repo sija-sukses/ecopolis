@@ -1028,11 +1028,13 @@
 
 @media (max-width: 900px) {
   .stage {
-    gap: 8px;
-    padding: 8px 10px 10px;
+    gap: 6px;
+    padding: 8px 10px max(14px, env(safe-area-inset-bottom, 14px));
     height: 100dvh;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .hud {
@@ -1123,14 +1125,16 @@
 
   .stage__map {
     height: auto;
-    max-height: 22dvh;
+    max-height: 18dvh;
+    min-height: 105px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
   }
 
   .stage__map svg {
-    max-height: 20dvh;
+    max-height: 18dvh;
     width: auto;
   }
 
@@ -1139,48 +1143,48 @@
   }
 
   .card {
-    padding: 12px 14px;
+    padding: 10px 12px;
     margin-block: 0;
   }
 
   .card__title {
-    font-size: clamp(1.12rem, 4.8vw, 1.45rem);
-    line-height: 1.05;
+    font-size: clamp(1.05rem, 4.4vw, 1.25rem);
+    line-height: 1.15;
   }
 
   .card__ctx {
-    margin-top: 4px;
-    font-size: 0.82rem;
-    line-height: 1.28;
+    margin-top: 3px;
+    font-size: 0.78rem;
+    line-height: 1.24;
   }
 
   .card__opts {
     gap: 6px;
-    margin-top: 8px;
+    margin-top: 6px;
   }
 
   .card .opt {
-    padding: 8px 12px;
+    padding: 7px 10px;
   }
 
   .card .opt__icon {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 
   .card .opt b {
-    font-size: 0.88rem;
+    font-size: 0.84rem;
   }
 
   .card .opt__copy > span {
-    margin-top: 2px;
-    font-size: 0.74rem;
-    line-height: 1.25;
+    margin-top: 1px;
+    font-size: 0.72rem;
+    line-height: 1.2;
   }
 
   .card__hint {
-    margin-top: 6px;
-    font-size: 0.72rem;
+    margin-top: 5px;
+    font-size: 0.7rem;
   }
 
   .pick__grid {
@@ -1576,20 +1580,25 @@
 
 /* Peta dikeluarkan dari grid dan mengisi layar penuh selama adegan. */
 .stage--sinematik .stage__map {
-  position: fixed;
-  inset: 0;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  display: block !important;
   z-index: 10;
   overflow: hidden;
 }
 
 .stage--sinematik .stage__map svg {
-  width: 100%;
-  height: 100%;
-  max-height: none;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
 }
 
 .stage--sinematik {
   background: #06070f;
+  overflow: hidden !important;
 }
 
 .cut {
@@ -1723,6 +1732,32 @@
 .cut__skip:active {
   transform: translateY(3px);
   box-shadow: 0 2px 0 #b83712;
+}
+
+@media (max-width: 600px) {
+  .cut__caption {
+    bottom: clamp(66px, 12vh, 86px);
+    font-size: clamp(0.88rem, 3.8vw, 1.05rem);
+    padding-inline: 16px;
+  }
+
+  .cut__skip {
+    bottom: 16px;
+    right: 50%;
+    transform: translateX(50%);
+    min-height: 38px;
+    padding: 0 18px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .cut__skip:hover {
+    transform: translateX(50%) translateY(-2px);
+  }
+
+  .cut__skip:active {
+    transform: translateX(50%) translateY(3px);
+  }
 }
 
 /* Gerak dikurangi: kamera dan iris langsung di tempat, tanpa animasi. */

@@ -310,7 +310,11 @@ const VIEW_CENTER: [number, number] = [0, 160];
  * transform, dan mencampur keduanya di satu elemen pernah menumpuk seluruh
  * kota di titik asal.
  */
-export function getPlotCameraTransform(plotIndex: number | null, scale = CAMERA_ZOOM): string {
+export function getPlotCameraTransform(
+  plotIndex: number | null,
+  isMobile = false,
+  scale?: number,
+): string {
   if (plotIndex === null || plotIndex < 0 || plotIndex >= PLOT_TILE_COORDS.length) {
     return 'translate(0px, 0px) scale(1)';
   }
@@ -319,13 +323,19 @@ export function getPlotCameraTransform(plotIndex: number | null, scale = CAMERA_
   // Dibidik sedikit di atas pusat petak, karena bangunan menjulang ke atas.
   const py = (u + v) * 32 + 4;
 
-  // Diukur langsung di peramban: dengan `transform-box: view-box` dan
-  // `transform-origin: 0 0`, Chrome memakai titik (0,0) ruang pengguna sebagai
-  // porosnya, bukan sudut kiri-atas viewBox. Jadi tidak ada offset viewBox yang
-  // perlu ditambahkan di sini; cukup geser titik bidik ke tengah viewBox.
-  const [cx, cy] = VIEW_CENTER;
+  const actualScale = scale ?? (isMobile ? 1.4 : CAMERA_ZOOM);
+  // Di mobile portrait, walikota berdiri di sebelah kiri petak (px - 49).
+  // Pusatkan bidikan di tengah-tengah antara walikota dan gedung (px - 25).
+  const focalX = isMobile ? px - 25 : px;
+  const focalY = py;
 
-  return `translate(${(cx - scale * px).toFixed(2)}px, ${(cy - scale * py).toFixed(2)}px) scale(${scale})`;
+  const [cx, cy] = VIEW_CENTER;
+  // Di mobile, bilah keterangan & tombol lewati berada di bagian bawah,
+  // jadi naikkan titik tengah sedikit (cy = 130) agar gedung & walikota
+  // berada pas di jendela pandang atas yang bebas halangan.
+  const targetCy = isMobile ? 130 : cy;
+
+  return `translate(${(cx - actualScale * focalX).toFixed(2)}px, ${(targetCy - actualScale * focalY).toFixed(2)}px) scale(${actualScale})`;
 }
 
 export type MayorAssetSpec = {

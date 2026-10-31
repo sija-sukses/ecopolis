@@ -116,21 +116,20 @@ export function AiAdvisor() {
     function syncViewport() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
+      const minY = vw < 768 ? 116 : EDGE_MARGIN;
+      const maxY = vh - ORB_SIZE - (vw < 768 ? 20 : EDGE_MARGIN);
       setPos((prev) => {
         if (prev.x < 0 || prev.y < 0) {
           return {
-            x: vw - ORB_SIZE - EDGE_MARGIN,
+            x: Math.max(EDGE_MARGIN, vw - ORB_SIZE - EDGE_MARGIN),
             y:
               vw < 768
-                ? Math.round(vh * 0.48)
+                ? Math.round(vh * 0.45)
                 : Math.max(EDGE_MARGIN, vh - ORB_SIZE - 28),
             side: 'right',
           };
         }
-        const clampedY = Math.min(
-          Math.max(EDGE_MARGIN, prev.y),
-          Math.max(EDGE_MARGIN, vh - ORB_SIZE - EDGE_MARGIN),
-        );
+        const clampedY = Math.min(Math.max(minY, prev.y), maxY);
         const snapX =
           prev.side === 'left'
             ? EDGE_MARGIN
@@ -183,8 +182,10 @@ export function AiAdvisor() {
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    const minY = vw < 768 ? 116 : EDGE_MARGIN;
+    const maxY = vh - ORB_SIZE - (vw < 768 ? 20 : EDGE_MARGIN);
     const nextX = Math.min(Math.max(EDGE_MARGIN, d.origX + dx), vw - ORB_SIZE - EDGE_MARGIN);
-    const nextY = Math.min(Math.max(EDGE_MARGIN, d.origY + dy), vh - ORB_SIZE - EDGE_MARGIN);
+    const nextY = Math.min(Math.max(minY, d.origY + dy), maxY);
     setPos((prev) => ({ ...prev, x: nextX, y: nextY }));
   }
 
@@ -196,11 +197,16 @@ export function AiAdvisor() {
     if (d.moved) {
       setDragging(false);
       const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const minY = vw < 768 ? 116 : EDGE_MARGIN;
+      const maxY = vh - ORB_SIZE - (vw < 768 ? 20 : EDGE_MARGIN);
       const isLeft = pos.x + ORB_SIZE / 2 < vw / 2;
       const snapX = isLeft ? EDGE_MARGIN : Math.max(EDGE_MARGIN, vw - ORB_SIZE - EDGE_MARGIN);
+      const clampedY = Math.min(Math.max(minY, pos.y), maxY);
       setPos((prev) => ({
         ...prev,
         x: snapX,
+        y: clampedY,
         side: isLeft ? 'left' : 'right',
       }));
       return;

@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
   getPlotCameraTransform,
   resolvePlotStage,
@@ -74,6 +77,17 @@ export function CityMap({
   mayorMode = 'ceremony',
   fill = false,
 }: Props) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    function check() {
+      setIsMobile(window.innerWidth < 768);
+    }
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const stagger = animate && plots.every(Boolean) && !activeTransition;
   const westPlotStage = resolvePlotStage(plots[1], activeTransition, 1);
   const hasTolOnWestPlot =
@@ -103,7 +117,7 @@ export function CityMap({
         style={{
           transformBox: 'view-box',
           transformOrigin: '0 0',
-          transform: getPlotCameraTransform(cameraPlot),
+          transform: getPlotCameraTransform(cameraPlot, isMobile),
         }}
       >
       <IslandTerrain plots={plots} />
