@@ -1028,13 +1028,17 @@
 
 @media (max-width: 900px) {
   .stage {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
-    padding: 8px 10px max(14px, env(safe-area-inset-bottom, 14px));
+    padding: 8px 12px max(20px, calc(env(safe-area-inset-bottom, 0px) + 14px));
     height: 100dvh;
+    max-height: 100dvh;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    box-sizing: border-box;
   }
 
   .hud {
@@ -1119,21 +1123,22 @@
   .stage__grid {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
   }
 
   .stage__map {
     flex: 1 1 0%;
-    min-height: 140px;
-    height: 100%;
+    min-height: 90px;
+    height: auto;
     max-height: none;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
 
   .stage__map svg {
@@ -1149,13 +1154,16 @@
     margin-top: auto;
     min-height: 0;
     height: auto;
+    overflow: visible;
   }
 
   .card {
     width: 100%;
     margin-top: auto;
     margin-bottom: 0;
-    padding: 11px 13px;
+    padding: 10px 13px 12px;
+    border-radius: 20px;
+    box-shadow: 0 6px 0 #c9783a;
   }
 
   .card__title {
