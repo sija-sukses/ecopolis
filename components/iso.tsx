@@ -1327,10 +1327,10 @@ function IsoCloudCluster({
 }) {
   const animClass =
     speed === 'slow'
-      ? 'cloud-float cloud-float--slow'
+      ? 'cloud-drift cloud-drift--slow'
       : speed === 'alt'
-        ? 'cloud-float cloud-float--alt'
-        : 'cloud-float';
+        ? 'cloud-drift cloud-drift--alt'
+        : 'cloud-drift';
 
   return (
     <g transform={`${at(u, v, lift)} scale(${scale})`}>
@@ -1460,6 +1460,42 @@ function IsoCloudCluster({
 }
 
 /**
+ * Awan low-poly horizon tinggi di latar belakang langit atas.
+ */
+function DistantSkyCloud({
+  startX,
+  startY,
+  scale = 1,
+  speed = 'normal',
+  opacity = 0.45,
+}: {
+  startX: number;
+  startY: number;
+  scale?: number;
+  speed?: 'normal' | 'slow' | 'alt';
+  opacity?: number;
+}) {
+  const animClass =
+    speed === 'slow'
+      ? 'sky-cloud-drift sky-cloud-drift--slow'
+      : speed === 'alt'
+        ? 'sky-cloud-drift sky-cloud-drift--alt'
+        : 'sky-cloud-drift';
+
+  return (
+    <g transform={`translate(${startX} ${startY}) scale(${scale})`} opacity={opacity} pointerEvents="none">
+      <g className={animClass}>
+        <polygon points="-46,-6 -10,-24 46,-8 10,10" fill="#ffffff" />
+        <polygon points="-10,-24 46,-8 46,0 -10,-16" fill="#d9e6fc" />
+        <polygon points="-46,-6 -10,-16 -10,-24" fill="#edf3ff" />
+        <polygon points="-22,-14 2,-26 30,-14 6,-2" fill="#ffffff" />
+        <polygon points="2,-26 30,-14 30,-8 2,-20" fill="#d9e6fc" />
+      </g>
+    </g>
+  );
+}
+
+/**
  * Elemen atmosfer terapung di sekeliling pulau utama: awan putih low-poly,
  * kubus tanah/batu satelit di berbagai ketinggian, serta pulau-pulau kecil
  * terapung sesuai gambar referensi.
@@ -1467,6 +1503,11 @@ function IsoCloudCluster({
 function FloatingAtmosphere() {
   return (
     <g>
+      {/* Awan horizon tinggi di latar langit belakang */}
+      <DistantSkyCloud startX={-380} startY={-92} scale={0.78} speed="slow" opacity={0.42} />
+      <DistantSkyCloud startX={340} startY={-108} scale={0.72} speed="alt" opacity={0.38} />
+      <DistantSkyCloud startX={90} startY={-124} scale={0.58} speed="normal" opacity={0.46} />
+
       {/* 1. Awan low-poly bertingkat di langit kiri-atas & kubus tanah melayang */}
       <IsoCloudCluster u={-2.35} v={1.65} lift={68} scale={0.95} variant="stepped" speed="slow" />
       <IsoCloudCluster u={-3.65} v={3.35} lift={8} scale={0.88} variant="stepped" speed="alt" />
@@ -1484,7 +1525,7 @@ function FloatingAtmosphere() {
       <IsoCloudCluster u={5.52} v={-0.35} lift={-42} scale={0.48} variant="cube" speed="alt" />
 
       {/* 4. Pulau Satelit Kecil Kiri-Tengah dengan Pohon Kanopi Kubus */}
-      <g className="cloud-float cloud-float--slow">
+      <g className="isle-float isle-float--slow">
         <IsoSlab u1={-3.32} v1={3.68} u2={-2.68} v2={4.32} h={12} lift={-154} top="#9e4f1e" left="#8c4316" right="#6e320d" />
         <IsoSlab u1={-3.42} v1={3.58} u2={-2.58} v2={4.42} h={14} lift={-142} top="#c97a3e" left="#b5652b" right="#944d1b" />
         <IsoSlab u1={-3.48} v1={3.52} u2={-2.52} v2={4.48} h={10} lift={-128} top={C.mintTop} left={C.mintL} right={C.mintR} />
@@ -1496,7 +1537,7 @@ function FloatingAtmosphere() {
       <IsoCloudCluster u={-2.45} v={4.68} lift={-142} scale={0.48} variant="cube" speed="normal" />
 
       {/* 5. Pulau Satelit Kiri-Bawah dengan 3 Pohon Pinus & 2 Kubus Terakota/Amber */}
-      <g className="cloud-float">
+      <g className="isle-float">
         <IsoSlab u1={-1.15} v1={5.05} u2={-0.32} v2={5.88} h={14} lift={-168} top="#9e4f1e" left="#8c4316" right="#6e320d" />
         <IsoSlab u1={-1.28} v1={4.92} u2={-0.18} v2={6.02} h={16} lift={-154} top="#c97a3e" left="#b5652b" right="#944d1b" />
         <IsoSlab u1={-1.35} v1={4.85} u2={-0.12} v2={6.08} h={12} lift={-138} top={C.mintTop} left={C.mintL} right={C.mintR} />
@@ -1508,7 +1549,7 @@ function FloatingAtmosphere() {
       </g>
 
       {/* 6. Pulau Satelit Kanan-Bawah dengan Pohon Kanopi Kubus */}
-      <g className="cloud-float cloud-float--alt">
+      <g className="isle-float isle-float--alt">
         <IsoSlab u1={5.78} v1={0.02} u2={6.38} v2={0.62} h={12} lift={-138} top="#9e4f1e" left="#8c4316" right="#6e320d" />
         <IsoSlab u1={5.68} v1={-0.08} u2={6.48} v2={0.72} h={14} lift={-126} top="#c97a3e" left="#b5652b" right="#944d1b" />
         <IsoSlab u1={5.62} v1={-0.14} u2={6.54} v2={0.78} h={10} lift={-112} top={C.mintTop} left={C.mintL} right={C.mintR} />
@@ -1718,7 +1759,7 @@ export function IslandTerrain({
       <line x1={fallRightTopX} y1={fallRightTopY} x2={fallRightBotX} y2={fallRightBotY} className="waterfall-stream waterfall-stream--alt" stroke={river.currentAlt} strokeWidth="2.6" strokeLinecap="round" />
 
       {/* Gumpalan awan putih/keruh low-poly & kubus percikan air di dasar air terjun */}
-      <g className="cloud-float">
+      <g className="isle-float">
         <IsoSlab u1={1.88} v1={4.62} u2={2.76} v2={5.08} h={12} lift={-84} top={river.cloudTop} left={river.cloudLeft} right={river.cloudRight} />
         <IsoSlab u1={2.04} v1={4.66} u2={2.58} v2={4.98} h={10} lift={-74} top={river.foam} left={river.cloudTop} right={river.cloudLeft} />
         {/* Kubus-kubus percikan awan low-poly yang menyebar di sekitar dasar air terjun (sesuai referensi) */}
@@ -1734,6 +1775,15 @@ export function IslandTerrain({
             <RiverTrashItem u={2.48} v={4.88} lift={-71} kind="plastic" />
           </>
         )}
+      </g>
+
+      {/* Percikan kabut uap air terjun dinamis (waterfall impact mist & spray) */}
+      <g transform={`translate(${fallBotX.toFixed(1)} ${(fallBotY + 2).toFixed(1)})`} pointerEvents="none">
+        <ellipse cx="0" cy="0" rx="14" ry="7" fill={river.foam} className="waterfall-mist-pulse" opacity="0.6" />
+        <ellipse cx="0" cy="0" rx="9" ry="4.5" fill="#ffffff" className="waterfall-mist-pulse waterfall-mist-pulse--delay" opacity="0.75" />
+        <circle cx="-5" cy="-2" r="2.2" fill="#ffffff" className="waterfall-droplet--1" />
+        <circle cx="6" cy="-3" r="1.8" fill="#ffffff" className="waterfall-droplet--2" />
+        <circle cx="1" cy="-5" r="2.0" fill={river.foam} className="waterfall-droplet--3" />
       </g>
 
       {/* =====================================================================
@@ -1841,7 +1891,7 @@ function facePoints(
   return `${p(s0, t0)} ${p(s1, t0)} ${p(s1, t1)} ${p(s0, t1)}`;
 }
 
-function SolarPanel() {
+function SolarPanel({ gleamDelay = 0 }: { gleamDelay?: number }) {
   const w = 26;
   const front = 11;
   const back = 18;
@@ -1868,6 +1918,13 @@ function SolarPanel() {
       {line(`${p(2 / 3, 0)} ${p(2 / 3, 1)}`)}
       {line(`${p(0, 1 / 3)} ${p(1, 1 / 3)}`)}
       {line(`${p(0, 2 / 3)} ${p(1, 2 / 3)}`)}
+      {/* Kilau refleksi surya lembut di atas kaca panel */}
+      <polygon
+        className="solar-gleam"
+        points={`${-w},0 0,${front} ${w},0 0,${-back}`}
+        fill="#ffffff"
+        style={{ animationDelay: `${gleamDelay}s` }}
+      />
     </g>
   );
 }
@@ -1878,19 +1935,19 @@ function Plts() {
     <g>
       {/* Hamparan 5 deret panel surya membentang mengikuti kontur perbukitan barat-laut */}
       <g transform={at(-0.52, 0.36, 14)}>
-        <SolarPanel />
+        <SolarPanel gleamDelay={0} />
       </g>
       <g transform={at(-0.14, 0.36, 14)}>
-        <SolarPanel />
+        <SolarPanel gleamDelay={0.7} />
       </g>
       <g transform={at(0.24, 0.36, 14)}>
-        <SolarPanel />
+        <SolarPanel gleamDelay={1.4} />
       </g>
       <g transform={at(-0.28, -0.04, 14)}>
-        <SolarPanel />
+        <SolarPanel gleamDelay={2.1} />
       </g>
       <g transform={at(0.14, -0.04, 14)}>
-        <SolarPanel />
+        <SolarPanel gleamDelay={2.8} />
       </g>
       {/* Gardu inverter & bank baterai penyimpanan */}
       <g transform={at(-0.46, -0.34, 14)}>
@@ -1900,17 +1957,21 @@ function Plts() {
       <g transform={at(-0.18, -0.42, 14)}>
         <Box h={16} inset={50} top={C.steelTop} left={C.steelL} right={C.steelR} />
       </g>
-      {/* Dua turbin angin tinggi di punggung bukit */}
+      {/* Dua turbin angin tinggi di punggung bukit dengan baling-baling berputar halus */}
       {[
         [0.12, -0.42],
         [0.46, -0.28],
       ].map(([tu, tv], i) => (
         <g key={i} transform={at(tu, tv, 14)}>
           <rect x="-2" y="-52" width="4" height="52" fill={C.smoke} />
-          <circle cx="0" cy="-52" r="3.2" fill={C.steelL} />
-          <polygon points="0,-52 -2,-72 2,-72" fill={C.smoke} />
-          <polygon points="0,-52 16,-42 14,-39" fill={C.smoke} />
-          <polygon points="0,-52 -16,-42 -14,-39" fill={C.smoke} />
+          <g transform="translate(0 -52)">
+            <g className={i === 0 ? 'wind-turbine-blades' : 'wind-turbine-blades wind-turbine-blades--alt'}>
+              <polygon points="0,0 -2,-21 2,-21" fill={C.smoke} />
+              <polygon points="0,0 18,10 16,13" fill={C.smoke} />
+              <polygon points="0,0 -18,10 -16,13" fill={C.smoke} />
+            </g>
+            <circle cx="0" cy="0" r="3.2" fill={C.steelL} />
+          </g>
         </g>
       ))}
       <IsoWorker u={-0.12} v={0.56} lift={14} shirt="cyan" hat="helmet-white" tool="wiper" action="wipe" />

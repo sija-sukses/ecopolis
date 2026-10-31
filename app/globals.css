@@ -1087,21 +1087,32 @@ a { color: inherit; }
 }
 
 /* Animasi kepulan asap PLTU, asap periodik kawasan industri & sampah, serta kabut polusi kota */
-@keyframes smokeBillow {
-  0% {
-    transform: translate(0, 4px) scale(0.42);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.82;
-  }
-  75% {
-    opacity: 0.48;
-  }
-  100% {
-    transform: translate(-18px, -42px) scale(1.55);
-    opacity: 0;
-  }
+@keyframes smokeBillow1 {
+  0% { transform: translate(0, 4px) scale(0.42); opacity: 0; }
+  20% { opacity: 0.85; }
+  72% { opacity: 0.45; }
+  100% { transform: translate(-16px, -44px) scale(1.52); opacity: 0; }
+}
+
+@keyframes smokeBillow2 {
+  0% { transform: translate(0, 4px) scale(0.45); opacity: 0; }
+  20% { opacity: 0.82; }
+  72% { opacity: 0.42; }
+  100% { transform: translate(-22px, -48px) scale(1.6); opacity: 0; }
+}
+
+@keyframes smokeBillow3 {
+  0% { transform: translate(0, 4px) scale(0.4); opacity: 0; }
+  20% { opacity: 0.85; }
+  72% { opacity: 0.44; }
+  100% { transform: translate(-14px, -42px) scale(1.48); opacity: 0; }
+}
+
+@keyframes smokeBillow4 {
+  0% { transform: translate(0, 4px) scale(0.44); opacity: 0; }
+  20% { opacity: 0.8; }
+  72% { opacity: 0.4; }
+  100% { transform: translate(-26px, -52px) scale(1.65); opacity: 0; }
 }
 
 @keyframes smokePeriodic {
@@ -1155,22 +1166,22 @@ a { color: inherit; }
 }
 
 .smoke-puff--1 {
-  animation: smokeBillow 2.6s ease-out infinite;
+  animation: smokeBillow1 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
 }
 
 .smoke-puff--2 {
-  animation: smokeBillow 2.6s ease-out infinite;
-  animation-delay: -0.65s;
+  animation: smokeBillow2 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  animation-delay: -0.7s;
 }
 
 .smoke-puff--3 {
-  animation: smokeBillow 2.6s ease-out infinite;
-  animation-delay: -1.3s;
+  animation: smokeBillow3 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  animation-delay: -1.4s;
 }
 
 .smoke-puff--4 {
-  animation: smokeBillow 2.6s ease-out infinite;
-  animation-delay: -1.95s;
+  animation: smokeBillow4 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  animation-delay: -2.1s;
 }
 
 .smoke-puff--per-1 {
@@ -1213,29 +1224,158 @@ a { color: inherit; }
 .smog-wisp--5 { animation-delay: -2.1s; }
 .smog-wisp--6 { animation-delay: -3.5s; }
 
-@keyframes cloudFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4.5px);
-  }
+/* Gerakan atmosfer pulau: awan melayang diagonal, pulau satelit terapung, kabut air terjun */
+@keyframes cloudDriftNormal {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(16px, -8px); }
 }
 
+@keyframes cloudDriftSlow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-15px, 7.5px); }
+}
+
+@keyframes cloudDriftAlt {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(13px, -6.5px) translateY(-3px); }
+}
+
+.cloud-drift {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: cloudDriftNormal 16s ease-in-out infinite;
+}
+
+.cloud-drift--slow {
+  animation: cloudDriftSlow 24s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+.cloud-drift--alt {
+  animation: cloudDriftAlt 20s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+@keyframes isleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4.5px); }
+}
+
+.isle-float,
 .cloud-float {
   transform-box: fill-box;
   transform-origin: 50% 50%;
-  animation: cloudFloat 5.2s ease-in-out infinite;
+  animation: isleFloat 7.2s ease-in-out infinite;
 }
 
+.isle-float--slow,
 .cloud-float--slow {
-  animation-duration: 6.8s;
-  animation-delay: -1.8s;
+  animation-duration: 9.4s;
+  animation-delay: -3.2s;
 }
 
+.isle-float--alt,
 .cloud-float--alt {
-  animation-duration: 5.8s;
-  animation-delay: -3.1s;
+  animation-duration: 8.1s;
+  animation-delay: -5.5s;
+}
+
+/* Awan voxel horizon tinggi di latar belakang langit */
+@keyframes skyCloudDrift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(36px, -8px); }
+}
+
+@keyframes skyCloudDriftSlow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-28px, 6px); }
+}
+
+.sky-cloud-drift {
+  animation: skyCloudDrift 32s ease-in-out infinite;
+}
+
+.sky-cloud-drift--slow {
+  animation: skyCloudDriftSlow 42s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+.sky-cloud-drift--alt {
+  animation: skyCloudDrift 36s ease-in-out infinite;
+  animation-delay: -20s;
+}
+
+/* Percikan uap kabut air terjun di dasar tebing pulau */
+@keyframes waterfallMistPulse {
+  0% { transform: scale(0.65); opacity: 0.65; }
+  50% { opacity: 0.9; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+@keyframes waterfallDroplet1 {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0.9; }
+  100% { transform: translate(-9px, -15px) scale(0.2); opacity: 0; }
+}
+
+@keyframes waterfallDroplet2 {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0.9; }
+  100% { transform: translate(11px, -17px) scale(0.2); opacity: 0; }
+}
+
+@keyframes waterfallDroplet3 {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0.9; }
+  100% { transform: translate(2px, -19px) scale(0.2); opacity: 0; }
+}
+
+.waterfall-mist-pulse {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: waterfallMistPulse 1.9s ease-out infinite;
+}
+
+.waterfall-mist-pulse--delay {
+  animation-delay: -0.95s;
+}
+
+.waterfall-droplet--1 {
+  animation: waterfallDroplet1 1.4s ease-out infinite;
+}
+
+.waterfall-droplet--2 {
+  animation: waterfallDroplet2 1.6s ease-out infinite;
+  animation-delay: -0.5s;
+}
+
+.waterfall-droplet--3 {
+  animation: waterfallDroplet3 1.5s ease-out infinite;
+  animation-delay: -1.0s;
+}
+
+/* Kilau refleksi surya pada panel PLTS */
+@keyframes solarGleam {
+  0%, 78%, 100% { opacity: 0; }
+  84% { opacity: 0.42; }
+  90% { opacity: 0; }
+}
+
+.solar-gleam {
+  pointer-events: none;
+  animation: solarGleam 5.2s ease-in-out infinite;
+}
+
+/* Putaran baling-baling turbin angin PLTS */
+@keyframes turbineSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.wind-turbine-blades {
+  animation: turbineSpin 4.2s linear infinite;
+}
+
+.wind-turbine-blades--alt {
+  animation: turbineSpin 5.6s linear infinite;
+  animation-delay: -2.1s;
 }
 
 /* Animasi aliran kendaraan dinamis di kedua lajur Jalan Tol Layang Dalam Kota */
@@ -1436,7 +1576,16 @@ a { color: inherit; }
   .crane-jib,
   .crane-load,
   .confetti-piece,
-  .mayor-sprite--ceremony {
+  .mayor-sprite--ceremony,
+  .cloud-drift,
+  .isle-float,
+  .sky-cloud-drift,
+  .waterfall-mist-pulse,
+  .waterfall-droplet--1,
+  .waterfall-droplet--2,
+  .waterfall-droplet--3,
+  .solar-gleam,
+  .wind-turbine-blades {
     animation: none;
     opacity: 1;
     transform: none;
