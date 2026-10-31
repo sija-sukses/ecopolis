@@ -77,9 +77,51 @@ function stopSpeaking() {
   }
 }
 
+function getNudgeMessage(
+  round: number,
+  stats: { economy: number; environment: number; satisfaction: number; energy: number },
+  hasLeader: boolean,
+): string {
+  if (!hasLeader) {
+    return 'Siap memimpin kota? Pilih avatar dan nama Anda!';
+  }
+  if (round > ROUNDS) {
+    return 'Laporan 2050 terbit! Diskusikan evaluasi bersama TARA.';
+  }
+  if (stats.environment <= 35) {
+    return '⚠️ Lingkungan kritis! TARA punya saran mitigasi emisi.';
+  }
+  if (stats.economy <= 35) {
+    return '⚠️ Ekonomi defisit! Perlu stimulus anggaran segera.';
+  }
+  if (stats.satisfaction <= 35) {
+    return '⚠️ Warga gelisah! Kebijakan berikutnya harus pro-rakyat.';
+  }
+  if (stats.energy <= 35) {
+    return '⚠️ Listrik menipis! Amankan sumber daya energi.';
+  }
+  switch (round) {
+    case 1:
+      return 'TARA siap membantu analisis PLTU vs PLTS Surya.';
+    case 2:
+      return 'Bimbang antara tol atau BRT? Cek dampak jangka panjangnya.';
+    case 3:
+      return 'Kelola sampah: TPA murah atau investasi daur ulang?';
+    case 4:
+      return 'Ruang hijau atau industri? Tinjau dampaknya bersama TARA.';
+    case 5:
+      return 'Ronde penentu! Konsultasikan tata ruang hunian 2050.';
+    default:
+      return 'Ada yang ingin dikonsultasikan seputar strategi kota?';
+  }
+}
+
 export function AiAdvisor() {
   const { state } = useGame();
   const [open, setOpen] = useState(false);
+  const hasLeader = Boolean(state.leader);
+  const currentKey = `${state.round}-${hasLeader ? 'leader' : 'prep'}`;
+  const [dismissedKey, setDismissedKey] = useState<string | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number; side: 'left' | 'right' }>({
     x: -1,
     y: -1,
@@ -156,6 +198,14 @@ export function AiAdvisor() {
     };
   }, []);
 
+  // Batasi durasi tayang balon petunjuk (nudge) hingga 9 detik
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDismissedKey(currentKey);
+    }, 9000);
+    return () => clearTimeout(timer);
+  }, [currentKey]);
+
   function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = {
@@ -177,6 +227,7 @@ export function AiAdvisor() {
     if (!d.moved && Math.hypot(dx, dy) > 6) {
       d.moved = true;
       setDragging(true);
+      setDismissedKey(currentKey);
     }
     if (!d.moved) return;
 
@@ -213,7 +264,10 @@ export function AiAdvisor() {
     }
 
     play('click', state.muted);
-    setOpen((prev) => !prev);
+    setOpen((prev) => {
+      if (!prev) setDismissedKey(currentKey);
+      return !prev;
+    });
   }
 
   async function ask(rawQuestion: string) {
@@ -324,6 +378,8 @@ export function AiAdvisor() {
       : `Ronde ${state.round} / ${ROUNDS}`;
 
   const prompts = quickPromptsFor(state.round, Boolean(state.leader));
+  const nudgeText = getNudgeMessage(state.round, state.stats, Boolean(state.leader));
+  const showNudge = !open && !dragging && dismissedKey !== currentKey;
 
   return (
     <div
@@ -332,7 +388,7 @@ export function AiAdvisor() {
     >
       <button
         type="button"
-        className="assist__orb"
+        className={`assist__orb${showNudge && !open ? ' assist__orb--nudge' : ''}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -349,6 +405,41 @@ export function AiAdvisor() {
           AI
         </span>
       </button>
+
+      {showNudge && !open && !dragging && (
+        <aside
+          className={`assist__nudge assist__nudge--${pos.side}`}
+          role="status"
+          aria-live="polite"
+        >
+          <button
+            type="button"
+            className="assist__nudge-body"
+            onClick={() => {
+              play('click', state.muted);
+              setOpen(true);
+              setDismissedKey(currentKey);
+            }}
+          >
+            <span className="assist__nudge-icon" aria-hidden="true">
+              <Sparkles size={13} strokeWidth={2.4} />
+            </span>
+            <span className="assist__nudge-text">{nudgeText}</span>
+          </button>
+          <button
+            type="button"
+            className="assist__nudge-dismiss"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDismissedKey(currentKey);
+            }}
+            aria-label="Tutup petunjuk TARA"
+            title="Tutup"
+          >
+            <X size={12} strokeWidth={2.4} />
+          </button>
+        </aside>
+      )}
 
       {open && (
         <section className="assist__panel" aria-label="Asisten AI Ecopolis">

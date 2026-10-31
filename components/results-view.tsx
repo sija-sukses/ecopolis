@@ -43,6 +43,47 @@ function computeQuadrant(economy: number, environment: number): { grade: string;
   return { grade: 'C', label: 'Kota dalam Tekanan Ganda' };
 }
 
+function EvaluationStamp({
+  grade,
+  label,
+}: {
+  grade: string;
+  label: string;
+}) {
+  const isA = grade === 'A';
+  const isC = grade === 'C';
+  const stampTheme = isA
+    ? 'eval-stamp--a'
+    : isC
+      ? 'eval-stamp--c'
+      : 'eval-stamp--b';
+
+  const statusText = isA
+    ? 'KOTA BERKELANJUTAN'
+    : isC
+      ? 'PERLU RESTRUKTURISASI'
+      : label.toUpperCase().includes('INDUSTRI')
+        ? 'INDUSTRI PESAT'
+        : 'TRANSISI IKLIM';
+
+  return (
+    <div
+      className={`eval-stamp ${stampTheme}`}
+      role="img"
+      aria-label={`Cap Dinas Resmi: Kelas ${grade} - ${label}`}
+    >
+      <div className="eval-stamp__inner">
+        <span className="eval-stamp__agency">★ PEMERINTAH ECOPOLIS ★</span>
+        <div className="eval-stamp__center">
+          <span className="eval-stamp__grade">KELAS {grade}</span>
+          <span className="eval-stamp__status">{statusText}</span>
+        </div>
+        <span className="eval-stamp__date">EVALUASI RESMI 2050</span>
+      </div>
+    </div>
+  );
+}
+
 export function ResultsView() {
   const { state, dispatch, ready } = useGame();
   const router = useRouter();
@@ -56,6 +97,16 @@ export function ResultsView() {
   useEffect(() => {
     if (ready && (!leader || !review)) router.replace('/play');
   }, [ready, leader, review, router]);
+
+  // Efek suara stempel cap dinas resmi saat dossier terbuka
+  useEffect(() => {
+    if (ready && leader && review) {
+      const timer = setTimeout(() => {
+        play('stamp', state.muted);
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [ready, leader, review, state.muted]);
 
   if (!ready || !leader || !review) return <div className="stage stage--wait" aria-busy="true" />;
 
@@ -139,16 +190,19 @@ export function ResultsView() {
             <div className="result__who-row">
               <div className="result__who">
                 <Avatar id={leader.avatar} size={68} className="result__face" />
-                <p>
-                  <span>Dossier Kepemimpinan 2050</span>
+                <div>
+                  <div className="result__kicker-wrap">
+                    <span>Dossier Kepemimpinan 2050</span>
+                    <span className="result__badge">
+                      {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
+                    </span>
+                  </div>
                   <b>
                     {honorific} {leader.name}
                   </b>
-                </p>
+                </div>
               </div>
-              <span className="result__badge">
-                {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
-              </span>
+              <EvaluationStamp grade={quadrant.grade} label={quadrant.label} />
             </div>
 
             <h1 className="result__title">{review.title}</h1>
