@@ -599,6 +599,8 @@
 /* --- Menunggu laporan --- */
 
 .analyzing {
+  max-height: 100%;
+  margin-block: auto;
   padding: clamp(24px, 3vw, 40px);
   border-radius: var(--r);
   background: var(--field-warm);
