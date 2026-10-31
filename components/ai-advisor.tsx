@@ -120,7 +120,10 @@ export function AiAdvisor() {
         if (prev.x < 0 || prev.y < 0) {
           return {
             x: vw - ORB_SIZE - EDGE_MARGIN,
-            y: Math.max(EDGE_MARGIN, vh - ORB_SIZE - 28),
+            y:
+              vw < 768
+                ? Math.round(vh * 0.48)
+                : Math.max(EDGE_MARGIN, vh - ORB_SIZE - 28),
             side: 'right',
           };
         }

@@ -64,7 +64,12 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
             className={`hud__face${mood ? ` hud__face--${mood}` : ''}`}
           />
           <span>{leaderName}</span>
-          <b>{round > ROUNDS ? 'Selesai' : `Ronde ${round} dari ${ROUNDS}`}</b>
+          <b className="hud__round-full">
+            {round > ROUNDS ? 'Selesai' : `Ronde ${round} dari ${ROUNDS}`}
+          </b>
+          <b className="hud__round-compact" aria-hidden="true">
+            {round > ROUNDS ? 'Selesai' : `R${round}/${ROUNDS}`}
+          </b>
         </p>
         <button
           type="button"
@@ -73,7 +78,12 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
           aria-pressed={muted}
           title={muted ? 'Nyalakan suara (Tombol M)' : 'Matikan suara (Tombol M)'}
         >
-          {muted ? 'Suara mati [M]' : 'Suara nyala [M]'}
+          <span className="hud__mute-full">
+            {muted ? 'Suara mati [M]' : 'Suara nyala [M]'}
+          </span>
+          <span className="hud__mute-compact" aria-hidden="true">
+            {muted ? '🔇 Bisu' : '🔊 Suara'}
+          </span>
         </button>
       </div>
 

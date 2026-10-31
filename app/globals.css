@@ -604,6 +604,11 @@ a { color: inherit; }
 
 .opt span:not(.opt__row):not(.opt__icon):not(.opt__copy):not(.opt__key) { display: block; margin-top: 6px; font-size: var(--step-small); }
 
+/* Lencana A/B hanya berguna untuk papan ketik; di layar sentuh ia memakan lebar teks. */
+@media (hover: none) and (pointer: coarse) {
+  .opt__key { display: none; }
+}
+
 .tryout__panel { display: grid; gap: 20px; }
 
 .tryout__city { width: 100%; height: auto; max-height: 52svh; }
