@@ -190,29 +190,30 @@ export function ResultsView() {
             <div className="result__who-row">
               <div className="result__who">
                 <Avatar id={leader.avatar} size={68} className="result__face" />
-                <div>
-                  <div className="result__kicker-wrap">
-                    <span>Dossier Kepemimpinan 2050</span>
-                    <span className="result__badge">
-                      {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
-                    </span>
-                  </div>
+                <p>
+                  <span>Dossier Kepemimpinan 2050</span>
                   <b>
                     {honorific} {leader.name}
                   </b>
-                </div>
+                </p>
               </div>
-              <EvaluationStamp grade={quadrant.grade} label={quadrant.label} />
+              <span className="result__badge">
+                {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
+              </span>
             </div>
 
             <h1 className="result__title">{review.title}</h1>
 
-            <div className="result__story-box" aria-label="Ecopolis pada 2050">
-              {review.narrative.split('\n\n').map((p, i) => (
-                <p className="result__para" key={i}>
-                  {p.trim()}
-                </p>
-              ))}
+            <div className="result__story-wrap">
+              <EvaluationStamp grade={quadrant.grade} label={quadrant.label} />
+              <div className="result__story-box" aria-label="Ecopolis pada 2050">
+                <div className="result__story-stamp-spacer" aria-hidden="true" />
+                {review.narrative.split('\n\n').map((p, i) => (
+                  <p className="result__para" key={i}>
+                    {p.trim()}
+                  </p>
+                ))}
+              </div>
             </div>
 
             <div className="result__actions" aria-label="Simpan dan bagikan laporan">
