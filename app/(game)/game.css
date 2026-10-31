@@ -716,6 +716,7 @@
 
 .result__map {
   margin-block: clamp(10px, 1.8vw, 18px);
+  overflow: visible;
 }
 
 .result__map svg {

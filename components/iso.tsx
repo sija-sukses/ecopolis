@@ -259,27 +259,21 @@ function PineTree({
   );
 }
 
-/** Pohon rindang bulat untuk taman kota dan boulevard. */
+/** Pohon kanopi kubus 3D isometrik untuk taman kota dan boulevard. */
 function RoundTree({
   u,
   v,
   lift = 0,
   scale = 0.75,
+  tone = 'bright',
 }: {
   u: number;
   v: number;
   lift?: number;
   scale?: number;
+  tone?: 'bright' | 'deep';
 }) {
-  return (
-    <g transform={`${at(u, v, lift)} scale(${scale})`}>
-      <polygon points="0,-4 10,0 0,4 -10,0" fill={C.mintR} opacity="0.75" />
-      <rect x="-3.5" y="-13" width="7" height="15" rx="2.5" fill={C.warmR} />
-      <circle cx="0" cy="-26" r="15" fill={C.leafTop} />
-      <circle cx="-9" cy="-18" r="10.5" fill={C.leafL} />
-      <circle cx="10" cy="-19" r="10" fill={C.leafR} />
-    </g>
-  );
+  return <BlockTree u={u} v={v} lift={lift} scale={scale} tone={tone} />;
 }
 
 /** Pohon kanopi kubus 3D isometrik bergaya clay diorama sesuai referensi. */
@@ -1254,9 +1248,9 @@ function CityWideEffects({ plots }: { plots: (AssetId | null)[] }) {
       {/* Efek HUTAN KOTA: Sabuk pepohonan hijau rindang tumbuh di sepanjang tepi sungai & kota */}
       {hasHutan && (
         <g>
-          <RoundTree u={1.82} v={0.82} lift={0} scale={0.64} />
+          <BlockTree u={1.82} v={0.82} lift={0} scale={0.68} tone="bright" />
           <PineTree u={2.68} v={1.28} lift={0} scale={0.68} tone="pine" />
-          <RoundTree u={1.78} v={2.48} lift={0} scale={0.62} />
+          <BlockTree u={1.78} v={2.48} lift={0} scale={0.66} tone="deep" />
           <PineTree u={2.72} v={2.18} lift={0} scale={0.66} tone="leaf" />
         </g>
       )}
@@ -2481,22 +2475,6 @@ function Industri() {
 
 /** Kawasan Hutan Kota & Danau Resapan Ekologis di Lembah Utara */
 function Hutan() {
-  const round = (s: number) => (
-    <g transform={`scale(${s})`}>
-      <rect x="-4.5" y="-15" width="9" height="19" rx="3.5" fill={C.warmR} />
-      <circle cx="0" cy="-31" r="20" fill={C.leafTop} />
-      <circle cx="-12" cy="-21" r="14" fill={C.leafL} />
-      <circle cx="13" cy="-22" r="13" fill={C.leafR} />
-    </g>
-  );
-  const pine = (s: number) => (
-    <g transform={`scale(${s})`}>
-      <rect x="-4" y="-12" width="8" height="16" rx="3" fill={C.warmR} />
-      <polygon points="-17,-12 0,-48 17,-12" fill={C.leafL} />
-      <polygon points="-14,-24 0,-58 14,-24" fill={C.leafTop} />
-      <polygon points="-10,-36 0,-66 10,-36" fill={C.leafR} />
-    </g>
-  );
   return (
     <g>
       <g transform={at(0.06, 0.16, 14)}>
@@ -2510,17 +2488,17 @@ function Hutan() {
         <Box h={13} inset={53} top={C.warmTop} left={C.warmL} right={C.warmR} />
         <polygon points="-15,-13 0,-5 15,-13 0,-24" fill={C.brickTop} />
       </g>
-      {/* Rumpun pohon hutan kota yang lebat dan luas */}
-      <g transform={at(-0.48, 0.28, 14)}>{round(0.95)}</g>
-      <g transform={at(0.34, -0.38, 14)}>{pine(0.9)}</g>
-      <g transform={at(-0.36, -0.32, 14)}>{round(0.88)}</g>
-      <g transform={at(-0.04, -0.14, 14)}>{round(1.06)}</g>
-      <g transform={at(0.24, 0.42, 14)}>{pine(0.78)}</g>
-      <g transform={at(-0.52, -0.06, 14)}>{pine(0.76)}</g>
-      <g transform={at(0.52, 0.24, 14)}>{round(0.78)}</g>
+      {/* Rumpun pohon hutan kota low-poly (kombinasi BlockTree dan PineTree 3D) */}
+      <BlockTree u={-0.36} v={-0.32} lift={14} scale={0.92} tone="deep" />
+      <PineTree u={-0.52} v={-0.06} lift={14} scale={0.88} tone="pine" />
+      <PineTree u={0.34} v={-0.38} lift={14} scale={0.94} tone="leaf" />
+      <BlockTree u={-0.04} v={-0.14} lift={14} scale={1.05} tone="bright" />
+      <BlockTree u={-0.48} v={0.28} lift={14} scale={0.96} tone="bright" />
       <IsoWorker u={-0.18} v={0.42} lift={14} shirt="green" hat="straw" tool="watering" action="water" />
       <IsoWorker u={0.04} v={0.18} lift={16} shirt="warm" hat="hair-dark" tool="none" action="bob" delay={0.3} />
+      <PineTree u={0.24} v={0.42} lift={14} scale={0.86} tone="pine" />
       <IsoWorker u={0.42} v={0.28} lift={14} shirt="blue" hat="cap-green" tool="none" action="patrol-v" delay={0.55} flip />
+      <BlockTree u={0.52} v={0.24} lift={14} scale={0.84} tone="deep" />
     </g>
   );
 }
@@ -2705,7 +2683,7 @@ function Daurulang() {
           <Box h={19} inset={47} top={top as string} left={side as string} right={side as string} />
         </g>
       ))}
-      <RoundTree u={-0.52} v={0.06} lift={14} scale={0.56} />
+      {/* <RoundTree u={-0.52} v={0.06} lift={14} scale={0.56} /> */}
       <IsoWorker u={-0.18} v={0.46} lift={14} shirt="green" hat="helmet-white" tool="box" action="lift" />
       <IsoWorker u={0.18} v={0.46} lift={14} shirt="cyan" hat="cap-green" tool="wiper" action="wipe" delay={0.35} flip />
       <IsoWorker u={0.42} v={0.12} lift={14} shirt="white" hat="helmet-white" tool="clipboard" action="patrol-v" delay={0.65} />

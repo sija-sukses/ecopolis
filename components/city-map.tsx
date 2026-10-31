@@ -101,7 +101,7 @@ export function CityMap({
   return (
     <svg
       className={className}
-      viewBox="-570 -145 1140 610"
+      viewBox="-570 -190 1140 610"
       preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
       role="img"
       aria-label={label}
