@@ -1119,9 +1119,11 @@ function SmokePlume({
 function AtmospherePollution({
   level,
   plots,
+  environment = 50,
 }: {
   level: PollutionLevel;
   plots: (AssetId | null)[];
+  environment?: number;
 }) {
   if (level === 'bersih') return null;
 
@@ -1131,6 +1133,10 @@ function AtmospherePollution({
 
   return (
     <g className={`city-pollution city-pollution--${level}`} data-pollution={level} pointerEvents="none">
+      {/* Lapisan kabut polusi halus di atas pulau saat lingkungan tertekan (< 40) */}
+      {environment < 40 && (
+        <ellipse cx="0" cy="40" rx="360" ry="180" fill="rgba(120, 80, 40, 0.08)" className="eco-smog" />
+      )}
       {/* Kepulan partikel asap kelabu di langit atas PLTU */}
       {hasPltu && (
         <g transform="translate(-48 -96)">
@@ -1627,8 +1633,10 @@ function FloatingCliffStrata() {
  */
 export function IslandTerrain({
   plots = [null, null, null, null, null],
+  environment = 50,
 }: {
   plots?: (AssetId | null)[];
+  environment?: number;
 }) {
   const river = getRiverPalette(plots);
   const turbidity = getWaterTurbidity(plots);
@@ -1780,6 +1788,17 @@ export function IslandTerrain({
         <circle cx="1" cy="-5" r="2.0" fill={river.foam} className="waterfall-droplet--3" />
       </g>
 
+      {/* Pelangi halus di uap air terjun saat indeks lingkungan tinggi (>= 70) */}
+      {environment >= 70 && (
+        <g className="eco-rainbow" transform={`translate(${(fallBotX - 8).toFixed(1)} ${(fallBotY - 14).toFixed(1)})`} pointerEvents="none">
+          <path d="M-18,6 A22,18 0 0,1 26,6" fill="none" stroke="rgba(244, 63, 94, 0.55)" strokeWidth="3.2" strokeLinecap="round" />
+          <path d="M-15,6 A19,15 0 0,1 23,6" fill="none" stroke="rgba(245, 158, 11, 0.55)" strokeWidth="2.8" strokeLinecap="round" />
+          <path d="M-12,6 A16,12 0 0,1 20,6" fill="none" stroke="rgba(34, 197, 94, 0.55)" strokeWidth="2.6" strokeLinecap="round" />
+          <path d="M-9,6 A13,9 0 0,1 17,6" fill="none" stroke="rgba(14, 165, 233, 0.55)" strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M-6,6 A10,7 0 0,1 14,6" fill="none" stroke="rgba(168, 85, 247, 0.55)" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+      )}
+
       {/* =====================================================================
           5. GUNUNG BATU TERAKOTA-ORANYE TIMUR LAUT & PORTAL TEROWONGAN SUNGAI
           ===================================================================== */}
@@ -1845,10 +1864,12 @@ export function IslandTerrain({
 export function IslandForeground({
   avatar = 'rian',
   satisfaction = 50,
+  environment = 50,
   plots = [null, null, null, null, null],
 }: {
   avatar?: string;
   satisfaction?: number;
+  environment?: number;
   plots?: (AssetId | null)[];
 }) {
   const pollutionLevel = getPollutionLevel(plots);
@@ -1865,7 +1886,7 @@ export function IslandForeground({
       <PineTree u={1.76} v={4.32} lift={0} scale={0.78} tone="pine" />
       <PineTree u={2.88} v={4.22} lift={0} scale={0.82} tone="pine" />
       <BlockTree u={4.68} v={4.12} lift={0} scale={0.82} tone="bright" />
-      <AtmospherePollution level={pollutionLevel} plots={plots} />
+      <AtmospherePollution level={pollutionLevel} plots={plots} environment={environment} />
     </g>
   );
 }

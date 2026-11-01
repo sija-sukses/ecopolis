@@ -77,3 +77,64 @@ export function fallbackReview(leader: Leader, stats: Stats): Review {
     fallback: true,
   };
 }
+
+export type LeaderHonoraryTitle = {
+  title: string;
+  icon: string;
+  desc: string;
+};
+
+export function getLeaderHonoraryTitle(stats: Stats): LeaderHonoraryTitle {
+  const { economy, environment, satisfaction, energy } = stats;
+
+  if (environment >= 75 && economy >= 70) {
+    return {
+      title: 'Arsitek Metropolis Berkelanjutan',
+      icon: '🌟',
+      desc: 'Mencapai keselarasan ideal antara ekspansi ekonomi hijau dan kelestarian ekosistem.',
+    };
+  }
+  if (environment >= 75) {
+    return {
+      title: 'Pelopor Ekologi Nusantara',
+      icon: '🌿',
+      desc: 'Berani memprioritaskan udara bersih dan keanekaragaman hayati di atas segalanya.',
+    };
+  }
+  if (economy >= 75 && environment < 45) {
+    return {
+      title: 'Penggerak Industri Megapolitan',
+      icon: '⚡',
+      desc: 'Mendorong akselerasi ekonomi dan kapital industri berskala raksasa.',
+    };
+  }
+  if (satisfaction >= 75) {
+    return {
+      title: 'Wali Kota Pro-Rakyat Inklusif',
+      icon: '🤝',
+      desc: 'Menempatkan kesejahteraan, kebahagiaan, dan suara warga sebagai prioritas utama.',
+    };
+  }
+  if (energy >= 75) {
+    return {
+      title: 'Pemberdaya Transisi Energi 2050',
+      icon: '☀️',
+      desc: 'Membangun kedaulatan daya listrik yang tangguh, modern, dan siap masa depan.',
+    };
+  }
+  const diff =
+    Math.max(economy, environment, satisfaction, energy) -
+    Math.min(economy, environment, satisfaction, energy);
+  if (diff <= 25 && (economy + environment + satisfaction + energy) / 4 >= 50) {
+    return {
+      title: 'Negarawan Seimbang Ecopolis',
+      icon: '⚖️',
+      desc: 'Memimpin dengan stabilitas tinggi tanpa mengorbankan pilar kota mana pun.',
+    };
+  }
+  return {
+    title: 'Perintis Ketahanan Kota 2050',
+    icon: '🏛️',
+    desc: 'Menuntaskan masa transisi awal di tengah tantangan iklim dan keterbatasan anggaran.',
+  };
+}

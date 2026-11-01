@@ -1,3 +1,4 @@
+import { getLeaderHonoraryTitle } from './fallback.ts';
 import type { GameState, StatKey } from './types.ts';
 
 /**
@@ -175,8 +176,14 @@ export async function downloadCertificate(
   }
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(26);
+  doc.setFontSize(24);
   doc.text(leader.name, facePng ? L + FACE + 7 : L, Y.name, { maxWidth: COL_L_W + 54 });
+
+  const honorary = getLeaderHonoraryTitle(state.stats);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...accent);
+  doc.text(`Gelar: ${honorary.title}`, facePng ? L + FACE + 7 : L, Y.name + 6);
 
   /* ---- Kolom kiri: peta, dipaskan ke dalam kotak tetap ---- */
   const mapPng = mapSvg ? await mapToPng(mapSvg, 700) : null;
@@ -371,8 +378,13 @@ export async function downloadStoryCard(
   g.fillText('LAPORAN KEPEMIMPINAN WALI KOTA', nameX, 174);
 
   g.fillStyle = '#16193a';
-  g.font = '900 48px system-ui, sans-serif';
-  g.fillText(leader.name, nameX, 218);
+  g.font = '900 42px system-ui, sans-serif';
+  g.fillText(leader.name, nameX, 212, cw - nameX - 88);
+
+  const honorary = getLeaderHonoraryTitle(stats);
+  g.fillStyle = '#b83712';
+  g.font = '800 16px system-ui, sans-serif';
+  g.fillText(`${honorary.icon} ${honorary.title.toUpperCase()}`, nameX, 240, cw - nameX - 88);
 
   // Pita Judul 2050
   drawRoundedRect(g, 88, 266, cw - 176, 78, 20, '#b83712');

@@ -2651,3 +2651,49 @@
     width: auto;
   }
 }
+
+.result__honor-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(46, 175, 119, 0.12);
+  border: 1px solid rgba(46, 175, 119, 0.35);
+  color: #14532d;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* Animasi kilau pelangi air terjun dan kabut polusi atmosfer */
+@keyframes rainbowShimmer {
+  0%, 100% {
+    opacity: 0.72;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.96;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+    transform: translateY(-2px);
+  }
+}
+
+.eco-rainbow {
+  animation: rainbowShimmer 4s ease-in-out infinite;
+}
+
+@keyframes smogDrift {
+  0%, 100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.eco-smog {
+  animation: smogDrift 6s ease-in-out infinite;
+}

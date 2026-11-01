@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { AVATARS, avatarOf, honorificOf } from './avatars.ts';
-import { fallbackReview } from './fallback.ts';
+import { fallbackReview, getLeaderHonoraryTitle } from './fallback.ts';
 import { INITIAL_STATS } from './reducer.ts';
 import type { Leader, Stats } from './types.ts';
 
@@ -81,4 +81,26 @@ test('katalog berisi enam avatar dengan id unik', () => {
   assert.equal(AVATARS.length, 6);
   assert.equal(new Set(AVATARS.map((a) => a.id)).size, 6);
   assert.equal(AVATARS.filter((a) => a.gender === 'wanita').length, 3);
+});
+test('gelar kehormatan pemimpin terpetakan sesuai prestasi kota', () => {
+  assert.equal(
+    getLeaderHonoraryTitle({ economy: 75, environment: 80, satisfaction: 60, energy: 60 }).title,
+    'Arsitek Metropolis Berkelanjutan'
+  );
+  assert.equal(
+    getLeaderHonoraryTitle({ economy: 40, environment: 80, satisfaction: 50, energy: 50 }).title,
+    'Pelopor Ekologi Nusantara'
+  );
+  assert.equal(
+    getLeaderHonoraryTitle({ economy: 80, environment: 35, satisfaction: 50, energy: 60 }).title,
+    'Penggerak Industri Megapolitan'
+  );
+  assert.equal(
+    getLeaderHonoraryTitle({ economy: 50, environment: 50, satisfaction: 80, energy: 50 }).title,
+    'Wali Kota Pro-Rakyat Inklusif'
+  );
+  assert.equal(
+    getLeaderHonoraryTitle({ economy: 55, environment: 55, satisfaction: 55, energy: 55 }).title,
+    'Negarawan Seimbang Ecopolis'
+  );
 });

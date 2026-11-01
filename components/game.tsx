@@ -240,6 +240,7 @@ export function Game() {
             plots={displayPlots}
             avatar={state.leader.avatar}
             satisfaction={state.stats.satisfaction}
+            environment={state.stats.environment}
             activeTransition={activeTransition}
             cameraPlot={cutscene && cutscene.phase !== 'zoom-out' ? cutscene.plotIndex : null}
             mayorMode={cutscene?.phase === 'ceremony' ? 'ceremony' : 'inspection'}

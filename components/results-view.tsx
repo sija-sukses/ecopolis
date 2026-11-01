@@ -10,6 +10,7 @@ import { PolicyIcon } from '@/components/policy-icon.tsx';
 import { honorificOf } from '@/lib/avatars.ts';
 import { useGame } from '@/lib/game-context.tsx';
 import { downloadCertificate, downloadStoryCard } from '@/lib/pdf.ts';
+import { getLeaderHonoraryTitle } from '@/lib/fallback.ts';
 import { SCENARIOS } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId, StatKey } from '@/lib/types.ts';
@@ -112,6 +113,7 @@ export function ResultsView() {
 
   const honorific = honorificOf(leader.avatar);
   const quadrant = computeQuadrant(stats.economy, stats.environment);
+  const honorary = getLeaderHonoraryTitle(stats);
   const avgScore = Math.round(
     (stats.economy + stats.environment + stats.satisfaction + stats.energy) / 4,
   );
@@ -161,6 +163,7 @@ export function ResultsView() {
                 plots={plots}
                 avatar={leader.avatar}
                 satisfaction={stats.satisfaction}
+                environment={stats.environment}
                 animate
                 label={`Kota Ecopolis pada 2050 dengan kelima kawasan terbangun: ${choices
                   .map((c) => c.label)
@@ -190,12 +193,16 @@ export function ResultsView() {
             <div className="result__who-row">
               <div className="result__who">
                 <Avatar id={leader.avatar} size={68} className="result__face" />
-                <p>
+                <div>
                   <span>Dossier Kepemimpinan 2050</span>
                   <b>
                     {honorific} {leader.name}
                   </b>
-                </p>
+                  <div className="result__honor-chip" title={honorary.desc}>
+                    <span aria-hidden="true">{honorary.icon}</span>
+                    <span>{honorary.title}</span>
+                  </div>
+                </div>
               </div>
               <span className="result__badge">
                 {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
