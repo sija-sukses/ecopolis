@@ -230,7 +230,6 @@ export function AiAdvisor() {
   const [listening, setListening] = useState(false);
   const [voiceReply, setVoiceReply] = useState(true);
   const [speakingText, setSpeakingText] = useState<string | null>(null);
-  const [lastEngine, setLastEngine] = useState<'gemini' | 'local' | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [messages, setMessages] = useState<AdvisorMessage[]>([
     {
@@ -421,7 +420,6 @@ export function AiAdvisor() {
 
     try {
       const res = await askAdvisor(payload);
-      setLastEngine(res.fallback ? 'local' : 'gemini');
       const aiMsg: AdvisorMessage = {
         role: 'assistant',
         text: res.reply,
@@ -437,7 +435,6 @@ export function AiAdvisor() {
       }
     } catch {
       const fallback = localAdvisorReply(payload);
-      setLastEngine('local');
       const aiMsg: AdvisorMessage = {
         role: 'assistant',
         text: fallback.reply,
@@ -626,11 +623,6 @@ export function AiAdvisor() {
               <div>
                 <div className="assist__title-row">
                   <b className="assist__title">TARA · Staf Ahli AI</b>
-                  <span
-                    className={`assist__engine-badge assist__engine-badge--${lastEngine || 'gemini'}`}
-                  >
-                    {lastEngine === 'local' ? '🛡️ Mode Cerdas' : '⚡ Gemini 2.5 Flash'}
-                  </span>
                 </div>
                 <span className="assist__sub">
                   {who} · {statusLabel}
@@ -716,18 +708,7 @@ export function AiAdvisor() {
                       )}
                     </button>
 
-                    {m.fallback !== undefined && (
-                      <span
-                        className="assist__msg-engine"
-                        title={
-                          m.fallback
-                            ? 'Dianalisis menggunakan Sistem Pakar Tata Ruang Lokal (Offline Resilience)'
-                            : 'Dianalisis langsung menggunakan Google Gemini 2.5 Flash'
-                        }
-                      >
-                        {m.fallback ? '🛡️ Mode Cerdas' : '⚡ Gemini AI'}
-                      </span>
-                    )}
+
                   </div>
                 )}
               </div>

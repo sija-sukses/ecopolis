@@ -257,7 +257,6 @@ export function Game() {
               scenario={scenario}
               onChoose={choose}
               busy={busy}
-              stats={state.stats}
             />
           ) : (
             <div className="analyzing" role="status">

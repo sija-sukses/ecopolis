@@ -83,7 +83,7 @@ export function CityMap({
 
   useEffect(() => {
     function check() {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth <= 900);
     }
     check();
     window.addEventListener('resize', check);
@@ -103,7 +103,7 @@ export function CityMap({
   return (
     <svg
       className={className}
-      viewBox="-570 -190 1140 610"
+      viewBox={fill ? "-570 -190 1140 610" : isMobile ? "-380 -95 760 450" : "-570 -190 1140 610"}
       preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
       {...(label?.trim() ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
 
