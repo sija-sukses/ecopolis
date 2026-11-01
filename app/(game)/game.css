@@ -1461,16 +1461,63 @@
 }
 
 @media (max-height: 720px) and (max-width: 900px) {
-  .stage__map { max-height: none; min-height: 44px; }
-  .card { padding: 10px 13px 14px; margin-bottom: 8px; }
-  .card__title { font-size: 1.05rem; }
-  .card__ctx { font-size: 0.74rem; line-height: 1.18; margin-top: 2px; }
-  .card__opts { gap: 5px; margin-top: 4px; }
-  .card .opt { padding: 5px 8px; min-height: 44px; }
-  .card .opt__icon { width: 25px; height: 25px; }
-  .card .opt b { font-size: 0.8rem; }
-  .card .opt__copy > span { font-size: 0.68rem; line-height: 1.15; }
-  .card__hint { margin-top: 6px; font-size: 0.68rem; text-align: center; }
+  .stage {
+    gap: 4px;
+    padding-top: 4px;
+    padding-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) + 6px));
+  }
+  .hud {
+    padding: 6px 10px;
+  }
+  .stage__grid {
+    gap: 4px;
+  }
+  .stage__map {
+    flex: 0 1 auto;
+    max-height: clamp(80px, 22vh, 150px);
+    min-height: 44px;
+  }
+  .stage__card {
+    margin-top: auto;
+  }
+  .card {
+    padding: 8px 12px 10px;
+    margin-bottom: 2px;
+  }
+  .card__title {
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+  .card__ctx {
+    font-size: 0.7rem;
+    line-height: 1.15;
+    margin-top: 1px;
+  }
+  .card__opts {
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .card .opt {
+    padding: 4px 8px;
+    min-height: 40px;
+  }
+  .card .opt__icon {
+    width: 24px;
+    height: 24px;
+  }
+  .card .opt b {
+    font-size: 0.78rem;
+  }
+  .card .opt__copy > span {
+    font-size: 0.65rem;
+    line-height: 1.12;
+  }
+  .card__hint {
+    margin-top: 4px;
+    padding-top: 4px;
+    font-size: 0.64rem;
+    text-align: center;
+  }
 }
 
 @media (max-width: 560px) {

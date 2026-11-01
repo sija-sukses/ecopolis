@@ -8,6 +8,19 @@
 
 type Sound = 'click' | 'drop' | 'construct' | 'ceremony' | 'done' | 'stamp';
 
+/**
+ * Pola getaran mikro (haptics) untuk perangkat seluler berkemampuan getar.
+ * Pendek dan halus (10-35ms) untuk sensasi taktil fisik layaknya game konsol.
+ */
+const HAPTICS: Record<Sound, number | number[]> = {
+  click: 10,
+  drop: [12, 16],
+  construct: [15, 25],
+  ceremony: [20, 30, 15],
+  done: [20, 25, 30],
+  stamp: [25, 35, 20],
+};
+
 /** Nada dalam Hz, dan panjangnya dalam detik. */
 const NOTES: Record<Sound, { freq: number[]; dur: number; type: OscillatorType }> = {
   click: { freq: [660], dur: 0.06, type: 'triangle' },
@@ -21,7 +34,18 @@ const NOTES: Record<Sound, { freq: number[]; dur: number; type: OscillatorType }
 let ctx: AudioContext | null = null;
 
 export function play(sound: Sound, muted: boolean): void {
-  if (muted || typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return;
+
+  // Haptic feedback mikro pada smartphone sentuh (tetap berfungsi untuk konfirmasi taktil fisik).
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try {
+      navigator.vibrate(HAPTICS[sound]);
+    } catch {
+      // Abaikan jika peramban membatasi akses getar.
+    }
+  }
+
+  if (muted) return;
 
   try {
     const audioCtx = (ctx ??= new AudioContext());
