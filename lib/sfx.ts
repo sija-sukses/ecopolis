@@ -36,8 +36,12 @@ let ctx: AudioContext | null = null;
 export function play(sound: Sound, muted: boolean): void {
   if (typeof window === 'undefined') return;
 
-  // Haptic feedback mikro pada smartphone sentuh (tetap berfungsi untuk konfirmasi taktil fisik).
-  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+  // Haptic feedback mikro pada smartphone sentuh (hanya saat ada gestur interaksi pengguna yang sah).
+  if (
+    typeof navigator !== 'undefined' &&
+    typeof navigator.vibrate === 'function' &&
+    (typeof navigator.userActivation === 'undefined' || navigator.userActivation.hasBeenActive)
+  ) {
     try {
       navigator.vibrate(HAPTICS[sound]);
     } catch {

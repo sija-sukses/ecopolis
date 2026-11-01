@@ -38,6 +38,8 @@ export function Onboarding() {
       <label className="field">
         <span className="field__label">Nama pemimpin</span>
         <input
+          id="leader-name"
+          name="leader-name"
           className="field__input"
           value={name}
           onChange={(e) => setName(e.target.value.slice(0, MAX))}

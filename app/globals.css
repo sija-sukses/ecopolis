@@ -154,7 +154,7 @@ a { color: inherit; }
   border: 0;
   border-radius: 13px;
   background: var(--accent);
-  color: #ffffff;
+  color: var(--field-ink);
   font: inherit;
   font-weight: 900;
   font-size: 0.96rem;
@@ -544,7 +544,7 @@ a { color: inherit; }
 
 .opt[aria-pressed='true'] .opt__key {
   background: var(--accent);
-  color: #ffffff;
+  color: var(--field-ink);
   box-shadow: 0 4px 0 #b83712;
 }
 

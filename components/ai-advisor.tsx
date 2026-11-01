@@ -498,12 +498,12 @@ export function AiAdvisor() {
       {showNudge && !open && !dragging && (
         <aside
           className={`assist__nudge assist__nudge--${pos.side}`}
-          role="status"
-          aria-live="polite"
+          aria-label="Petunjuk asisten TARA"
         >
           <button
             type="button"
             className="assist__nudge-body"
+            aria-label={`Buka saran TARA: ${nudgeText}`}
             onClick={() => {
               play('click', state.muted);
               setOpen(true);
@@ -692,6 +692,8 @@ export function AiAdvisor() {
 
             <div className="assist__input-wrap">
               <input
+                id="advisor-query"
+                name="advisor-query"
                 className="assist__input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

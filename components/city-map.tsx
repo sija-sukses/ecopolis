@@ -105,8 +105,8 @@ export function CityMap({
       className={className}
       viewBox="-570 -190 1140 610"
       preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
-      role="img"
-      aria-label={label}
+      {...(label?.trim() ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
+
     >
       {/* Kamera.
           Transform dipasang sebagai inline style pada pembungkus yang tidak
