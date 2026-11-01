@@ -596,6 +596,77 @@
   cursor: wait;
 }
 
+/* --- Proyeksi Kebijakan Cerdas AI --- */
+.opt-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.opt__meta {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.opt__proj-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1.5px solid rgba(46, 175, 119, 0.45);
+  border-radius: 999px;
+  background: #f0faf4;
+  color: #1b7a4f;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.opt__proj-btn:hover {
+  background: #dcf5e7;
+  border-color: #2eaf77;
+  transform: translateY(-1px);
+}
+
+.opt__proj-btn--active {
+  background: #2eaf77;
+  border-color: #1b7a4f;
+  color: #ffffff;
+}
+
+.opt__projection {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #f4fbf7;
+  border-left: 3.5px solid #2eaf77;
+  border-top: 1px solid rgba(46, 175, 119, 0.2);
+  border-right: 1px solid rgba(46, 175, 119, 0.2);
+  border-bottom: 1px solid rgba(46, 175, 119, 0.2);
+  box-shadow: 0 2px 6px rgba(11, 13, 33, 0.05);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #1a422d;
+  animation: fadeInProj 180ms ease forwards;
+}
+
+.opt__projection p {
+  margin: 0;
+}
+
+@keyframes fadeInProj {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* --- Menunggu laporan --- */
 
 .analyzing {
@@ -1866,6 +1937,10 @@
   .mayor-sprite--ceremony,
   .eval-stamp,
   .assist__orb--nudge,
+  .assist__orb--crisis,
+  .assist__badge--crisis,
+  .typewriter-cursor,
+  .opt__projection,
   .assist__nudge {
     animation: none;
     transform: none;
@@ -2199,6 +2274,40 @@
   animation: orbNudgePulse 2.8s ease-in-out infinite;
 }
 
+/* Intervensi Krisis Proaktif Staf Ahli AI */
+.assist__orb--crisis {
+  animation: orbCrisisPulse 1.3s ease-in-out infinite !important;
+  border-color: #ef4444 !important;
+}
+
+@keyframes orbCrisisPulse {
+  0%, 100% {
+    box-shadow:
+      0 6px 0 #7f1d1d,
+      0 14px 28px rgba(185, 28, 28, 0.45),
+      0 0 0 0 rgba(239, 68, 68, 0.75);
+  }
+  50% {
+    box-shadow:
+      0 6px 0 #7f1d1d,
+      0 18px 36px rgba(185, 28, 28, 0.6),
+      0 0 0 12px rgba(239, 68, 68, 0);
+  }
+}
+
+.assist__badge--crisis {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #7f1d1d !important;
+  box-shadow: 0 2px 0 #7f1d1d !important;
+  animation: badgeBlink 1.2s infinite ease-in-out;
+}
+
+@keyframes badgeBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
 @keyframes orbNudgePulse {
   0%, 100% {
     box-shadow:
@@ -2241,6 +2350,18 @@
 
 .assist__nudge--left {
   left: calc(100% + 12px);
+}
+
+.assist__nudge--crisis {
+  border-color: rgba(239, 68, 68, 0.85) !important;
+  background: #2b0b0b !important;
+  box-shadow:
+    0 4px 0 #7f1d1d,
+    0 12px 24px rgba(185, 28, 28, 0.45) !important;
+}
+
+.assist__nudge--crisis .assist__nudge-icon {
+  background: #ef4444 !important;
 }
 
 @keyframes nudgeSlideIn {
@@ -2593,6 +2714,38 @@
   transform: translateY(-1px);
   background: #30386b;
   color: #ffffff;
+}
+
+.assist__chip--crisis {
+  border-color: #ef4444 !important;
+  background: #3d1414 !important;
+  color: #fca5a5 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 3px 0 #7f1d1d !important;
+}
+
+.assist__chip--crisis:hover:not(:disabled) {
+  background: #4f1b1b !important;
+  color: #ffffff !important;
+}
+
+/* Typewriter Cursor */
+.typewriter-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--accent);
+  font-size: 0.85em;
+  line-height: 1;
+  animation: blinkCursor 700ms infinite ease-in-out;
+}
+
+@keyframes blinkCursor {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .assist__chip:active:not(:disabled) {

@@ -40,7 +40,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Jendela penyamaran, penyimpanan diblokir, atau isinya rusak: mulai baru.
     }
-    setReady(true);
+    queueMicrotask(() => setReady(true));
   }, []);
 
   useEffect(() => {

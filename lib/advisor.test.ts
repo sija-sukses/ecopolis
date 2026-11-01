@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { localAdvisorReply, quickPromptsFor, type AdvisorContext } from './advisor.ts';
+import {
+  getPolicyProjection,
+  localAdvisorReply,
+  quickPromptsFor,
+  type AdvisorContext,
+} from './advisor.ts';
 
 const baseContext: AdvisorContext = {
   leader: { name: 'Althof', avatar: 'rian' },
@@ -56,4 +61,28 @@ test('pertanyaan audit sektor menghasilkan diagnosa 4 indikator dan rekomendasi 
   assert.match(res.reply, /Ekonomi: 50\/100/);
   assert.match(res.reply, /Lingkungan: 30\/100/);
   assert.match(res.reply, /KRITIS/);
+});
+
+test('quickPromptsFor memunculkan protokol kontinjensi saat kondisi kritis', () => {
+  const crisisPrompts = quickPromptsFor(2, true, true);
+  assert.equal(crisisPrompts[0], '🚨 Rencana Kontinjensi Darurat');
+});
+
+test('pertanyaan rencana darurat menghasilkan instruksi protokol kontinjensi', () => {
+  const res = localAdvisorReply({
+    ...baseContext,
+    question: '🚨 Rencana Kontinjensi Darurat',
+  });
+  assert.equal(res.fallback, true);
+  assert.match(res.reply, /PROTOKOL KONTINJENSI DARURAT/);
+  assert.match(res.reply, /Lingkungan berada di zona kritis/);
+});
+
+test('getPolicyProjection menghasilkan analisis taktis sesuai ronde dan opsi', () => {
+  const proj1 = getPolicyProjection(1, 'a', { economy: 50, environment: 30, satisfaction: 50, energy: 50 });
+  assert.match(proj1, /Peringatan/);
+  assert.match(proj1, /memangkas lingkungan/);
+
+  const proj2 = getPolicyProjection(1, 'b', { economy: 50, environment: 50, satisfaction: 50, energy: 50 });
+  assert.match(proj2, /Fondasi energi bersih/);
 });

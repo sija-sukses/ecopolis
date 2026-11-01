@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Bot, Mic, MicOff, Send, Sparkles, Square, Volume2, VolumeX, X } from 'lucide-react';
+import { AlertTriangle, Bot, Mic, MicOff, Send, Sparkles, Square, Volume2, VolumeX, X } from 'lucide-react';
 
 import { askAdvisor } from '@/app/actions/askAdvisor.ts';
 import {
@@ -62,6 +62,63 @@ function VoiceWave({ active = false }: { active?: boolean }) {
     </span>
   );
 }
+function TypewriterText({
+  text,
+  animate = false,
+  onUpdate,
+}: {
+  text: string;
+  animate?: boolean;
+  onUpdate?: () => void;
+}) {
+  const [displayedLength, setDisplayedLength] = useState(() => {
+    if (!animate) return text.length;
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return text.length;
+    }
+    return 0;
+  });
+  const hasFinishedRef = useRef(!animate);
+
+  useEffect(() => {
+    if (!animate || hasFinishedRef.current) return;
+
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      hasFinishedRef.current = true;
+      return;
+    }
+
+    const step = Math.max(1, Math.floor(text.length / 45));
+    const timer = setInterval(() => {
+      setDisplayedLength((prev) => {
+        const next = Math.min(prev + step, text.length);
+        if (next >= text.length) {
+          clearInterval(timer);
+          hasFinishedRef.current = true;
+        }
+        onUpdate?.();
+        return next;
+      });
+    }, 22);
+
+    return () => clearInterval(timer);
+  }, [text, animate, onUpdate]);
+
+  const isTyping = animate && displayedLength < text.length;
+
+  return (
+    <p>
+      {text.slice(0, displayedLength)}
+      {isTyping && <span className="typewriter-cursor" aria-hidden="true">▍</span>}
+    </p>
+  );
+}
 
 function speakIndonesian(
   text: string,
@@ -99,12 +156,27 @@ function getNudgeMessage(
   round: number,
   stats: { economy: number; environment: number; satisfaction: number; energy: number },
   hasLeader: boolean,
+  isCrisis = false,
 ): string {
   if (!hasLeader) {
     return 'Siap memimpin kota? Pilih avatar dan nama Anda!';
   }
   if (round > ROUNDS) {
     return 'Laporan 2050 terbit! Diskusikan evaluasi bersama TARA.';
+  }
+  if (isCrisis) {
+    if (stats.environment <= 30) {
+      return '🚨 KRISIS LINGKUNGAN: Ekosistem terancam! Buka rencana kontinjensi.';
+    }
+    if (stats.economy <= 30) {
+      return '🚨 KRISIS EKONOMI: Kas kota kritis! Buka rencana kontinjensi.';
+    }
+    if (stats.satisfaction <= 30) {
+      return '🚨 KRISIS SOSIAL: Warga bergejolak! Buka rencana kontinjensi.';
+    }
+    if (stats.energy <= 30) {
+      return '🚨 KRISIS ENERGI: Listrik menipis parah! Buka rencana kontinjensi.';
+    }
   }
   if (stats.environment <= 35) {
     return '⚠️ Lingkungan kritis! TARA punya saran mitigasi emisi.';
@@ -138,7 +210,14 @@ export function AiAdvisor() {
   const { state } = useGame();
   const [open, setOpen] = useState(false);
   const hasLeader = Boolean(state.leader);
-  const currentKey = `${state.round}-${hasLeader ? 'leader' : 'prep'}`;
+  const isCrisis =
+    hasLeader &&
+    state.round <= ROUNDS &&
+    (state.stats.environment <= 30 ||
+      state.stats.economy <= 30 ||
+      state.stats.satisfaction <= 30 ||
+      state.stats.energy <= 30);
+  const currentKey = `${state.round}-${hasLeader ? 'leader' : 'prep'}${isCrisis ? '-crisis' : ''}`;
   const [dismissedKey, setDismissedKey] = useState<string | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number; side: 'left' | 'right' }>({
     x: -1,
@@ -448,8 +527,8 @@ export function AiAdvisor() {
       ? 'Evaluasi 2050'
       : `Ronde ${state.round} / ${ROUNDS}`;
 
-  const prompts = quickPromptsFor(state.round, Boolean(state.leader));
-  const nudgeText = getNudgeMessage(state.round, state.stats, Boolean(state.leader));
+  const prompts = quickPromptsFor(state.round, Boolean(state.leader), isCrisis);
+  const nudgeText = getNudgeMessage(state.round, state.stats, Boolean(state.leader), isCrisis);
   const showNudge = !open && !dragging && dismissedKey !== currentKey;
 
   return (
@@ -459,7 +538,7 @@ export function AiAdvisor() {
     >
       <button
         type="button"
-        className={`assist__orb${showNudge && !open ? ' assist__orb--nudge' : ''}`}
+        className={`assist__orb${isCrisis ? ' assist__orb--crisis' : showNudge && !open ? ' assist__orb--nudge' : ''}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -490,14 +569,14 @@ export function AiAdvisor() {
             <Bot size={24} strokeWidth={2.4} />
           </span>
         </span>
-        <span className="assist__badge" aria-hidden="true">
-          AI
+        <span className={`assist__badge${isCrisis ? ' assist__badge--crisis' : ''}`} aria-hidden="true">
+          {isCrisis ? 'SOS' : 'AI'}
         </span>
       </button>
 
       {showNudge && !open && !dragging && (
         <aside
-          className={`assist__nudge assist__nudge--${pos.side}`}
+          className={`assist__nudge assist__nudge--${pos.side}${isCrisis ? ' assist__nudge--crisis' : ''}`}
           aria-label="Petunjuk asisten TARA"
         >
           <button
@@ -511,7 +590,7 @@ export function AiAdvisor() {
             }}
           >
             <span className="assist__nudge-icon" aria-hidden="true">
-              <Sparkles size={13} strokeWidth={2.4} />
+              {isCrisis ? <AlertTriangle size={13} strokeWidth={2.4} /> : <Sparkles size={13} strokeWidth={2.4} />}
             </span>
             <span className="assist__nudge-text">{nudgeText}</span>
           </button>
@@ -597,7 +676,15 @@ export function AiAdvisor() {
           <div className="assist__log" ref={logRef} aria-live="polite">
             {messages.map((m, i) => (
               <div key={i} className={`assist__msg assist__msg--${m.role}`}>
-                <p>{m.text}</p>
+                <TypewriterText
+                  text={m.text}
+                  animate={i === messages.length - 1 && messages.length > 1 && m.role === 'assistant'}
+                  onUpdate={() => {
+                    if (logRef.current) {
+                      logRef.current.scrollTop = logRef.current.scrollHeight;
+                    }
+                  }}
+                />
                 {m.role === 'assistant' && (
                   <div className="assist__msg-actions">
                     <button
@@ -655,20 +742,23 @@ export function AiAdvisor() {
           {voiceError && <p className="assist__err">{voiceError}</p>}
 
           <div className="assist__chips" aria-label="Pertanyaan cepat">
-            {prompts.map((p) => (
-              <button
-                key={p}
-                type="button"
-                className="assist__chip"
-                disabled={loading}
-                onClick={() => {
-                  play('click', state.muted);
-                  void ask(p);
-                }}
-              >
-                {p}
-              </button>
-            ))}
+            {prompts.map((p) => {
+              const isCrisisPrompt = p.includes('Kontinjensi') || p.includes('Darurat');
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  className={`assist__chip${isCrisisPrompt ? ' assist__chip--crisis' : ''}`}
+                  disabled={loading}
+                  onClick={() => {
+                    play('click', state.muted);
+                    void ask(p);
+                  }}
+                >
+                  {p}
+                </button>
+              );
+            })}
           </div>
 
           <form

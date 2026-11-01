@@ -2,19 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Sparkles } from 'lucide-react';
+
 import { PolicyIcon } from '@/components/policy-icon.tsx';
-import type { OptionId, Scenario } from '@/lib/types.ts';
+import { getPolicyProjection } from '@/lib/advisor.ts';
+import type { OptionId, Scenario, Stats } from '@/lib/types.ts';
 
 type Props = {
   scenario: Scenario;
   onChoose: (option: OptionId) => void;
   /** Mengunci kartu selama animasi bangunan jatuh. */
   busy: boolean;
+  stats?: Stats;
 };
 
-export function ScenarioCard({ scenario, onChoose, busy }: Props) {
+export function ScenarioCard({ scenario, onChoose, busy, stats }: Props) {
   const heading = useRef<HTMLHeadingElement>(null);
   const [selected, setSelected] = useState<OptionId | null>(null);
+  const [projecting, setProjecting] = useState<OptionId | null>(null);
 
   // Fokus berpindah ke judul saat kartu pertama kali dimuat.
   useEffect(() => {
@@ -70,25 +75,48 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
         {scenario.options.map((o) => {
           const isSelected = selected === o.id;
           const isDimmed = selected !== null && !isSelected;
+          const isProjecting = projecting === o.id;
           return (
-            <button
-              key={o.id}
-              type="button"
-              className={`opt${isSelected ? ' opt--selected' : isDimmed ? ' opt--dimmed' : ''}`}
-              disabled={busy || selected !== null}
-              onClick={() => chooseOption(o.id)}
-            >
-              <span className="opt__row">
-                <PolicyIcon asset={o.asset} />
-                <span className="opt__copy">
-                  <b>{o.label}</b>
-                  <span>{o.blurb}</span>
+            <div key={o.id} className="opt-block">
+              <button
+                type="button"
+                className={`opt${isSelected ? ' opt--selected' : isDimmed ? ' opt--dimmed' : ''}`}
+                disabled={busy || selected !== null}
+                onClick={() => chooseOption(o.id)}
+              >
+                <span className="opt__row">
+                  <PolicyIcon asset={o.asset} />
+                  <span className="opt__copy">
+                    <b>{o.label}</b>
+                    <span>{o.blurb}</span>
+                  </span>
+                  <span className="opt__key" aria-hidden="true">
+                    {isSelected ? '✓' : o.id.toUpperCase()}
+                  </span>
                 </span>
-                <span className="opt__key" aria-hidden="true">
-                  {isSelected ? '✓' : o.id.toUpperCase()}
-                </span>
-              </span>
-            </button>
+              </button>
+              <div className="opt__meta">
+                <button
+                  type="button"
+                  className={`opt__proj-btn${isProjecting ? ' opt__proj-btn--active' : ''}`}
+                  disabled={busy || selected !== null}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProjecting((prev) => (prev === o.id ? null : o.id));
+                  }}
+                  aria-expanded={isProjecting}
+                  title={`Tinjau analisis proyeksi AI untuk ${o.label}`}
+                >
+                  <Sparkles size={11} strokeWidth={2.4} />
+                  <span>{isProjecting ? 'Tutup Proyeksi' : '⚡ Proyeksi AI'}</span>
+                </button>
+              </div>
+              {isProjecting && (
+                <div className="opt__projection" role="region" aria-label={`Proyeksi AI ${o.label}`}>
+                  <p>{getPolicyProjection(scenario.round, o.id, stats)}</p>
+                </div>
+              )}
+            </div>
           );
         })}
       </div>

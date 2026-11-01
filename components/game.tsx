@@ -252,7 +252,13 @@ export function Game() {
 
         <div className="stage__card">
           {scenario ? (
-            <ScenarioCard key={scenario.round} scenario={scenario} onChoose={choose} busy={busy} />
+            <ScenarioCard
+              key={scenario.round}
+              scenario={scenario}
+              onChoose={choose}
+              busy={busy}
+              stats={state.stats}
+            />
           ) : (
             <div className="analyzing" role="status">
               <h2 className="analyzing__title">Menganalisis dampak masa depan</h2>
