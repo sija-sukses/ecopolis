@@ -45,3 +45,15 @@ test('quickPromptsFor menyesuaikan dengan status pemain dan ronde', () => {
   assert.match(playing[0], /Ronde 3/);
   assert.match(finished[0], /Evaluasi/);
 });
+
+test('pertanyaan audit sektor menghasilkan diagnosa 4 indikator dan rekomendasi mitigasi', () => {
+  const res = localAdvisorReply({
+    ...baseContext,
+    question: '📊 Audit Cepat Sektor Kritis',
+  });
+  assert.equal(res.fallback, true);
+  assert.match(res.reply, /Hasil Audit Tata Ruang 2050/);
+  assert.match(res.reply, /Ekonomi: 50\/100/);
+  assert.match(res.reply, /Lingkungan: 30\/100/);
+  assert.match(res.reply, /KRITIS/);
+});

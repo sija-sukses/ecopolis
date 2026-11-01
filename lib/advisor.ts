@@ -5,6 +5,7 @@ import type { Choice, Leader, StatKey, Stats } from './types.ts';
 export type AdvisorMessage = {
   role: 'user' | 'assistant';
   text: string;
+  fallback?: boolean;
 };
 
 export type AdvisorContext = {
@@ -67,12 +68,14 @@ export function quickPromptsFor(round: number, hasLeader: boolean): string[] {
   if (round > ROUNDS) {
     return [
       'Evaluasi hasil akhir kotaku',
+      '📊 Audit Cepat Sektor Kritis',
       'Kebijakan mana yang paling berdampak?',
       'Bagaimana cara memperbaiki skor ini?',
     ];
   }
   return [
     `Saran strategi untuk Ronde ${round}?`,
+    '📊 Audit Cepat Sektor Kritis',
     'Indikator mana yang paling kritis?',
     'Prediksi nasib kotaku di 2050',
   ];
@@ -84,6 +87,14 @@ export function localAdvisorReply(payload: AdvisorPayload): AdvisorReply {
   const q = question.toLowerCase();
   const { lowest, highest } = extremeStats(stats);
   const currentScenario = scenarioFor(round);
+
+  if (q.includes('audit') || q.includes('diagnosis')) {
+    const health = (val: number) => (val >= 60 ? 'AMAN' : val >= 40 ? 'WASPADA' : 'KRITIS');
+    return {
+      reply: `📊 Hasil Audit Tata Ruang 2050 untuk ${who}:\n• 💼 Ekonomi: ${stats.economy}/100 [${health(stats.economy)}]\n• 🌳 Lingkungan: ${stats.environment}/100 [${health(stats.environment)}]\n• 👥 Kepuasan: ${stats.satisfaction}/100 [${health(stats.satisfaction)}]\n• ⚡ Energi: ${stats.energy}/100 [${health(stats.energy)}]\nPrioritas mitigasi: Sektor ${STAT_NAMES[lowest]} (${stats[lowest]}) membutuhkan intervensi mendesak agar stabilitas kota tidak kolaps.`,
+      fallback: true,
+    };
+  }
 
   if (q.includes('energi') || q.includes('pltu') || q.includes('plts') || q.includes('batu bara') || q.includes('surya')) {
     return {

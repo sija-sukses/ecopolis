@@ -44,7 +44,7 @@ function buildAdvisorPrompt(payload: AdvisorPayload): string {
     recentChat ? `Percakapan sebelumnya:\n${recentChat}` : '',
     `Pertanyaan Wali Kota: "${question}"`,
     '',
-    'Jawab dalam Bahasa Indonesia yang cerdas, taktis, ramah, dan ringkas (maksimal 3 kalimat pendek agar nyaman dibaca dan didengarkan lewat fitur suara). Kaitkan langsung dengan angka indikator kota saat ini.',
+    'Jawab dalam Bahasa Indonesia yang cerdas, taktis, ramah, dan ringkas (maksimal 3 kalimat pendek agar nyaman dibaca dan didengarkan lewat fitur suara). Kaitkan langsung dengan angka indikator kota saat ini. Jika ditanya seputar audit atau diagnosis sektor, sebutkan sektor terlemah dan tindakan mitigasi prioritas.',
   ]
     .filter(Boolean)
     .join('\n');

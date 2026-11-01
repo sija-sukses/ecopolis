@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Bot, Mic, MicOff, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { Bot, Mic, MicOff, Send, Sparkles, Square, Volume2, VolumeX, X } from 'lucide-react';
 
 import { askAdvisor } from '@/app/actions/askAdvisor.ts';
 import {
@@ -52,7 +52,22 @@ declare global {
 const ORB_SIZE = 60;
 const EDGE_MARGIN = 16;
 
-function speakIndonesian(text: string) {
+function VoiceWave({ active = false }: { active?: boolean }) {
+  return (
+    <span className={`voice-wave${active ? ' voice-wave--active' : ''}`} aria-hidden="true">
+      <span className="voice-wave__bar" />
+      <span className="voice-wave__bar" />
+      <span className="voice-wave__bar" />
+      <span className="voice-wave__bar" />
+    </span>
+  );
+}
+
+function speakIndonesian(
+  text: string,
+  onStart?: () => void,
+  onEnd?: () => void,
+) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
@@ -62,9 +77,12 @@ function speakIndonesian(text: string) {
     const voices = window.speechSynthesis.getVoices();
     const idVoice = voices.find((v) => v.lang.toLowerCase().includes('id'));
     if (idVoice) utterance.voice = idVoice;
+    utterance.onstart = () => onStart?.();
+    utterance.onend = () => onEnd?.();
+    utterance.onerror = () => onEnd?.();
     window.speechSynthesis.speak(utterance);
   } catch {
-    // Abaikan jika peramban memblokir sintesis suara.
+    onEnd?.();
   }
 }
 
@@ -132,6 +150,8 @@ export function AiAdvisor() {
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [voiceReply, setVoiceReply] = useState(true);
+  const [speakingText, setSpeakingText] = useState<string | null>(null);
+  const [lastEngine, setLastEngine] = useState<'gemini' | 'local' | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [messages, setMessages] = useState<AdvisorMessage[]>([
     {
@@ -148,6 +168,7 @@ export function AiAdvisor() {
     origY: number;
     moved: boolean;
   } | null>(null);
+  const draggedRef = useRef(false);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -198,6 +219,39 @@ export function AiAdvisor() {
     };
   }, []);
 
+  // Pintasan keyboard: Alt+T / T untuk buka-tutup TARA, Esc untuk tutup
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      const isInput = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA';
+
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+        stopSpeaking();
+        setSpeakingText(null);
+        return;
+      }
+
+      if (
+        (e.altKey && e.key.toLowerCase() === 't') ||
+        (!isInput && e.key.toLowerCase() === 't' && !e.ctrlKey && !e.metaKey)
+      ) {
+        e.preventDefault();
+        setOpen((prev) => {
+          if (!prev) setDismissedKey(currentKey);
+          if (prev) {
+            stopSpeaking();
+            setSpeakingText(null);
+          }
+          return !prev;
+        });
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, currentKey]);
+
   // Batasi durasi tayang balon petunjuk (nudge) hingga 9 detik
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -246,6 +300,7 @@ export function AiAdvisor() {
     dragRef.current = null;
 
     if (d.moved) {
+      draggedRef.current = true;
       setDragging(false);
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -262,12 +317,7 @@ export function AiAdvisor() {
       }));
       return;
     }
-
-    play('click', state.muted);
-    setOpen((prev) => {
-      if (!prev) setDismissedKey(currentKey);
-      return !prev;
-    });
+    draggedRef.current = false;
   }
 
   async function ask(rawQuestion: string) {
@@ -292,17 +342,35 @@ export function AiAdvisor() {
 
     try {
       const res = await askAdvisor(payload);
-      const aiMsg: AdvisorMessage = { role: 'assistant', text: res.reply };
+      setLastEngine(res.fallback ? 'local' : 'gemini');
+      const aiMsg: AdvisorMessage = {
+        role: 'assistant',
+        text: res.reply,
+        fallback: res.fallback,
+      };
       setMessages((prev) => [...prev, aiMsg]);
       if (voiceReply && !state.muted) {
-        speakIndonesian(res.reply);
+        speakIndonesian(
+          res.reply,
+          () => setSpeakingText(res.reply),
+          () => setSpeakingText(null),
+        );
       }
     } catch {
       const fallback = localAdvisorReply(payload);
-      const aiMsg: AdvisorMessage = { role: 'assistant', text: fallback.reply };
+      setLastEngine('local');
+      const aiMsg: AdvisorMessage = {
+        role: 'assistant',
+        text: fallback.reply,
+        fallback: true,
+      };
       setMessages((prev) => [...prev, aiMsg]);
       if (voiceReply && !state.muted) {
-        speakIndonesian(fallback.reply);
+        speakIndonesian(
+          fallback.reply,
+          () => setSpeakingText(fallback.reply),
+          () => setSpeakingText(null),
+        );
       }
     } finally {
       setLoading(false);
@@ -311,6 +379,9 @@ export function AiAdvisor() {
 
   function toggleVoiceInput() {
     play('click', state.muted);
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      navigator.vibrate(12);
+    }
     setVoiceError(null);
 
     if (listening && recognitionRef.current) {
@@ -392,9 +463,27 @@ export function AiAdvisor() {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onClick={() => {
+          if (draggedRef.current) {
+            draggedRef.current = false;
+            return;
+          }
+          play('click', state.muted);
+          if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            navigator.vibrate(8);
+          }
+          setOpen((prev) => {
+            if (!prev) setDismissedKey(currentKey);
+            if (prev) {
+              stopSpeaking();
+              setSpeakingText(null);
+            }
+            return !prev;
+          });
+        }}
         aria-expanded={open}
         aria-label={open ? 'Tutup Staf Ahli AI' : 'Buka Staf Ahli AI (bisa digeser)'}
-        title="TARA — Staf Ahli AI (Geser atau klik)"
+        title="TARA — Staf Ahli AI (Geser atau klik, Alt+T)"
       >
         <span className="assist__ring" aria-hidden="true">
           <span className="assist__core">
@@ -445,11 +534,25 @@ export function AiAdvisor() {
         <section className="assist__panel" aria-label="Asisten AI Ecopolis">
           <header className="assist__head">
             <div className="assist__identity">
-              <span className="assist__avatar" aria-hidden="true">
-                <Sparkles size={18} strokeWidth={2.4} />
+              <span
+                className={`assist__avatar${speakingText ? ' assist__avatar--speaking' : ''}`}
+                aria-hidden="true"
+              >
+                {speakingText ? (
+                  <VoiceWave active={true} />
+                ) : (
+                  <Sparkles size={18} strokeWidth={2.4} />
+                )}
               </span>
               <div>
-                <b className="assist__title">TARA · Staf Ahli AI</b>
+                <div className="assist__title-row">
+                  <b className="assist__title">TARA · Staf Ahli AI</b>
+                  <span
+                    className={`assist__engine-badge assist__engine-badge--${lastEngine || 'gemini'}`}
+                  >
+                    {lastEngine === 'local' ? '🛡️ Mode Cerdas' : '⚡ Gemini 2.5 Flash'}
+                  </span>
+                </div>
                 <span className="assist__sub">
                   {who} · {statusLabel}
                 </span>
@@ -464,7 +567,10 @@ export function AiAdvisor() {
                 onClick={() => {
                   const next = !voiceReply;
                   setVoiceReply(next);
-                  if (!next) stopSpeaking();
+                  if (!next) {
+                    stopSpeaking();
+                    setSpeakingText(null);
+                  }
                 }}
                 title={voiceReply ? 'Matikan balasan suara AI' : 'Nyalakan balasan suara AI'}
                 aria-label={voiceReply ? 'Matikan suara AI' : 'Nyalakan suara AI'}
@@ -477,9 +583,10 @@ export function AiAdvisor() {
                 onClick={() => {
                   play('click', state.muted);
                   stopSpeaking();
+                  setSpeakingText(null);
                   setOpen(false);
                 }}
-                title="Tutup panel AI"
+                title="Tutup panel AI (Esc)"
                 aria-label="Tutup panel AI"
               >
                 <X size={16} />
@@ -492,13 +599,49 @@ export function AiAdvisor() {
               <div key={i} className={`assist__msg assist__msg--${m.role}`}>
                 <p>{m.text}</p>
                 {m.role === 'assistant' && (
-                  <button
-                    type="button"
-                    className="assist__speak"
-                    onClick={() => speakIndonesian(m.text)}
-                  >
-                    <Volume2 size={13} /> Dengarkan
-                  </button>
+                  <div className="assist__msg-actions">
+                    <button
+                      type="button"
+                      className={`assist__speak${speakingText === m.text ? ' assist__speak--active' : ''}`}
+                      onClick={() => {
+                        if (speakingText === m.text) {
+                          stopSpeaking();
+                          setSpeakingText(null);
+                        } else {
+                          speakIndonesian(
+                            m.text,
+                            () => setSpeakingText(m.text),
+                            () => setSpeakingText(null),
+                          );
+                        }
+                      }}
+                      title={speakingText === m.text ? 'Hentikan suara' : 'Dengarkan suara'}
+                    >
+                      {speakingText === m.text ? (
+                        <>
+                          <Square size={11} fill="currentColor" /> Hentikan
+                          <VoiceWave active={true} />
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 size={13} /> Dengarkan
+                        </>
+                      )}
+                    </button>
+
+                    {m.fallback !== undefined && (
+                      <span
+                        className="assist__msg-engine"
+                        title={
+                          m.fallback
+                            ? 'Dianalisis menggunakan Sistem Pakar Tata Ruang Lokal (Offline Resilience)'
+                            : 'Dianalisis langsung menggunakan Google Gemini 2.5 Flash'
+                        }
+                      >
+                        {m.fallback ? '🛡️ Mode Cerdas' : '⚡ Gemini AI'}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -547,14 +690,21 @@ export function AiAdvisor() {
               {listening ? <MicOff size={18} /> : <Mic size={18} />}
             </button>
 
-            <input
-              className="assist__input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={listening ? 'Mendengarkan suara Anda...' : 'Tanya strategi kota...'}
-              disabled={loading}
-              aria-label="Pertanyaan untuk Staf Ahli AI"
-            />
+            <div className="assist__input-wrap">
+              <input
+                className="assist__input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={listening ? 'Mendengarkan suara Anda...' : 'Tanya strategi / audit kota... (Alt+T)'}
+                disabled={loading}
+                aria-label="Pertanyaan untuk Staf Ahli AI"
+              />
+              {listening && (
+                <span className="assist__input-wave" aria-hidden="true">
+                  <VoiceWave active={true} />
+                </span>
+              )}
+            </div>
 
             <button
               type="submit"
