@@ -98,7 +98,7 @@ export function CityMap({
   // peresmian, karena sinematiknya memperlihatkan dia meninjau lebih dulu.
   const mayorPlotIndex = activeTransition ? activeTransition.plotIndex : null;
 
-  const mobileViewBox = '-535 -190 990 600';
+  const mobileViewBox = '-450 -170 830 570';
   const defaultViewBox = '-570 -190 1140 610';
 
   return (

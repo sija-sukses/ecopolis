@@ -1345,7 +1345,9 @@
     min-height: 0;
     height: auto;
     max-height: none;
-    width: 100%;
+    width: calc(100% + 24px);
+    margin-left: -12px;
+    margin-right: -12px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1476,6 +1478,9 @@
     flex: 1 1 0%;
     max-height: none;
     min-height: 0;
+    width: calc(100% + 24px);
+    margin-left: -12px;
+    margin-right: -12px;
   }
   .stage__card {
     margin-top: auto;
