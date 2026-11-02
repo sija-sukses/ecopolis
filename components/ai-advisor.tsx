@@ -265,7 +265,7 @@ export function AiAdvisor() {
             x: Math.max(EDGE_MARGIN, vw - ORB_SIZE - EDGE_MARGIN),
             y:
               vw < 768
-                ? Math.round(vh * 0.45)
+                ? Math.round(vh * 0.35)
                 : Math.max(EDGE_MARGIN, vh - ORB_SIZE - 28),
             side: 'right',
           };
@@ -526,7 +526,7 @@ export function AiAdvisor() {
 
   const prompts = quickPromptsFor(state.round, Boolean(state.leader), isCrisis);
   const nudgeText = getNudgeMessage(state.round, state.stats, Boolean(state.leader), isCrisis);
-  const showNudge = !open && !dragging && dismissedKey !== currentKey;
+  const showNudge = isCrisis && !open && !dragging && dismissedKey !== currentKey;
 
   return (
     <div
