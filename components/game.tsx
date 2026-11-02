@@ -240,7 +240,6 @@ export function Game() {
             plots={displayPlots}
             avatar={state.leader.avatar}
             satisfaction={state.stats.satisfaction}
-            environment={state.stats.environment}
             activeTransition={activeTransition}
             cameraPlot={cutscene && cutscene.phase !== 'zoom-out' ? cutscene.plotIndex : null}
             mayorMode={cutscene?.phase === 'ceremony' ? 'ceremony' : 'inspection'}
@@ -252,12 +251,7 @@ export function Game() {
 
         <div className="stage__card">
           {scenario ? (
-            <ScenarioCard
-              key={scenario.round}
-              scenario={scenario}
-              onChoose={choose}
-              busy={busy}
-            />
+            <ScenarioCard key={scenario.round} scenario={scenario} onChoose={choose} busy={busy} />
           ) : (
             <div className="analyzing" role="status">
               <h2 className="analyzing__title">Menganalisis dampak masa depan</h2>

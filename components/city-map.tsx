@@ -49,7 +49,6 @@ type Props = {
   avatar?: string;
   /** Nilai kepuasan warga (jika < 30, memicu aksi demo di depan Balai Kota). */
   satisfaction?: number;
-  environment?: number;
   /** Transisi konstruksi / peresmian yang sedang berlangsung pada salah satu petak. */
   activeTransition?: ActivePlotTransition | null;
   /** Petak yang sedang disorot kamera, atau null untuk pandangan kota penuh. */
@@ -73,7 +72,6 @@ export function CityMap({
   animate = false,
   avatar = 'rian',
   satisfaction = 50,
-  environment = 50,
   activeTransition = null,
   cameraPlot = null,
   mayorMode = 'ceremony',
@@ -105,8 +103,8 @@ export function CityMap({
       className={className}
       viewBox="-570 -190 1140 610"
       preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
-      {...(label?.trim() ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
-
+      role="img"
+      aria-label={label}
     >
       {/* Kamera.
           Transform dipasang sebagai inline style pada pembungkus yang tidak
@@ -122,7 +120,7 @@ export function CityMap({
           transform: getPlotCameraTransform(cameraPlot, isMobile),
         }}
       >
-      <IslandTerrain plots={plots} environment={environment} />
+      <IslandTerrain plots={plots} />
       {PLOT_POS.map(([x, y], i) => {
         const asset = plots[i];
         const stage = resolvePlotStage(asset, activeTransition, i);
@@ -168,7 +166,7 @@ export function CityMap({
           animate={animate}
         />
       )}
-      <IslandForeground avatar={avatar} satisfaction={satisfaction} environment={environment} plots={plots} />
+      <IslandForeground avatar={avatar} satisfaction={satisfaction} plots={plots} />
       <MayorDynamicLayer
         ceremonyPlotIndex={mayorPlotIndex}
         plotMode={mayorMode}
