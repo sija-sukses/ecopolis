@@ -81,7 +81,7 @@ export function CityMap({
 
   useEffect(() => {
     function check() {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth <= 900);
     }
     check();
     window.addEventListener('resize', check);
@@ -98,10 +98,13 @@ export function CityMap({
   // peresmian, karena sinematiknya memperlihatkan dia meninjau lebih dulu.
   const mayorPlotIndex = activeTransition ? activeTransition.plotIndex : null;
 
+  const mobileViewBox = '-420 -185 770 610';
+  const defaultViewBox = '-570 -190 1140 610';
+
   return (
     <svg
       className={className}
-      viewBox="-570 -190 1140 610"
+      viewBox={fill ? defaultViewBox : isMobile ? mobileViewBox : defaultViewBox}
       preserveAspectRatio={fill ? 'xMidYMid slice' : 'xMidYMid meet'}
       role="img"
       aria-label={label}
