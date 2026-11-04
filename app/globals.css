@@ -102,7 +102,10 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
 
 body {
   margin: 0;
@@ -112,6 +115,9 @@ body {
   font-size: var(--step-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 h1, h2, h3 {
@@ -136,9 +142,11 @@ a { color: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
 .shell {
+  width: 100%;
   max-width: 1480px;
   margin-inline: auto;
   padding-inline: var(--gutter);
+  box-sizing: border-box;
 }
 
 /* --------------------------------------------------------------------------

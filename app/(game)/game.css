@@ -689,6 +689,10 @@
 /* --- Laporan (Executive 2050 Command Dossier) --- */
 
 .result {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
   padding-top: clamp(20px, 3vw, 42px);
   padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
 }
@@ -698,6 +702,9 @@
 }
 
 .result__dossier {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(18px, 2.4vw, 28px);
@@ -705,6 +712,9 @@
 }
 
 .result__stage {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -757,7 +767,11 @@
 
 .result__map {
   margin-block: clamp(10px, 1.8vw, 18px);
-  overflow: visible;
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 .result__map svg {
@@ -1074,15 +1088,29 @@
 
 @media (max-width: 600px) {
   .result__stage-top {
-    flex-wrap: nowrap;
     gap: 6px;
+    flex-wrap: wrap;
   }
 
-  .result__grade,
+  .result__grade {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+    min-width: 0;
+    max-width: 100%;
+    line-height: 1.25;
+  }
+
   .result__avg {
     padding: 5px 10px;
     font-size: 0.68rem;
     white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .result__plot-pill {
+    font-size: 0.68rem;
+    padding: 0 2px;
+    height: 30px;
   }
 
   .result-dock {
@@ -1150,6 +1178,9 @@
 }
 
 .result__brief {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1383,6 +1414,9 @@
 }
 
 .result__bottom {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   gap: clamp(18px, 2.4vw, 28px);
@@ -1409,6 +1443,9 @@
 
 .result__sdg,
 .result__close {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   padding: clamp(20px, 2.5vw, 28px);
   border: 2px solid rgba(22, 25, 58, 0.16);
   border-radius: calc(var(--r) + 4px);
@@ -1888,6 +1925,9 @@
 
   .result__dossier,
   .result__bottom {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
     grid-template-columns: 1fr;
   }
 
