@@ -41,6 +41,34 @@
   background: var(--field-ink);
   color: var(--field-paper);
   box-shadow: 0 10px 0 #0b0d21, 0 24px 48px rgba(11, 13, 33, 0.32);
+  animation: onboardIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.onboard--exiting {
+  animation: onboardOut 210ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes onboardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes onboardOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
 }
 
 .onboard__title {
@@ -221,6 +249,18 @@
   background: var(--field-ink);
   color: var(--field-paper);
   box-shadow: 0 7px 0 #0b0d21;
+  animation: hudIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hudIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hud__top {
@@ -649,7 +689,8 @@
 /* --- Laporan (Executive 2050 Command Dossier) --- */
 
 .result {
-  padding-block: clamp(20px, 3vw, 42px) clamp(48px, 7vw, 96px);
+  padding-top: clamp(20px, 3vw, 42px);
+  padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
 }
 
 .result__hero {
@@ -720,6 +761,7 @@
 }
 
 .result__map svg {
+  border-radius: 16px;
   width: 100%;
   max-width: 680px;
   margin-inline: auto;
@@ -771,7 +813,336 @@
   overflow: hidden;
 }
 
+@keyframes resultBarGrow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes resultRevealIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.result-reveal {
+  animation: resultRevealIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.result-reveal--1 { animation-delay: 0ms; }
+.result-reveal--2 { animation-delay: 80ms; }
+.result-reveal--3 { animation-delay: 160ms; }
+.result-reveal--4 { animation-delay: 240ms; }
+.result-reveal--5 { animation-delay: 320ms; }
+
+.result__plot-bar {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 10px;
+  border: 1.5px solid rgba(22, 25, 58, 0.12);
+  border-radius: 13px;
+  background: rgba(22, 25, 58, 0.06);
+}
+
+.result__plot-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(22, 25, 58, 0.72);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.result__plot-pill:hover {
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--ink);
+}
+
+.result__plot-pill:active {
+  transform: scale(0.96);
+}
+
+.result__plot-pill--active,
+.result__plot-pill--active:hover {
+  background: var(--field-ink);
+  color: var(--field-paper);
+  box-shadow: 0 2px 6px rgba(22, 25, 58, 0.22);
+}
+
+.result__choice-pin {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: rgba(22, 25, 58, 0.07);
+  color: rgba(22, 25, 58, 0.55);
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.result__choice-item:hover .result__choice-pin {
+  background: rgba(22, 25, 58, 0.14);
+  color: var(--ink);
+  transform: scale(1.06);
+}
+
+.result__choice-item--active .result__choice-pin {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Floating Action Dock (/results) — Satu Navbar Terpadu (UI/UX Pro Max)
+   ========================================================================== */
+
+.result-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+  z-index: 75;
+  display: flex;
+  justify-content: center;
+  padding-inline: 12px;
+  pointer-events: none;
+}
+
+.result-dock__inner {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(560px, 100%);
+  padding: 7px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 22px;
+  background: rgba(22, 25, 58, 0.94);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 6px 0 #090b1c,
+    0 18px 36px rgba(11, 13, 33, 0.42);
+}
+
+.result-dock__item {
+  position: relative;
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: rgba(246, 244, 238, 0.88);
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.result-dock__item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.result-dock__item:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.result-dock__item:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.result-dock__tara-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-dock__tara-icon small {
+  position: absolute;
+  top: -5px;
+  right: -13px;
+  padding: 1px 4px;
+  border-radius: 5px;
+  background: var(--field-grass);
+  color: var(--ink);
+  font-size: 0.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.result-dock__cta {
+  flex: 1.25 1 0%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 15px;
+  background: var(--accent);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b83712;
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 140ms ease,
+    background-color 140ms ease;
+}
+
+.result-dock__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #b83712;
+}
+
+.result-dock__cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #b83712;
+}
+
+/* Di halaman /results, bola mengambang TARA disembunyikan karena sudah menyatu
+   ke dalam .result-dock, namun panel chat TARA tetap muncul rapi di atas dock. */
+.result ~ .assist {
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.result ~ .assist .assist__orb,
+.result ~ .assist .assist__nudge {
+  display: none;
+}
+
+.result ~ .assist .assist__panel {
+  pointer-events: auto;
+  position: fixed;
+  right: max(16px, var(--gutter));
+  left: auto;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  transform-origin: bottom center;
+}
+
+@media (max-width: 600px) {
+  .result__stage-top {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .result__grade,
+  .result__avg {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  .result-dock {
+    padding-inline: 10px;
+    bottom: max(10px, calc(env(safe-area-inset-bottom, 0px) + 6px));
+  }
+
+  .result-dock__inner {
+    gap: 4px;
+    padding: 5px 6px;
+    border-radius: 18px;
+  }
+
+  .result-dock__item {
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 2px;
+    font-size: 0.62rem;
+    border-radius: 11px;
+  }
+
+  .result-dock__cta {
+    flex: 1.35 1 0%;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 0.7rem;
+    border-radius: 12px;
+    gap: 5px;
+  }
+
+  .result ~ .assist .assist__panel {
+    left: 12px;
+    right: 12px;
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.result__mini-fill.result__mini-fill--good {
+  background: #2eaf77;
+}
+
+.result__mini-fill.result__mini-fill--warn {
+  background: #f59e0b;
+}
+
+.result__mini-fill.result__mini-fill--bad {
+  background: #ef4444;
+}
+
+.result__mini-stat--good .result__mini-head b {
+  color: #1f8a5b;
+}
+
+.result__mini-stat--bad .result__mini-head b {
+  color: #dc2626;
+}
+
 .result__mini-fill {
+  transform-origin: left center;
+  animation: resultBarGrow 780ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
   display: block;
   height: 100%;
   border-radius: 999px;
@@ -1106,7 +1477,29 @@
   overflow: hidden;
 }
 
+.sdg--warn {
+  background: #fde68a;
+}
+
+.sdg--bad {
+  background: #fecaca;
+}
+
+.sdg--good .sdg__fill {
+  background: #15803d;
+}
+
+.sdg--warn .sdg__fill {
+  background: #b45309;
+}
+
+.sdg--bad .sdg__fill {
+  background: #b91c1c;
+}
+
 .sdg__fill {
+  transform-origin: left center;
+  animation: resultBarGrow 820ms cubic-bezier(0.22, 1, 0.36, 1) 280ms both;
   display: block;
   height: 100%;
   border-radius: 999px;
@@ -1137,6 +1530,73 @@
   margin: 18px 0 0;
   padding: 0;
   list-style: none;
+}
+
+.result__choice-item {
+  animation: resultRevealIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.result__choice-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(22, 25, 58, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.result__choice-item--active {
+  border-color: var(--accent) !important;
+  background: #fff4ec !important;
+  box-shadow: 0 4px 0 rgba(255, 107, 53, 0.24);
+}
+
+.result__choice-btn {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.result__choice-deltas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.result__delta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.result__delta-pill--up {
+  background: rgba(46, 175, 119, 0.16);
+  color: #15803d;
+}
+
+.result__delta-pill--down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-reveal,
+  .result__mini-fill,
+  .sdg__fill,
+  .result__choice-item {
+    animation: none;
+  }
 }
 
 .result__list li {
@@ -2096,6 +2556,12 @@
   .cut__bar,
   .cut__caption,
   .assist__panel,
+  .onboard,
+  .onboard--exiting,
+  .hud,
+  .assist__panel,
+  .assist__panel--closing,
+  .assist__msg,
   .assist__mic--active {
     animation: none;
     transition: none;
@@ -2382,7 +2848,28 @@
     0 10px 0 #090b1c,
     0 24px 48px rgba(9, 11, 28, 0.45);
   overflow: hidden;
+  transform-origin: bottom right;
   animation: assistPop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.assist--left .assist__panel {
+  transform-origin: bottom left;
+}
+
+.assist__panel--closing {
+  animation: assistPopOut 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes assistPopOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
 }
 
 .assist--left .assist__panel {
@@ -2530,7 +3017,19 @@
   gap: 10px;
 }
 
+@keyframes msgPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .assist__msg {
+  animation: msgPopIn 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
   max-width: 90%;
   padding: 10px 14px;
   border-radius: 14px;
@@ -2544,6 +3043,7 @@
 }
 
 .assist__msg--assistant {
+  transform-origin: bottom left;
   align-self: flex-start;
   border: 1.5px solid #363f78;
   border-bottom-left-radius: 4px;
@@ -2553,6 +3053,7 @@
 }
 
 .assist__msg--user {
+  transform-origin: bottom right;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
   background: var(--accent);

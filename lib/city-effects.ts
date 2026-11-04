@@ -314,26 +314,36 @@ export function getPlotCameraTransform(
   plotIndex: number | null,
   isMobile = false,
   scale?: number,
+  fill = false,
 ): string {
   if (plotIndex === null || plotIndex < 0 || plotIndex >= PLOT_TILE_COORDS.length) {
     return 'translate(0px, 0px) scale(1)';
   }
   const [u, v] = PLOT_TILE_COORDS[plotIndex];
   const px = (u - v) * 64;
-  // Dibidik sedikit di atas pusat petak, karena bangunan menjulang ke atas.
-  const py = (u + v) * 32 + 4;
+  const py = (u + v) * 32;
 
-  const actualScale = scale ?? (isMobile ? 1.4 : CAMERA_ZOOM);
-  // Di mobile portrait, walikota berdiri di sebelah kiri petak (px - 49).
-  // Pusatkan bidikan di tengah-tengah antara walikota dan gedung (px - 25).
-  const focalX = isMobile ? px - 25 : px;
-  const focalY = py;
+  // Di mode sinematik layar penuh mobile (`fill = true`), SVG memakai
+  // `preserveAspectRatio="xMidYMid slice"` pada `defaultViewBox`, sehingga
+  // viewport sudah memotong dan memperbesar pulau secara otomatis.
+  if (isMobile && fill) {
+    const actualScale = scale ?? 1.4;
+    const focalX = px - 25;
+    const focalY = py + 4;
+    const [cx] = VIEW_CENTER;
+    const targetCy = 130;
+    return `translate(${(cx - actualScale * focalX).toFixed(2)}px, ${(targetCy - actualScale * focalY).toFixed(2)}px) scale(${actualScale})`;
+  }
 
-  const [cx, cy] = VIEW_CENTER;
-  // Di mobile, bilah keterangan & tombol lewati berada di bagian bawah,
-  // jadi naikkan titik tengah sedikit (cy = 130) agar gedung & walikota
-  // berada pas di jendela pandang atas yang bebas halangan.
-  const targetCy = isMobile ? 130 : cy;
+  // Di mode kartu / inspeksi kawasan (`fill = false`, mis. halaman /results):
+  // Mobile memakai `mobileViewBox = "-450 -170 830 570"` (titik tengah di -35, 115)
+  // dengan `preserveAspectRatio="xMidYMid meet"`, sehingga butuh zoom penuh (3.1x)
+  // tepat ke pusat visual bangunan (px, py - 14).
+  const actualScale = scale ?? (isMobile ? 3.1 : CAMERA_ZOOM);
+  const focalX = px;
+  const focalY = isMobile ? py - 14 : py + 4;
+  const cx = isMobile ? -35 : VIEW_CENTER[0];
+  const targetCy = isMobile ? 115 : VIEW_CENTER[1];
 
   return `translate(${(cx - actualScale * focalX).toFixed(2)}px, ${(targetCy - actualScale * focalY).toFixed(2)}px) scale(${actualScale})`;
 }

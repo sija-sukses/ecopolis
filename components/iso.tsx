@@ -965,6 +965,40 @@ function CityHallSection({
       <RoundTree u={0.28} v={2.36} lift={4} scale={0.58} />
       <RoundTree u={1.62} v={2.36} lift={4} scale={0.58} />
 
+      {/* Air Mancur Bundar Alun-Alun (Civic Fountain) & Bangku Taman */}
+      <g transform={at(0.52, 2.02, 4.4)}>
+        <ellipse cx="0" cy="1" rx="13" ry="6.5" fill={C.stoneR} />
+        <ellipse cx="0" cy="0" rx="12" ry="5.8" fill={C.stoneTop} />
+        <ellipse cx="0" cy="0" rx="9.5" ry="4.5" fill={protesting ? C.stoneL : C.riverTop} />
+        {!protesting && (
+          <>
+            <ellipse
+              cx="0"
+              cy="0"
+              rx="6.8"
+              ry="3.2"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="0.9"
+              className="water-ripple"
+            />
+            <line
+              x1="0"
+              y1="-2"
+              x2="0"
+              y2="-9.5"
+              stroke="#ffffff"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              className="waterfall-stream"
+            />
+            <circle cx="-2.2" cy="-6.5" r="1" fill="#ffffff" className="waterfall-droplet--1" />
+            <circle cx="2.2" cy="-6.8" r="1" fill="#ffffff" className="waterfall-droplet--2" />
+          </>
+        )}
+        <ellipse cx="0" cy="-1.2" rx="3.2" ry="1.6" fill={C.smoke} />
+      </g>
+
       {/* Tiang Bendera Merah Putih di halaman Balai Kota */}
       <g transform={`translate(${flagX} ${flagY})`}>
         <ellipse cx="0" cy="0" rx="4" ry="2" fill={C.stoneR} />
@@ -1730,6 +1764,24 @@ export function IslandTerrain({
       <path d={eastStreamD} className="river-current river-current--slow" fill="none" stroke={river.currentAlt} strokeWidth="2" strokeLinecap="round" />
       <path d={mainStreamD} className="river-current" fill="none" stroke={river.currentMain} strokeWidth="2.8" strokeLinecap="round" />
 
+      {/* Batu kali alami di tengah aliran sungai lengkap dengan cincin buih riak air */}
+      {[
+        [1.96, 0.28],
+        [2.32, 2.94],
+      ].map(([ru, rv], i) => (
+        <g key={i} transform={at(ru, rv, -4.4)}>
+          <polygon
+            className={i === 0 ? 'water-ripple' : 'water-ripple water-ripple--delay'}
+            points="-9,0 0,-4.5 9,0 0,4.5"
+            fill="none"
+            stroke={river.foam}
+            strokeWidth="0.9"
+          />
+          <polygon points="-4.5,0.5 0,-2.2 4.5,0.5 0,2.6" fill={C.stoneL} />
+          <polygon points="-3.8,-0.2 0,-3.4 3.8,-0.2 0,1.5" fill={C.stoneTop} />
+        </g>
+      ))}
+
       {/* Daratan Timur-Laut Kaki Gunung Terakota (Kawasan 2 - Industri / Hutan Kota) */}
       <IsoSlab u1={2.30} v1={-0.52} u2={4.88} v2={2.05} h={10} lift={-10} top={C.mintTop} left={C.mintL} right={C.mintR} />
       {/* Daratan Semenanjung Tenggara (Kawasan 4 - Perumahan / Apartemen Hijau) */}
@@ -1773,6 +1825,7 @@ export function IslandTerrain({
 
       {/* Percikan kabut uap air terjun dinamis (waterfall impact mist & spray) */}
       <g transform={`translate(${fallBotX.toFixed(1)} ${(fallBotY + 2).toFixed(1)})`} pointerEvents="none">
+        <ellipse cx="0" cy="1" rx="20" ry="9" fill="none" stroke={river.foam} strokeWidth="1.2" className="waterfall-mist-pulse" opacity="0.55" />
         <ellipse cx="0" cy="0" rx="14" ry="7" fill={river.foam} className="waterfall-mist-pulse" opacity="0.6" />
         <ellipse cx="0" cy="0" rx="9" ry="4.5" fill="#ffffff" className="waterfall-mist-pulse waterfall-mist-pulse--delay" opacity="0.75" />
         <circle cx="-5" cy="-2" r="2.2" fill="#ffffff" className="waterfall-droplet--1" />
@@ -1819,6 +1872,23 @@ export function IslandTerrain({
       {/* Jalur Pedestrian Timur membagi plot konstruksi modular */}
       <polygon points={`${pt(2.56, 1.68, 0.4)} ${pt(3.78, 1.68, 0.4)} ${pt(3.78, 1.96, 0.4)} ${pt(2.56, 1.96, 0.4)}`} fill={C.pathTop} />
       <polygon points={`${pt(3.52, 0.35, 0.4)} ${pt(3.78, 0.35, 0.4)} ${pt(3.78, 3.25, 0.4)} ${pt(3.52, 3.25, 0.4)}`} fill={C.pathTop} />
+
+      {/* Cabang jalan konektor otomatis untuk setiap kawasan yang sudah terbangun */}
+      {plots[0] && (
+        <polygon points={`${pt(-0.85, -0.35, 0.45)} ${pt(-0.55, -0.35, 0.45)} ${pt(-0.55, 0.25, 0.45)} ${pt(-0.85, 0.25, 0.45)}`} fill={C.pathNode} opacity="0.85" />
+      )}
+      {plots[1] && (
+        <polygon points={`${pt(-1.32, 2.05, 0.45)} ${pt(-0.98, 2.05, 0.45)} ${pt(-0.98, 2.48, 0.45)} ${pt(-1.32, 2.48, 0.45)}`} fill={C.pathNode} opacity="0.85" />
+      )}
+      {plots[2] && (
+        <polygon points={`${pt(3.45, 0.22, 0.45)} ${pt(3.85, 0.22, 0.45)} ${pt(3.85, 0.65, 0.45)} ${pt(3.45, 0.65, 0.45)}`} fill={C.pathNode} opacity="0.85" />
+      )}
+      {plots[3] && (
+        <polygon points={`${pt(0.45, 3.68, 0.45)} ${pt(1.08, 3.68, 0.45)} ${pt(1.08, 3.96, 0.45)} ${pt(0.45, 3.96, 0.45)}`} fill={C.pathNode} opacity="0.85" />
+      )}
+      {plots[4] && (
+        <polygon points={`${pt(3.45, 3.05, 0.45)} ${pt(3.85, 3.05, 0.45)} ${pt(3.85, 3.45, 0.45)} ${pt(3.45, 3.45, 0.45)}`} fill={C.pathNode} opacity="0.85" />
+      )}
 
       {/* Pohon-pohon lanskap alami (kombinasi PineTree, RoundTree, dan BlockTree sesuai referensi) */}
       <PineTree u={-1.62} v={-0.55} lift={0} scale={0.88} tone="pine" />
@@ -1927,6 +1997,33 @@ function SolarPanel({ gleamDelay = 0 }: { gleamDelay?: number }) {
 function Plts() {
   return (
     <g>
+      {/* Jalur kabel transmisi bawah-permukaan & pipa konduit dari deret panel menuju gardu inverter */}
+      <polyline
+        points={`${pt(-0.52, 0.36, 14.3)} ${pt(-0.46, -0.04, 14.3)} ${pt(-0.46, -0.34, 14.3)}`}
+        fill="none"
+        stroke="#475569"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <polyline
+        points={`${pt(0.24, 0.36, 14.3)} ${pt(0.14, -0.04, 14.3)} ${pt(-0.28, -0.04, 14.3)} ${pt(-0.46, -0.34, 14.3)}`}
+        fill="none"
+        stroke="#475569"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <line
+        x1={ptXY(-0.46, -0.34, 14.4)[0]}
+        y1={ptXY(-0.46, -0.34, 14.4)[1]}
+        x2={ptXY(-0.18, -0.42, 14.4)[0]}
+        y2={ptXY(-0.18, -0.42, 14.4)[1]}
+        stroke="#38bdf8"
+        strokeWidth="1.6"
+        strokeDasharray="2.5 2"
+      />
+
       {/* Hamparan 5 deret panel surya membentang mengikuti kontur perbukitan barat-laut */}
       <g transform={at(-0.52, 0.36, 14)}>
         <SolarPanel gleamDelay={0} />
@@ -1943,13 +2040,35 @@ function Plts() {
       <g transform={at(0.14, -0.04, 14)}>
         <SolarPanel gleamDelay={2.8} />
       </g>
-      {/* Gardu inverter & bank baterai penyimpanan */}
+
+      {/* Gardu inverter & bank baterai penyimpanan dengan indikator LED daya 3-bar */}
       <g transform={at(-0.46, -0.34, 14)}>
         <Box h={22} inset={46} top={C.smoke} left={C.steelL} right={C.steelR} />
-        <polygon points={facePoints('left', 18, 9, 22, 0.2, 0.8, 0.45, 0.72)} fill={C.leafTop} />
+        {/* Kisi pendingin atap gardu */}
+        <polygon points="-10,-22 0,-17 10,-22 0,-27" fill="#64748b" />
+        {/* Indikator LED baterai 3-bar berkedip halus */}
+        <polygon
+          className="battery-led"
+          points={facePoints('left', 18, 9, 22, 0.22, 0.78, 0.22, 0.36)}
+          fill="#22c55e"
+        />
+        <polygon
+          className="battery-led battery-led--2"
+          points={facePoints('left', 18, 9, 22, 0.22, 0.78, 0.44, 0.58)}
+          fill="#4ade80"
+        />
+        <polygon
+          className="battery-led battery-led--3"
+          points={facePoints('left', 18, 9, 22, 0.22, 0.78, 0.66, 0.80)}
+          fill="#86efac"
+        />
+        <polygon points={facePoints('right', 18, 9, 22, 0.24, 0.76, 0.30, 0.74)} fill="#334155" />
       </g>
       <g transform={at(-0.18, -0.42, 14)}>
         <Box h={16} inset={50} top={C.steelTop} left={C.steelL} right={C.steelR} />
+        {/* Isolator trafo tegangan tinggi di atap gardu pendamping */}
+        <circle cx="-4" cy="-18" r="1.8" fill="#38bdf8" />
+        <circle cx="4" cy="-18" r="1.8" fill="#38bdf8" />
       </g>
       {/* Dua turbin angin tinggi di punggung bukit dengan baling-baling berputar halus */}
       {[
@@ -1999,6 +2118,17 @@ function Pltu() {
       <g transform="translate(0 -14)">
         <polygon points={facePoints('left', w, d, 36, 0.16, 0.84, 0.42, 0.68)} fill={C.glass} />
         <polygon points={facePoints('right', w, d, 36, 0.16, 0.84, 0.42, 0.68)} fill={C.glass} />
+        {/* Kisi tungku pembakaran batu bara (Furnace Glow) berpendar oranye-emas di dasar gedung */}
+        <polygon
+          className="furnace-glow"
+          points={facePoints('left', w, d, 36, 0.26, 0.74, 0.08, 0.28)}
+          fill="#ff6b3d"
+        />
+        <polygon
+          className="furnace-glow"
+          points={facePoints('left', w, d, 36, 0.32, 0.68, 0.11, 0.24)}
+          fill="#fde047"
+        />
       </g>
       {/* Dua cerobong asap raksasa dengan animasi asap mengebul dinamis */}
       <g transform={at(-0.22, 0.14, 52)}>
@@ -2015,9 +2145,18 @@ function Pltu() {
       <g transform={at(0.42, 0.08, 14)}>
         <Box h={28} inset={49} top={C.steelTop} left={C.steelL} right={C.steelR} />
       </g>
+
+      {/* Gunungan batu bara berfaset low-poly & sabuk konveyor miring menuju gedung tungku */}
       <g transform={at(-0.12, 0.44, 14)}>
-        <Box h={16} inset={42} top={C.coalLight} left={C.coal} right={C.coal} />
-        <Box h={12} inset={51} lift={16} top={C.coalLight} left={C.coal} right={C.coal} />
+        {/* Sabuk konveyor miring dari tumpukan batu bara naik ke lambung gedung boiler */}
+        <polygon points="-6,-10 10,-32 16,-29 0,-7" fill="#64748b" />
+        <polygon points="-4,-11 12,-33 15,-31 -1,-9" fill="#1e293b" />
+        <line x1="2" y1="-21" x2="2" y2="-4" stroke="#475569" strokeWidth="1.6" />
+        {/* Gunungan batu bara faset 3D */}
+        <polygon points="-26,2 -6,-18 14,-14 26,2 4,14 -18,12" fill={C.coal} />
+        <polygon points="-26,2 -6,-18 2,-6 -18,12" fill={C.coalLight} />
+        <polygon points="-6,-18 14,-14 6,-2 2,-6" fill="#475569" />
+        <polygon points="2,-6 6,-2 26,2 4,14" fill="#1e293b" />
       </g>
       <IsoWorker u={-0.42} v={0.44} lift={14} shirt="orange" hat="helmet-yellow" tool="shovel" action="dig" />
       <IsoWorker u={0.28} v={0.44} lift={14} shirt="coal" hat="helmet-yellow" tool="box" action="lift" delay={0.35} flip />
@@ -2385,6 +2524,33 @@ function Tol() {
   );
 }
 
+/** Armada Bus Listrik BRT Detail (kaca depan lebar, pod baterai atap, aksen hijau, lampu & roda) */
+function BrtElectricBus({ scale = 1 }: { scale?: number }) {
+  return (
+    <g transform={`scale(${scale})`}>
+      {/* Bayangan kontak di bawah sasis bus */}
+      <ellipse cx="0" cy="2" rx="18" ry="8" fill="#0f172a" opacity="0.28" />
+      {/* Bodi utama bus listrik biru */}
+      <Box h={18} inset={45} top={C.bus} left={C.bus} right={C.busDark} />
+      {/* Garis sabuk hijau elektrik (eco-stripe) di sepanjang lambung bus */}
+      <polygon points={facePoints('left', 19, 9.5, 18, 0.06, 0.94, 0.28, 0.38)} fill="#4ade80" />
+      <polygon points={facePoints('right', 19, 9.5, 18, 0.06, 0.94, 0.28, 0.38)} fill="#4ade80" />
+      {/* Kaca panorama penumpang & kaca depan kemudi */}
+      <polygon points={facePoints('left', 19, 9.5, 18, 0.12, 0.88, 0.44, 0.82)} fill="#bae6fd" />
+      <polygon points={facePoints('right', 19, 9.5, 18, 0.14, 0.86, 0.44, 0.82)} fill="#7dd3fc" />
+      {/* Pod baterai listrik & AC putih bersih di atap bus */}
+      <g transform="translate(0 -18)">
+        <Box h={3} inset={52} top="#f8fafc" left="#e2e8f0" right="#cbd5e1" />
+      </g>
+      {/* Lampu depan LED & roda bus */}
+      <circle cx="-13" cy="2" r="1.4" fill="#fef08a" />
+      <circle cx="-4" cy="6.5" r="1.4" fill="#fef08a" />
+      <ellipse cx="-10" cy="4.5" rx="2.6" ry="1.8" fill="#0f172a" />
+      <ellipse cx="8" cy="-4.5" rx="2.6" ry="1.8" fill="#0f172a" />
+    </g>
+  );
+}
+
 /** Koridor Transit BRT Listrik Terpadu & Jalur Hijau Sepeda */
 function Brt() {
   return (
@@ -2392,8 +2558,9 @@ function Brt() {
       {/* Koridor panjang aspal khusus bus & jalur hijau sepeda */}
       <g transform={at(0.08, 0.14, 14)}>
         <polygon points="-68,20 28,-28 60,-12 -36,36" fill={C.asphalt} />
-        <polygon points="-64,24 32,-24 38,-21 -58,27" fill={C.bus} opacity="0.75" />
+        <polygon points="-64,24 32,-24 38,-21 -58,27" fill={C.bus} opacity="0.78" />
         <polygon points="-56,28 40,-20 45,-17.5 -51,30.5" fill={C.leafTop} />
+        {/* Marka zebra cross penyeberangan pejalan kaki menuju peron halte */}
         {[-8, -2, 4].map((offset) => (
           <polygon
             key={offset}
@@ -2402,27 +2569,56 @@ function Brt() {
           />
         ))}
       </g>
-      {/* Halte pusat BRT beratap panel surya */}
+
+      {/* Halte pusat BRT dengan peron tinggi, garis taktil kuning, kanopi surya & papan rute digital */}
       <g transform={at(-0.18, -0.16, 14)}>
-        <Box h={26} inset={28} top={C.glass} left={C.steelL} right={C.steelR} />
-        <polygon points={facePoints('left', 36, 18, 26, 0.1, 0.9, 0.18, 0.82)} fill={C.glass} />
-        <polygon points={facePoints('right', 36, 18, 26, 0.1, 0.9, 0.18, 0.82)} fill={C.glass} />
-        <g transform={at(0, 0, 26)}>
-          <Box h={4} inset={24} top={C.smoke} left={C.steelL} right={C.steelR} />
-          <polygon points="-20,-5 0,5 20,-5 0,-15" fill={C.solar} />
+        {/* Dek peron tinggi (Raised Boarding Platform) */}
+        <Box h={5} inset={22} top="#e2e8f0" left="#cbd5e1" right="#94a3b8" />
+        {/* Garis batas aman kuning (tactile paving) di tepi peron */}
+        <polygon points="-38,3 4,-18 7,-16.5 -35,4.5" fill="#facc15" />
+        {/* Ruang tunggu kaca halte BRT */}
+        <g transform={at(0, 0, 5)}>
+          <Box h={22} inset={29} top={C.glass} left={C.steelL} right={C.steelR} />
+          <polygon points={facePoints('left', 35, 17.5, 22, 0.1, 0.9, 0.15, 0.84)} fill={C.glass} />
+          <polygon points={facePoints('right', 35, 17.5, 22, 0.1, 0.9, 0.15, 0.84)} fill={C.glass} />
+          {/* Kanopi lengkung bermodul panel surya di atap halte */}
+          <g transform={at(0, 0, 22)}>
+            <Box h={4} inset={23} top={C.smoke} left={C.steelL} right={C.steelR} />
+            <polygon points="-24,-5 0,7 24,-5 0,-17" fill={C.solar} stroke="#93c5fd" strokeWidth="0.7" />
+          </g>
+        </g>
+        {/* Papan informasi rute digital LED di ujung peron */}
+        <g transform="translate(-26 4)">
+          <line x1="0" y1="0" x2="0" y2="-16" stroke="#475569" strokeWidth="1.6" />
+          <rect x="-5.5" y="-22" width="11" height="6.5" rx="1" fill="#0f172a" stroke="#cbd5e1" strokeWidth="0.6" />
+          <line x1="-3.5" y1="-19.5" x2="3.5" y2="-19.5" stroke="#4ade80" strokeWidth="1.3" />
+          <line x1="-3.5" y1="-17.2" x2="1.5" y2="-17.2" stroke="#38bdf8" strokeWidth="1.1" />
         </g>
       </g>
-      {/* Tiga armada bus listrik biru beroperasi lancar di koridor */}
-      <g transform={at(0.32, -0.1, 15)}>
-        <Box h={20} inset={44} top={C.bus} left={C.bus} right={C.busDark} />
-        <polygon points={facePoints('right', 20, 10, 20, 0.12, 0.88, 0.42, 0.78)} fill={C.glass} />
-        <polygon points={facePoints('left', 20, 10, 20, 0.12, 0.88, 0.42, 0.78)} fill={C.glass} />
+
+      {/* Dua armada bus listrik biru melaju halus di koridor khusus BRT */}
+      <g transform={at(0.30, -0.08, 15)}>
+        <g className="brt-bus-mover">
+          <BrtElectricBus />
+        </g>
       </g>
-      <g transform={at(0.02, 0.18, 15)}>
-        <Box h={19} inset={46} top={C.bus} left={C.bus} right={C.busDark} />
-        <polygon points={facePoints('right', 18, 9, 19, 0.14, 0.86, 0.42, 0.78)} fill={C.glass} />
-        <polygon points={facePoints('left', 18, 9, 19, 0.14, 0.86, 0.42, 0.78)} fill={C.glass} />
+      <g transform={at(-0.04, 0.22, 15)}>
+        <g className="brt-bus-mover brt-bus-mover--alt">
+          <BrtElectricBus scale={0.94} />
+        </g>
       </g>
+
+      {/* Pesepeda komuter miniatur melaju di jalur hijau sepeda */}
+      <g transform={at(0.16, 0.22, 14.6)}>
+        <g className="brt-cyclist">
+          <circle cx="-3" cy="0" r="2.1" fill="none" stroke="#1e293b" strokeWidth="1.1" />
+          <circle cx="3" cy="-3" r="2.1" fill="none" stroke="#1e293b" strokeWidth="1.1" />
+          <polyline points="-3,0 0,-3.5 3,-3" fill="none" stroke="#38bdf8" strokeWidth="1.2" />
+          <circle cx="-0.5" cy="-7.2" r="1.7" fill="#fde047" />
+          <line x1="-0.5" y1="-5.5" x2="0.5" y2="-2.5" stroke="#22c55e" strokeWidth="1.8" strokeLinecap="round" />
+        </g>
+      </g>
+
       <RoundTree u={-0.52} v={0.08} lift={14} scale={0.58} />
       <RoundTree u={0.48} v={0.22} lift={14} scale={0.58} />
       <IsoWorker u={0.18} v={0.42} lift={14} shirt="blue" hat="cap-blue" tool="flag" action="wave" />
@@ -2438,12 +2634,35 @@ function Industri() {
     <g>
       <g transform={at(-0.14, -0.06, 14)}>
         <Box h={34} inset={24} top={C.brickTop} left={C.brickLeft} right={C.brickRight} />
-        <polygon points="-40,-34 0,-14 0,-24 -40,-42" fill={C.steelL} />
-        <polygon points="40,-34 0,-14 0,-24 40,-42" fill={C.steelR} />
-        <polygon points="-40,-42 0,-24 40,-42 0,-58" fill={C.steelTop} />
+        {/* Atap pabrik gigi gergaji (Sawtooth Factory Roof) dengan jendela skylight miring */}
+        <polygon points="-40,-34 0,-14 0,-23 -40,-43" fill={C.steelL} />
+        <polygon points="40,-34 0,-14 0,-23 40,-43" fill="#bae6fd" />
+        <polygon points="-40,-43 0,-23 20,-33 -20,-53" fill={C.steelTop} />
+        <polygon points="-20,-44 20,-24 20,-32 -20,-52" fill={C.steelL} />
+        <polygon points="20,-24 40,-34 40,-42 20,-32" fill="#7dd3fc" />
+        <polygon points="-20,-52 20,-32 40,-42 0,-60" fill={C.steelTop} />
         <polygon points={facePoints('left', 40, 20, 34, 0.14, 0.86, 0.44, 0.72)} fill={C.glass} />
         <polygon points={facePoints('right', 40, 20, 34, 0.28, 0.72, 0.0, 0.55)} fill={C.coal} />
       </g>
+
+      {/* Jaringan pipa baja industri & katup merah penghubung gedung pabrik ke tangki silo */}
+      <polyline
+        points={`${pt(0.08, -0.14, 34)} ${pt(0.22, -0.22, 34)} ${pt(0.32, -0.28, 34)}`}
+        fill="none"
+        stroke="#94a3b8"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <polyline
+        points={`${pt(0.32, -0.28, 28)} ${pt(0.46, 0.02, 28)}`}
+        fill="none"
+        stroke="#64748b"
+        strokeWidth="2.8"
+        strokeLinecap="round"
+      />
+      <circle cx={ptXY(0.22, -0.22, 34)[0]} cy={ptXY(0.22, -0.22, 34)[1]} r="2.3" fill="#ef4444" />
+
       {/* Tiga silo baja industri & cerobong asap pabrik dengan kepulan asap kelabu periodik */}
       <g transform={at(0.32, -0.28, 14)}>
         <Box h={46} inset={50} top={C.steelTop} left={C.steelL} right={C.steelR} />
@@ -2458,13 +2677,19 @@ function Industri() {
         <Box h={52} inset={52} top={C.coalLight} left={C.coal} right={C.coal} />
         <SmokePlume x={0} y={-56} scale={1.08} variant="periodic" />
       </g>
-      {/* Lapangan peti kemas kargo */}
+      {/* Lapangan peti kemas kargo dengan detail rusuk bergelombang (corrugated ribs) */}
       <g transform={at(-0.34, 0.34, 14)}>
         <Box h={14} inset={46} top={C.leafTop} left={C.leafL} right={C.leafR} />
+        <line x1="-10" y1="-2" x2="-10" y2="-11" stroke="#2c7a43" strokeWidth="1.1" />
+        <line x1="-5" y1="0.5" x2="-5" y2="-8.5" stroke="#2c7a43" strokeWidth="1.1" />
         <Box h={13} inset={47} lift={14} top={C.warmTop} left={C.warmL} right={C.warmR} />
+        <line x1="-9" y1="-16" x2="-9" y2="-24" stroke="#b57a45" strokeWidth="1.1" />
+        <line x1="-4" y1="-13.5" x2="-4" y2="-21.5" stroke="#b57a45" strokeWidth="1.1" />
       </g>
       <g transform={at(0.06, 0.42, 14)}>
         <Box h={14} inset={48} top={C.bus} left={C.bus} right={C.busDark} />
+        <line x1="-8" y1="-2" x2="-8" y2="-11" stroke="#1d4ed8" strokeWidth="1.1" />
+        <line x1="-3" y1="0.5" x2="-3" y2="-8.5" stroke="#1d4ed8" strokeWidth="1.1" />
       </g>
       <IsoWorker u={-0.12} v={0.46} lift={14} shirt="orange" hat="helmet-yellow" tool="box" action="lift" />
       <IsoWorker u={0.34} v={0.34} lift={14} shirt="blue" hat="helmet-white" tool="wrench" action="dig" delay={0.3} flip />
@@ -2481,9 +2706,29 @@ function Hutan() {
         <polygon points="-42,0 0,21 42,0 0,-21" fill={C.warmTop} opacity="0.55" />
         <polygon points="-32,0 0,16 32,0 0,-16" fill={C.pond} />
         <polygon className="water-ripple" points="-16,0 0,8 16,0 0,-8" fill="none" stroke={C.foam} strokeWidth="1.2" />
-        <polygon points="-12,5 5,-3.5 12,0 -5,8.5" fill={C.warmL} />
-        <polygon points="-12,3 5,-5.5 12,-2 -5,6.5" fill={C.warmTop} />
+        {/* Jembatan penyeberangan kayu lengkung lengkap dengan pagar sandaran kayu */}
+        <polygon points="-14,6 6,-4 14,0 -6,10" fill={C.warmR} />
+        <polygon points="-14,3.5 6,-6.5 14,-2.5 -6,7.5" fill={C.warmTop} />
+        {/* Tiang & pagar sandaran jembatan kayu */}
+        <line x1="-12" y1="3" x2="-12" y2="-2.5" stroke="#8f5b34" strokeWidth="1.4" />
+        <line x1="-3" y1="-1.5" x2="-3" y2="-7" stroke="#8f5b34" strokeWidth="1.4" />
+        <line x1="5" y1="-5.5" x2="5" y2="-11" stroke="#8f5b34" strokeWidth="1.4" />
+        <polyline points="-12,-2 -3,-6.5 5,-10.5" fill="none" stroke="#d3965e" strokeWidth="1.3" strokeLinecap="round" />
+        <line x1="-5" y1="6.5" x2="-5" y2="1" stroke="#8f5b34" strokeWidth="1.4" />
+        <line x1="4" y1="2" x2="4" y2="-3.5" stroke="#8f5b34" strokeWidth="1.4" />
+        <line x1="12" y1="-2" x2="12" y2="-7.5" stroke="#8f5b34" strokeWidth="1.4" />
+        <polyline points="-5,1.5 4,-3 12,-7" fill="none" stroke="#d3965e" strokeWidth="1.3" strokeLinecap="round" />
       </g>
+
+      {/* Batu pijakan setapak & bangku taman kayu di tepi danau resapan */}
+      <ellipse cx={ptXY(-0.14, 0.34, 14.3)[0]} cy={ptXY(-0.14, 0.34, 14.3)[1]} rx="4.2" ry="2.2" fill="#cbd5e1" />
+      <ellipse cx={ptXY(-0.22, 0.40, 14.3)[0]} cy={ptXY(-0.22, 0.40, 14.3)[1]} rx="3.6" ry="1.9" fill="#e2e8f0" />
+      <g transform={at(0.26, -0.18, 14.4)}>
+        <polygon points="-7,1 3,-4 6,-2.5 -4,2.5" fill="#d3965e" />
+        <polygon points="-7,-2 3,-7 4.5,-6 -5.5,-1" fill="#b57a45" />
+      </g>
+
+      {/* Gazebo kayu di bukit taman */}
       <g transform={at(0.42, -0.06, 14)}>
         <Box h={13} inset={53} top={C.warmTop} left={C.warmL} right={C.warmR} />
         <polygon points="-15,-13 0,-5 15,-13 0,-24" fill={C.brickTop} />
@@ -2499,6 +2744,19 @@ function Hutan() {
       <PineTree u={0.24} v={0.42} lift={14} scale={0.86} tone="pine" />
       <IsoWorker u={0.42} v={0.28} lift={14} shirt="blue" hat="cap-green" tool="none" action="patrol-v" delay={0.55} flip />
       <BlockTree u={0.52} v={0.24} lift={14} scale={0.84} tone="deep" />
+
+      {/* Kawanan burung putih low-poly terbang melingkar halus di atas tajuk hutan kota */}
+      <g transform={at(-0.08, -0.18, 62)}>
+        <g className="bird-glide">
+          <polyline points="-5,-2 0,1.5 5,-2" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+        <g transform="translate(14 -6)" className="bird-glide bird-glide--2">
+          <polyline points="-4,-1.6 0,1.2 4,-1.6" fill="none" stroke="#f8fafc" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+        <g transform="translate(-12 -9)" className="bird-glide bird-glide--3">
+          <polyline points="-3.5,-1.4 0,1 3.5,-1.4" fill="none" stroke="#f1f5f9" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      </g>
     </g>
   );
 }
@@ -2617,24 +2875,35 @@ function RiverTrashItem({
 
 /** Kawasan Gunung Sampah TPA Terbuka di Lembah Selatan (dengan asap kelabu halus periodik) */
 function Tpa() {
+  const debris: [number, number, string][] = [
+    [-26, -22, C.glass],
+    [14, -20, C.leafTop],
+    [-8, -38, C.brickTop],
+    [20, -34, C.smoke],
+    [-28, -10, C.sun],
+    [8, -48, C.bus],
+  ];
   return (
     <g>
+      {/* Genangan air lindi beracun (toxic leachate puddle) kehijauan-keruh di dasar lembah TPA */}
+      <g transform={at(0.22, 0.28, 14.1)}>
+        <polygon points="-24,0 -4,-10 18,-6 26,4 6,12 -16,9" fill="#4d7c0f" opacity="0.65" />
+        <polygon points="-16,1 -2,-6 12,-3 16,3 4,8 -10,6" fill="#84cc16" opacity="0.55" />
+      </g>
+
       {/* Tumpukan ceceran sampah 3D di sisi timur bukit TPA dengan asap halus */}
       <TrashCluster u={0.34} v={0.22} lift={14} variant="bags" smoke />
-      {/* Dua bukit sampah terbuka raksasa dengan partikel asap kelabu halus secara periodik */}
+
+      {/* Gunungan sampah terbuka asimetris berfaset dengan partikel asap kelabu halus secara periodik */}
       <g transform={at(-0.08, -0.08, 14)}>
+        {/* Dasar lereng sampah berfaset */}
+        <polygon points="-50,4 -12,-22 36,-16 52,6 10,26 -36,20" fill={C.warmR} />
+        <polygon points="-50,4 -12,-22 6,-4 -36,20" fill={C.warmL} />
         <Box h={22} inset={16} top={C.warmL} left={C.warmL} right={C.warmR} />
         <Box h={19} inset={28} lift={22} top={C.stoneL} left={C.stoneL} right={C.stoneR} />
         <Box h={15} inset={42} lift={41} top={C.warmTop} left={C.warmL} right={C.warmR} />
-        {[
-          [-26, -22, C.glass],
-          [14, -20, C.leafTop],
-          [-8, -38, C.brickTop],
-          [20, -34, C.smoke],
-          [-28, -10, C.sun],
-          [8, -48, C.bus],
-        ].map(([x, y, fill], i) => (
-          <rect key={i} x={x as number} y={y as number} width="7.5" height="5.5" rx="1.5" fill={fill as string} />
+        {debris.map(([x, y, fill], i) => (
+          <rect key={i} x={x} y={y} width="7.5" height="5.5" rx="1.5" fill={fill} />
         ))}
         <g transform="translate(4 -56)">
           <Box h={9} inset={56} top={C.sun} left={C.warmL} right={C.warmR} />
@@ -2644,9 +2913,22 @@ function Tpa() {
         <SmokePlume x={-16} y={-38} scale={0.95} variant="trash" />
         <SmokePlume x={18} y={-28} scale={0.9} variant="trash" />
       </g>
-      <g transform={at(-0.42, 0.22, 14)}>
-        <Box h={15} inset={50} top={C.brickTop} left={C.brickLeft} right={C.brickRight} />
+
+      {/* Buldoser kuning perata sampah lengkap dengan roda rantai baja & pisau dorong */}
+      <g transform={at(-0.42, 0.24, 14)}>
+        {/* Roda rantai (caterpillar tracks) kiri & kanan */}
+        <polygon points="-14,2 2,-6 6,-4 -10,4" fill="#1e293b" />
+        <polygon points="-10,6 6,-2 10,0 -6,8" fill="#0f172a" />
+        {/* Bodi mesin & kabin buldoser kuning */}
+        <Box h={12} inset={52} lift={2} top="#fde047" left="#facc15" right="#ca8a04" />
+        <Box h={8} inset={56} lift={14} top="#fef08a" left="#eab308" right="#a16207" />
+        <rect x="-4" y="-19" width="6" height="4.5" fill="#bae6fd" />
+        {/* Pisau baja pendorong sampah (dozer blade) di depan */}
+        <polygon points="8,-2 18,-7 18,1 8,6" fill="#94a3b8" stroke="#475569" strokeWidth="0.8" />
+        <line x1="4" y1="-2" x2="12" y2="-3" stroke="#ca8a04" strokeWidth="1.8" />
       </g>
+
+      {/* Truk pengangkut sampah di tepi selatan */}
       <g transform={at(0.06, 0.42, 14)}>
         <Box h={18} inset={46} top={C.leafTop} left={C.leafL} right={C.leafR} />
         <g transform="translate(11 5.5)">
@@ -2663,27 +2945,73 @@ function Tpa() {
 
 /** Kawasan Pusat Daur Ulang 3R & PLTSa Bersih */
 function Daurulang() {
+  const bins: [number, string, string, string][] = [
+    [-0.36, C.leafTop, C.leafL, '#86efac'],
+    [0, C.sun, C.warmL, '#fef08a'],
+    [0.36, C.bus, C.busDark, '#93c5fd'],
+  ];
   return (
     <g>
+      {/* Sabuk konveyor pemilah tertutup yang menghubungkan gedung utama ke 3 tangki daur ulang */}
+      <polyline
+        points={`${pt(-0.06, 0.08, 22)} ${pt(-0.36, 0.36, 22)}`}
+        fill="none"
+        stroke="#94a3b8"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
+      <polyline
+        points={`${pt(-0.06, 0.08, 22)} ${pt(0, 0.36, 22)}`}
+        fill="none"
+        stroke="#cbd5e1"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
+      <polyline
+        points={`${pt(-0.06, 0.08, 22)} ${pt(0.36, 0.36, 22)}`}
+        fill="none"
+        stroke="#94a3b8"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
+
+      {/* Gedung utama Pusat Daur Ulang 3R */}
       <g transform={at(-0.06, -0.08, 14)}>
         <Box h={32} inset={20} top={C.glass} left={C.leafL} right={C.leafR} />
         <polygon points={facePoints('left', 44, 22, 32, 0.18, 0.82, 0.38, 0.74)} fill={C.smoke} />
+        {/* Emblem segitiga daur ulang 3R hijau menyala di fasad kiri */}
+        <polygon
+          points="-24,-15 -16,-22 -14,-11"
+          fill="none"
+          stroke="#22c55e"
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+        />
         <polygon points={facePoints('right', 44, 22, 32, 0.22, 0.78, 0.0, 0.56)} fill={C.coal} />
         <g transform={at(0, 0, 32)}>
           <polygon points={diamond(14)} fill={C.warmTop} />
-          <polygon points="-24,-2 0,10 24,-2 0,-14" fill={C.solar} />
+          <polygon points="-24,-2 0,10 24,-2 0,-14" fill={C.solar} stroke="#93c5fd" strokeWidth="0.8" />
         </g>
       </g>
-      {[
-        [-0.36, C.leafTop, C.leafL],
-        [0, C.sun, C.warmL],
-        [0.36, C.bus, C.busDark],
-      ].map(([u, top, side], i) => (
-        <g key={i} transform={at(u as number, 0.36, 14)}>
-          <Box h={19} inset={47} top={top as string} left={side as string} right={side as string} />
+
+      {/* Tiga silo pemilah terpilah (Organik Hijau, Plastik Kuning, Kertas Biru) lengkap dengan tutup kubah */}
+      {bins.map(([u, top, side, cap], i) => (
+        <g key={i} transform={at(u, 0.36, 14)}>
+          <Box h={19} inset={47} top={top} left={side} right={side} />
+          <ellipse cx="0" cy="-19" rx="11" ry="5.5" fill={cap} />
+          <ellipse cx="0" cy="-20.5" rx="6.5" ry="3.2" fill="#ffffff" opacity="0.65" />
         </g>
       ))}
-      {/* <RoundTree u={-0.52} v={0.06} lift={14} scale={0.56} /> */}
+
+      {/* Truk pengumpul daur ulang bersih putih-hijau di pelataran timur */}
+      <g transform={at(0.46, -0.12, 14)}>
+        <Box h={13} inset={51} top="#f8fafc" left="#e2e8f0" right="#cbd5e1" />
+        <polygon points={facePoints('left', 13, 6.5, 13, 0.15, 0.85, 0.35, 0.62)} fill="#22c55e" />
+        <g transform="translate(-8 4)">
+          <Box h={10} inset={55} top="#4ade80" left="#22c55e" right="#16a34a" />
+        </g>
+      </g>
+
       <IsoWorker u={-0.18} v={0.46} lift={14} shirt="green" hat="helmet-white" tool="box" action="lift" />
       <IsoWorker u={0.18} v={0.46} lift={14} shirt="cyan" hat="cap-green" tool="wiper" action="wipe" delay={0.35} flip />
       <IsoWorker u={0.42} v={0.12} lift={14} shirt="white" hat="helmet-white" tool="clipboard" action="patrol-v" delay={0.65} />
@@ -2693,33 +3021,79 @@ function Daurulang() {
 
 /** Kawasan Perumahan Tapak Horizontal Padat (memakan lahan resapan tenggara) */
 function Perumahan() {
-  const house = (roofSide: string, roofTop: string) => (
-    <g>
-      <Box h={19} inset={45} top={C.smoke} left={C.steelL} right={C.steelR} />
-      <polygon points={facePoints('left', 19, 9.5, 19, 0.34, 0.66, 0.0, 0.58)} fill={C.ink} />
-      <polygon points={facePoints('right', 19, 9.5, 19, 0.26, 0.74, 0.32, 0.72)} fill={C.glass} />
-      <g transform="translate(0 -19)">
-        <polygon points="-22,1 0,12 0,-1.5 -22,-12.5" fill={roofSide} />
-        <polygon points="22,1 0,12 0,-1.5 22,-12.5" fill={roofSide} />
-        <polygon points="-22,-12.5 0,-1.5 22,-12.5 0,-23.5" fill={roofTop} />
+  const house = (
+    roofSide: string,
+    roofTop: string,
+    opts?: { h?: number; wallL?: string; wallR?: string; carColor?: string },
+  ) => {
+    const h = opts?.h ?? 19;
+    const wallL = opts?.wallL ?? C.steelL;
+    const wallR = opts?.wallR ?? C.steelR;
+    return (
+      <g>
+        {/* Pagar pembatas kapling & carport beton */}
+        <polygon points="-24,2 0,14 24,2 0,-10" fill="#cbd5e1" opacity="0.7" />
+        <polyline points="-22,2 0,13 22,2" fill="none" stroke="#f8fafc" strokeWidth="1.2" />
+        <Box h={h} inset={45} top={C.smoke} left={wallL} right={wallR} />
+        <polygon points={facePoints('left', 19, 9.5, h, 0.34, 0.66, 0.0, 0.58)} fill={C.ink} />
+        <polygon points={facePoints('right', 19, 9.5, h, 0.22, 0.78, 0.32, 0.74)} fill={C.glass} />
+        <g transform={`translate(0 ${-h})`}>
+          <polygon points="-22,1 0,12 0,-1.5 -22,-12.5" fill={roofSide} />
+          <polygon points="22,1 0,12 0,-1.5 22,-12.5" fill={roofSide} />
+          <polygon points="-22,-12.5 0,-1.5 22,-12.5 0,-23.5" fill={roofTop} />
+        </g>
+        {/* Mobil pribadi terparkir di garasi rumah (simbol urban sprawl berbasis kendaraan pribadi) */}
+        {opts?.carColor && (
+          <g transform="translate(-12 8)">
+            <ellipse cx="0" cy="1" rx="5.5" ry="2.8" fill="#0f172a" opacity="0.25" />
+            <polygon points="-5,0 0,-2.5 5,0 0,2.5" fill={opts.carColor} />
+            <polygon points="-3,-1.2 0,-2.8 3,-1.2 0,0.4" fill="#bae6fd" />
+          </g>
+        )}
       </g>
-    </g>
-  );
+    );
+  };
   return (
     <g>
       {/* Hamparan beton & jalan aspal menutup seluruh kawasan */}
       <polygon
         points={`${pt(-0.68, -0.58, 14)} ${pt(0.68, -0.58, 14)} ${pt(0.68, 0.68, 14)} ${pt(-0.68, 0.68, 14)}`}
         fill={C.stoneTop}
-        opacity="0.55"
+        opacity="0.58"
       />
-      {/* Enam rumah tapak berderet rapat memenuhi semenanjung */}
-      <g transform={at(-0.36, -0.34, 14)}>{house(C.brickLeft, C.brickTop)}</g>
-      <g transform={at(0.06, -0.34, 14)}>{house(C.warmL, C.warmTop)}</g>
-      <g transform={at(0.46, -0.34, 14)}>{house(C.brickLeft, C.brickTop)}</g>
-      <g transform={at(-0.36, 0.22, 14)}>{house(C.warmL, C.warmTop)}</g>
-      <g transform={at(0.06, 0.22, 14)}>{house(C.brickLeft, C.brickTop)}</g>
-      <g transform={at(0.46, 0.22, 14)}>{house(C.warmL, C.warmTop)}</g>
+      {/* Jalan aspal komplek di tengah deretan rumah */}
+      <polygon
+        points={`${pt(-0.66, -0.10, 14.2)} ${pt(0.66, -0.10, 14.2)} ${pt(0.66, 0.02, 14.2)} ${pt(-0.66, 0.02, 14.2)}`}
+        fill="#475569"
+        opacity="0.65"
+      />
+
+      {/* Menara tangki air (toren air komplek) di sudut barat-laut */}
+      <g transform={at(-0.58, -0.46, 14)}>
+        <line x1="-3" y1="0" x2="-3" y2="-16" stroke="#475569" strokeWidth="1.3" />
+        <line x1="3" y1="0" x2="3" y2="-16" stroke="#475569" strokeWidth="1.3" />
+        <Box h={9} inset={57} lift={16} top="#fb923c" left="#ea580c" right="#c2410c" />
+      </g>
+
+      {/* Enam rumah tapak dengan variasi tinggi 1-2 lantai, warna fasad & mobil parkir */}
+      <g transform={at(-0.36, -0.34, 14)}>
+        {house(C.brickLeft, C.brickTop, { h: 22, carColor: '#ef4444' })}
+      </g>
+      <g transform={at(0.06, -0.34, 14)}>
+        {house(C.warmL, C.warmTop, { h: 18, wallL: '#fef3c7', wallR: '#fde68a' })}
+      </g>
+      <g transform={at(0.46, -0.34, 14)}>
+        {house('#475569', '#64748b', { h: 23, carColor: '#3b82f6' })}
+      </g>
+      <g transform={at(-0.36, 0.22, 14)}>
+        {house(C.warmL, C.warmTop, { h: 19, carColor: '#facc15' })}
+      </g>
+      <g transform={at(0.06, 0.22, 14)}>
+        {house(C.brickLeft, C.brickTop, { h: 22, wallL: '#f1f5f9', wallR: '#cbd5e1', carColor: '#f8fafc' })}
+      </g>
+      <g transform={at(0.46, 0.22, 14)}>
+        {house(C.warmL, C.warmTop, { h: 18 })}
+      </g>
       <IsoWorker u={-0.12} v={0.48} lift={14} shirt="warm" hat="straw" tool="wiper" action="wipe" />
       <IsoWorker u={0.26} v={0.48} lift={14} shirt="blue" hat="hair-dark" tool="none" action="patrol" delay={0.3} />
       <IsoWorker u={0.54} v={-0.02} lift={14} shirt="green" hat="cap-green" tool="watering" action="water" delay={0.6} flip />
@@ -2732,30 +3106,74 @@ function Apartemen() {
   const tower = (h: number, w: number, terraces: number[]) => (
     <g>
       <Box h={h} inset={64 - w} top={C.smoke} left={C.steelL} right={C.steelR} />
-      {[0.18, 0.44, 0.7].map((t) =>
-        [0.16, 0.44, 0.72].map((s) => (
-          <g key={`${t}-${s}`}>
-            <polygon points={facePoints('left', w, w / 2, h, s, s + 0.16, t, t + 0.12)} fill={C.glass} />
-            <polygon points={facePoints('right', w, w / 2, h, s, s + 0.16, t, t + 0.12)} fill={C.glass} />
-          </g>
-        )),
+      {[0.18, 0.44, 0.7].map((t, ti) =>
+        [0.16, 0.44, 0.72].map((s, si) => {
+          const isWarmL = (ti + si) % 3 === 0;
+          const isWarmR = (ti * 2 + si) % 3 === 1;
+          return (
+            <g key={`${t}-${s}`}>
+              <polygon
+                points={facePoints('left', w, w / 2, h, s, s + 0.16, t, t + 0.12)}
+                fill={isWarmL ? '#ffd45e' : C.glass}
+              />
+              <polygon
+                points={facePoints('right', w, w / 2, h, s, s + 0.16, t, t + 0.12)}
+                fill={isWarmR ? '#fef08a' : C.glass}
+              />
+            </g>
+          );
+        }),
       )}
       {terraces.map((t) => (
-        <polygon
-          key={t}
-          points={`${-w - 3},${-t} 0,${-t + (w + 3) / 2} ${w + 3},${-t} 0,${-t - (w + 3) / 2}`}
-          fill={C.leafTop}
-        />
+        <g key={t}>
+          <polygon
+            points={`${-w - 3},${-t} 0,${-t + (w + 3) / 2} ${w + 3},${-t} 0,${-t - (w + 3) / 2}`}
+            fill={C.leafTop}
+          />
+          {/* Semak & pohon gantung miniatur di balkon taman vertikal */}
+          <circle cx={-w * 0.55} cy={-t - 2} r="3.4" fill="#4fb06a" />
+          <circle cx={-w * 0.55 - 0.8} cy={-t - 3} r="2.2" fill="#8ce868" />
+          <circle cx={w * 0.52} cy={-t - 1.5} r="3.0" fill="#3c9455" />
+          <circle cx={w * 0.52 - 0.6} cy={-t - 2.5} r="1.9" fill="#68c982" />
+        </g>
       ))}
       <polygon
         points={`${-w * 0.55},${-h} 0,${-h + w * 0.28} ${w * 0.55},${-h} 0,${-h - w * 0.28}`}
         fill={C.solar}
+        stroke="#93c5fd"
+        strokeWidth="0.7"
       />
     </g>
   );
   return (
     <g>
+      {/* Menara utama barat-laut */}
       <g transform={at(-0.22, -0.24, 14)}>{tower(78, 22, [30, 58])}</g>
+
+      {/* Jembatan kaca penghubung udara (Elevated Skybridge) berlapis tanaman di antara kedua menara */}
+      <g>
+        <polygon
+          points={`${pt(-0.12, -0.14, 48)} ${pt(0.16, 0.10, 48)} ${pt(0.16, 0.10, 42)} ${pt(-0.12, -0.14, 42)}`}
+          fill="#bae6fd"
+          opacity="0.88"
+        />
+        <polyline
+          points={`${pt(-0.12, -0.14, 48)} ${pt(0.16, 0.10, 48)}`}
+          fill="none"
+          stroke="#4ade80"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+        />
+        <polyline
+          points={`${pt(-0.12, -0.14, 42)} ${pt(0.16, 0.10, 42)}`}
+          fill="none"
+          stroke="#cbd5e1"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </g>
+
+      {/* Menara pendamping tenggara */}
       <g transform={at(0.24, 0.16, 14)}>{tower(54, 20, [26])}</g>
       <RoundTree u={-0.38} v={0.28} lift={14} scale={0.76} />
       <PineTree u={0.44} v={-0.22} lift={14} scale={0.68} tone="pine" />
@@ -2779,7 +3197,18 @@ const BUILDINGS: Record<AssetId, () => React.JSX.Element> = {
   apartemen: Apartemen,
 };
 
-export const ASSET_IDS = Object.keys(BUILDINGS) as AssetId[];
+export const ASSET_IDS: AssetId[] = [
+  'pltu',
+  'plts',
+  'tol',
+  'brt',
+  'industri',
+  'hutan',
+  'tpa',
+  'daurulang',
+  'perumahan',
+  'apartemen',
+];
 
 export function Building({ id }: { id: AssetId }) {
   const Draw = BUILDINGS[id];
@@ -2835,20 +3264,19 @@ function TrafficCone({ u, v, lift = 14 }: { u: number; v: number; lift?: number 
 }
 
 /**
- * Tahap 2: Aset Konstruksi Gedung Ramah Lingkungan 3D Isometrik (`ConstructionSite`).
+ * Tahap 2: Aset Konstruksi Gedung 3D Isometrik Kontekstual (`ConstructionSite`).
  *
- * Elemen Situs Konstruksi:
- * - Petak tanah persegi dikelilingi pembatas keselamatan garis oranye-putih & traffic cones.
- * - Rangka bangunan yang sedang didirikan dengan pilar beton modular terekspos,
- *   perancah kayu terang (light wooden scaffolding), dan balok silang baja.
- * - Tower crane konstruksi kuning cerah di sisi petak yang sedang mengangkat
- *   rangka panel surya (solar panel frame).
- * - Pekerja konstruksi miniatur dengan rompi keselamatan oranye neon dan helm
- *   kuning cerah yang memegang tablet digital dan alat teknik.
- * - Tumpukan material konstruksi rapi di atas rumput: palet eco-bricks,
- *   gulungan rumput turf (rolled turf grass), dan paket modul panel surya.
+ * Elemen Situs Konstruksi menyesuaikan kategori bangunan (`id`):
+ * - `pltu` / `industri` / `tpa`: Mengangkat balok baja I-Beam merah-karat & drum/bata tahan api.
+ * - `tol` / `brt` / `perumahan`: Mengangkat segmen beton jalan/box-girder & barier jalan.
+ * - `hutan`: Mengangkat bibit pohon rimbun berakar tanah & balok kayu gazebo.
+ * - Default (`plts`, `daurulang`, `apartemen`): Mengangkat modul panel surya & gulungan rumput turf.
  */
 export function ConstructionSite({ id }: { id?: AssetId }) {
+  const isHeavy = id === 'pltu' || id === 'industri' || id === 'tpa';
+  const isTransitOrRoad = id === 'tol' || id === 'brt' || id === 'perumahan';
+  const isPark = id === 'hutan';
+
   return (
     <g className="construction-site" data-testid="construction-site" data-building-id={id}>
       {/* Alas petak tanah konstruksi dengan bantalan kerikil & rumput */}
@@ -2859,37 +3287,65 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
       />
       <polygon
         points={`${pt(-0.56, -0.56, 14.3)} ${pt(0.56, -0.56, 14.3)} ${pt(0.56, 0.56, 14.3)} ${pt(-0.56, 0.56, 14.3)}`}
-        fill="#cbd5e1"
+        fill={isPark ? '#bbf7d0' : '#cbd5e1'}
         opacity="0.88"
       />
 
-      {/* 1. Tumpukan Material Rapi di Atas Rumput (Eco-Bricks, Rolled Turf Grass, Solar Modules) */}
-      {/* Palet Eco-Bricks terakota ramah lingkungan */}
+      {/* 1. Tumpukan Material Kontekstual di Atas Petak */}
+      {/* Palet Bata / Balok Kayu / Segmen Beton */}
       <g transform={at(-0.48, 0.42, 14.4)}>
         <Box h={2.5} inset={52} top="#d9a066" left="#b87d44" right="#96612e" />
-        <Box h={6} inset={54} lift={2.5} top="#e07a5f" left="#c45b41" right="#a3462f" />
-        <Box h={5} inset={56} lift={8.5} top="#e07a5f" left="#c45b41" right="#a3462f" />
+        {isTransitOrRoad ? (
+          <>
+            <Box h={6} inset={53} lift={2.5} top="#e2e8f0" left="#cbd5e1" right="#94a3b8" />
+            <Box h={5} inset={55} lift={8.5} top="#facc15" left="#eab308" right="#ca8a04" />
+          </>
+        ) : (
+          <>
+            <Box h={6} inset={54} lift={2.5} top="#e07a5f" left="#c45b41" right="#a3462f" />
+            <Box h={5} inset={56} lift={8.5} top="#e07a5f" left="#c45b41" right="#a3462f" />
+          </>
+        )}
       </g>
-      {/* Gulungan Rumput Turf Hijau (Rolled Turf Grass Cylinders) */}
+      {/* Gulungan Rumput Turf Hijau / Drum Baja Industri */}
       <g transform={at(-0.24, 0.52, 14.4)}>
-        <ellipse cx="-4" cy="0" rx="5.5" ry="2.8" fill="#4fb06a" />
-        <ellipse cx="4" cy="1.2" rx="5.5" ry="2.8" fill="#68c982" />
-        <ellipse cx="0" cy="-2.6" rx="5.5" ry="2.8" fill="#8ce868" />
-        <circle cx="0" cy="-2.6" r="1.4" fill="#7d5236" />
+        {isHeavy ? (
+          <>
+            <Box h={9} inset={56} top="#fb923c" left="#ea580c" right="#9a3412" />
+            <g transform="translate(8 2)">
+              <Box h={8} inset={57} top="#94a3b8" left="#64748b" right="#334155" />
+            </g>
+          </>
+        ) : (
+          <>
+            <ellipse cx="-4" cy="0" rx="5.5" ry="2.8" fill="#4fb06a" />
+            <ellipse cx="4" cy="1.2" rx="5.5" ry="2.8" fill="#68c982" />
+            <ellipse cx="0" cy="-2.6" rx="5.5" ry="2.8" fill="#8ce868" />
+            <circle cx="0" cy="-2.6" r="1.4" fill="#7d5236" />
+          </>
+        )}
       </g>
-      {/* Paket Modul Panel Surya di Atas Palet */}
+      {/* Paket Modul Panel Surya / Pipa Baja / Bibit Tanaman */}
       <g transform={at(0.44, 0.36, 14.4)}>
         <Box h={2.5} inset={50} top="#d9a066" left="#b87d44" right="#96612e" />
-        <Box h={5.5} inset={51} lift={2.5} top="#2f3b74" left="#3b82f6" right="#1d4ed8" />
-        <polygon points="-10,-6.5 0,-1.5 10,-6.5 0,-11.5" fill="none" stroke="#93c5fd" strokeWidth="0.9" />
+        {isHeavy ? (
+          <Box h={6} inset={51} lift={2.5} top="#94a3b8" left="#64748b" right="#475569" />
+        ) : isPark ? (
+          <Box h={6} inset={51} lift={2.5} top="#8ce868" left="#4fb06a" right="#2c7a43" />
+        ) : (
+          <>
+            <Box h={5.5} inset={51} lift={2.5} top="#2f3b74" left="#3b82f6" right="#1d4ed8" />
+            <polygon points="-10,-6.5 0,-1.5 10,-6.5 0,-11.5" fill="none" stroke="#93c5fd" strokeWidth="0.9" />
+          </>
+        )}
       </g>
 
-      {/* 2. Rangka Gedung Eco-Modular (Pilar Beton, Lantai Bertingkat, Perancah Kayu & Balok Baja) */}
+      {/* 2. Rangka Gedung Modular (Pilar Beton, Lantai Bertingkat, Perancah Kayu & Balok Baja) */}
       <g transform={at(-0.04, -0.06, 14.5)}>
         {/* Pelat lantai dasar beton */}
         <Box h={5} inset={26} top="#e2e8f0" left="#cbd5e1" right="#94a3b8" />
 
-        {/* 6 Pilar Beton Modular Terekspos (Exposed Concrete Modular Pillars) */}
+        {/* 6 Pilar Beton Modular Terekspos */}
         {[
           [-0.28, -0.28],
           [0.28, -0.28],
@@ -2905,8 +3361,15 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
 
         {/* Pelat lantai tengah (mezzanine concrete deck) */}
         <Box h={3.5} inset={28} lift={20} top="#e2e8f0" left="#cbd5e1" right="#94a3b8" />
-        {/* Taman vertikal modular sebagian terpasang di lantai 1 */}
-        <Box h={8} inset={34} lift={12} top="#68c982" left="#4fb06a" right="#3c9455" />
+        {/* Modul inti di lantai 1 sesuai tipe proyek */}
+        <Box
+          h={8}
+          inset={34}
+          lift={12}
+          top={isHeavy ? '#e07a5f' : isTransitOrRoad ? '#94a3b8' : '#68c982'}
+          left={isHeavy ? '#c45b41' : isTransitOrRoad ? '#64748b' : '#4fb06a'}
+          right={isHeavy ? '#a3462f' : isTransitOrRoad ? '#475569' : '#3c9455'}
+        />
 
         {/* Balok Silang Baja Biru-Abu (Steel Cross-Beams) di puncak rangka */}
         <Box h={3} inset={27} lift={36} top="#94a3b8" left="#64748b" right="#475569" />
@@ -2917,13 +3380,11 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
 
         {/* Perancah Kayu Terang (Light Wooden Scaffolding) mengelilingi fasad kiri & kanan */}
         <g stroke="#d99b52" strokeWidth="1.4" strokeLinecap="round">
-          {/* Tiang vertikal perancah kayu */}
           <line x1="-34" y1="-2" x2="-34" y2="-40" />
           <line x1="-18" y1="6" x2="-18" y2="-32" />
           <line x1="-2" y1="14" x2="-2" y2="-24" />
           <line x1="16" y1="6" x2="16" y2="-32" />
           <line x1="32" y1="-2" x2="32" y2="-40" />
-          {/* Papan horizontal & palang diagonal perancah kayu */}
           <line x1="-34" y1="-15" x2="-2" y2="1" stroke="#eab676" strokeWidth="2" />
           <line x1="-34" y1="-28" x2="-2" y2="-12" stroke="#eab676" strokeWidth="2" />
           <line x1="-2" y1="1" x2="32" y2="-15" stroke="#c68642" strokeWidth="2" />
@@ -2933,7 +3394,7 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
         </g>
       </g>
 
-      {/* 3. Tower Crane Kuning Cerah (Compact Bright Yellow Construction Tower Crane) */}
+      {/* 3. Tower Crane Kuning Cerah dengan Beban Angkat Kontekstual */}
       <g transform={at(0.46, -0.34, 14.5)}>
         {/* Pemberat beton dasar crane */}
         <Box h={7} inset={53} top="#64748b" left="#475569" right="#334155" />
@@ -2948,29 +3409,50 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
         <Box h={9} inset={56} lift={64} top="#fef08a" left="#facc15" right="#ca8a04" />
         <rect x="-5" y="-71" width="5" height="4" fill="#bae6fd" />
 
-        {/* Lengan Jib Crane Kuning & Kabel Pengangkat Panel Surya (Animated Hoist) */}
+        {/* Lengan Jib Crane Kuning & Kabel Pengangkat Material Kontekstual */}
         <g className="crane-jib">
-          {/* Counter-jib & pemberat belakang */}
           <polygon points="0,-76 18,-68 18,-73 0,-81" fill="#eab308" />
           <rect x="11" y="-71" width="6" height="6" rx="1" fill="#475569" />
-          {/* Lengan jib utama memanjang ke atas rangka gedung */}
           <polygon points="0,-78 -54,-52 -54,-57 0,-83" fill="#facc15" />
           <polygon points="0,-83 -54,-57 -51,-59 2,-85" fill="#fef08a" />
-          {/* Kabel baja penahan puncak menara crane */}
           <line x1="0" y1="-91" x2="-48" y2="-59" stroke="#94a3b8" strokeWidth="1" />
           <line x1="0" y1="-91" x2="16" y2="-72" stroke="#94a3b8" strokeWidth="1" />
           <polygon points="-2.5,-83 0,-92 2.5,-83" fill="#facc15" />
 
-          {/* Troli & Kabel Hoist Mengangkat Rangka Panel Surya (Hoisting Solar Panel Frame) */}
+          {/* Troli & Kabel Hoist Mengangkat Beban sesuai `id` */}
           <g transform="translate(-38 -59)" className="crane-load">
             <rect x="-3" y="-2" width="6" height="3.5" rx="1" fill="#334155" />
             <line x1="0" y1="1.5" x2="0" y2="18" stroke="#475569" strokeWidth="1.3" />
             <circle cx="0" cy="18" r="2" fill="#f59e0b" />
-            {/* Rangka Panel Surya yang Sedang Diangkat di Udara */}
             <g transform="translate(0 23)">
-              <polygon points="-14,0 0,7 14,0 0,-7" fill="#1e3a8a" stroke="#93c5fd" strokeWidth="1.2" />
-              <line x1="-7" y1="-3.5" x2="7" y2="3.5" stroke="#bfdbfe" strokeWidth="0.9" />
-              <line x1="-7" y1="3.5" x2="7" y2="-3.5" stroke="#bfdbfe" strokeWidth="0.9" />
+              {isHeavy ? (
+                /* Balok baja I-Beam merah-karat untuk PLTU / Industri / TPA */
+                <g>
+                  <polygon points="-15,-4 15,4 15,8 -15,0" fill="#b45309" />
+                  <polygon points="-15,-6 15,2 15,4 -15,-4" fill="#f59e0b" />
+                </g>
+              ) : isTransitOrRoad ? (
+                /* Segmen Box-Girder Jalan Beton untuk Tol / BRT / Perumahan */
+                <g>
+                  <polygon points="-15,0 0,7 15,0 0,-7" fill="#cbd5e1" stroke="#64748b" strokeWidth="1" />
+                  <line x1="-8" y1="0" x2="8" y2="0" stroke="#facc15" strokeWidth="1.4" strokeDasharray="3 2" />
+                </g>
+              ) : isPark ? (
+                /* Bibit Pohon Rimbun untuk Hutan Kota */
+                <g>
+                  <ellipse cx="0" cy="4" rx="4.5" ry="3" fill="#8f5b34" />
+                  <rect x="-1.2" y="-4" width="2.4" height="7" fill="#7d5236" />
+                  <circle cx="0" cy="-6" r="6" fill="#4fb06a" />
+                  <circle cx="-2" cy="-8" r="4" fill="#8ce868" />
+                </g>
+              ) : (
+                /* Rangka Panel Surya untuk PLTS / Daur Ulang / Apartemen */
+                <g>
+                  <polygon points="-14,0 0,7 14,0 0,-7" fill="#1e3a8a" stroke="#93c5fd" strokeWidth="1.2" />
+                  <line x1="-7" y1="-3.5" x2="7" y2="3.5" stroke="#bfdbfe" strokeWidth="0.9" />
+                  <line x1="-7" y1="3.5" x2="7" y2="-3.5" stroke="#bfdbfe" strokeWidth="0.9" />
+                </g>
+              )}
             </g>
           </g>
         </g>
@@ -3036,15 +3518,11 @@ function ConfettiBurst() {
  * Tahap 3: Aset Peresmian Gedung Baru 3D Isometrik (`OpeningCeremony`).
  *
  * Menampilkan:
- * - Latar Belakang: Fasilitas ramah lingkungan baru dengan jendela kaca surya,
- *   dinding taman vertikal hijau (vertical green garden walls), serta cahaya
- *   lampu interior hangat yang menyambut.
- * - Latar Depan: Jalur karpet merah peresmian menuju tangga pintu masuk gedung,
- *   dua tiang pembatas perak (silver stanchion posts) yang membentangkan pita
- *   satin merah cerah (vibrant red satin ribbon), staf kota & warga yang
- *   bertepuk tangan merayakan, serta partikel confetti geometris di udara.
- * - Figur Walikota berjas navy dan berselempang merah yang memegang gunting
- *   emas bergerak secara dinamis ke titik pita ini melalui `MayorDynamicLayer`.
+ * - Latar Belakang: Fasilitas baru yang telah berdiri megah di atas petak.
+ * - Latar Depan: Jalur karpet merah peresmian, dua tiang pembatas perak yang
+ *   membentangkan pita satin merah cerah dengan animasi terbelah saat digunting
+ *   Walikota (`.ceremony-ribbon-left`, `.ceremony-ribbon-right`, `.ceremony-ribbon-knot`),
+ *   staf kota & warga yang bersorak, serta partikel confetti geometris di udara.
  */
 export function OpeningCeremony({ id }: { id: AssetId }) {
   return (
@@ -3052,17 +3530,6 @@ export function OpeningCeremony({ id }: { id: AssetId }) {
       {/* Gedung utama di latar belakang */}
       <Building id={id} />
 
-      {/*
-        Prosesi peresmian sengaja diturunkan ke tanah di depan-kiri petak,
-        bukan di atas petaknya.
-
-        Sebelumnya ada paviliun kaca yang digambar tepat di atas gedung
-        aslinya, lalu karpet, pita, Walikota, dan kerumunan semuanya ditumpuk
-        di satu ubin yang sama, sehingga saling menimpa. Satu ubin memang tidak
-        cukup untuk menampung gedung sekaligus acaranya. Sekarang gedungnya
-        berdiri di atas petak, acaranya berlangsung di halaman depannya, persis
-        seperti peresmian sungguhan.
-      */}
       <g transform={at(CEREMONY_ANCHOR.u, CEREMONY_ANCHOR.v, CEREMONY_ANCHOR.lift)}>
         {/* Pendar cahaya hangat lampu penyambutan di halaman */}
         <ellipse cx="-2" cy="2" rx="40" ry="18" fill="#fef08a" opacity="0.3" />
@@ -3081,19 +3548,31 @@ export function OpeningCeremony({ id }: { id: AssetId }) {
         <line x1="10" y1="5" x2="10" y2="-9" stroke="#f1f5f9" strokeWidth="2.2" strokeLinecap="round" />
         <circle cx="10" cy="-9.5" r="2.2" fill="#ffffff" stroke="#94a3b8" strokeWidth="0.7" />
 
-        {/* Pita Satin Merah yang Direntangkan di Antara Kedua Tiang */}
-        <path
-          d="M -16,-13 Q -3,-8 10,-7"
-          fill="none"
-          stroke="#ef4444"
-          strokeWidth="3.4"
-          strokeLinecap="round"
-          className="ceremony-ribbon"
-        />
-        {/* Simpul Pita Merah-Emas di Tengah */}
-        <polygon points="-7.5,-12.5 -3,-9.5 -7.5,-6.5" fill="#f43f5e" />
-        <polygon points="1.5,-12.5 -3,-9.5 1.5,-6.5" fill="#f43f5e" />
-        <circle cx="-3" cy="-9.5" r="2.2" fill="#fbbf24" stroke="#fef08a" strokeWidth="0.6" />
+        {/* Pita Satin Merah Terbelah Dua Saat Gunting Emas Walikota Mengayun */}
+        <g className="ceremony-ribbon">
+          <path
+            d="M -16,-13 Q -9,-11 -3,-9.5"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="3.4"
+            strokeLinecap="round"
+            className="ceremony-ribbon-left"
+          />
+          <path
+            d="M -3,-9.5 Q 3.5,-8 10,-7"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="3.4"
+            strokeLinecap="round"
+            className="ceremony-ribbon-right"
+          />
+          {/* Simpul Pita Merah-Emas di Tengah */}
+          <g className="ceremony-ribbon-knot">
+            <polygon points="-7.5,-12.5 -3,-9.5 -7.5,-6.5" fill="#f43f5e" />
+            <polygon points="1.5,-12.5 -3,-9.5 1.5,-6.5" fill="#f43f5e" />
+            <circle cx="-3" cy="-9.5" r="2.2" fill="#fbbf24" stroke="#fef08a" strokeWidth="0.6" />
+          </g>
+        </g>
       </g>
 
       {/* Warga bersorak mengapit karpet, juga di tanah, bukan di atas petak */}

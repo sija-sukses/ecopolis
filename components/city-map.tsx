@@ -120,7 +120,7 @@ export function CityMap({
         style={{
           transformBox: 'view-box',
           transformOrigin: '0 0',
-          transform: getPlotCameraTransform(cameraPlot, isMobile),
+          transform: getPlotCameraTransform(cameraPlot, isMobile, undefined, fill),
         }}
       >
       <IslandTerrain plots={plots} />

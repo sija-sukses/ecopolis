@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Bot, FileDown, Home, MapPin, RotateCcw, Share2 } from 'lucide-react';
 
 import { CityMap } from '@/components/city-map.tsx';
 import { Avatar } from '@/components/avatars.tsx';
@@ -14,19 +15,76 @@ import { SCENARIOS } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId, StatKey } from '@/lib/types.ts';
 
-const STATS: { key: StatKey; label: string; sdg: string; sdgName: string }[] = [
-  { key: 'economy', label: 'Ekonomi', sdg: 'SDG 8', sdgName: 'Pekerjaan Layak dan Pertumbuhan Ekonomi' },
-  { key: 'environment', label: 'Lingkungan', sdg: 'SDG 13', sdgName: 'Penanganan Perubahan Iklim' },
-  { key: 'satisfaction', label: 'Kepuasan Warga', sdg: 'SDG 11', sdgName: 'Kota dan Permukiman Berkelanjutan' },
-  { key: 'energy', label: 'Energi', sdg: 'SDG 9', sdgName: 'Industri, Inovasi, dan Infrastruktur' },
+const STATS: { key: StatKey; label: string; shortLabel: string; sdg: string; sdgName: string }[] = [
+  { key: 'economy', label: 'Ekonomi', shortLabel: 'Ekonomi', sdg: 'SDG 8', sdgName: 'Pekerjaan Layak dan Pertumbuhan Ekonomi' },
+  { key: 'environment', label: 'Lingkungan', shortLabel: 'Lingkungan', sdg: 'SDG 13', sdgName: 'Penanganan Perubahan Iklim' },
+  { key: 'satisfaction', label: 'Kepuasan Warga', shortLabel: 'Kepuasan', sdg: 'SDG 11', sdgName: 'Kota dan Permukiman Berkelanjutan' },
+  { key: 'energy', label: 'Energi', shortLabel: 'Energi', sdg: 'SDG 9', sdgName: 'Industri, Inovasi, dan Infrastruktur' },
 ];
 
-function findChoiceMeta(round: number, option: OptionId): { asset: AssetId | null; scenarioTitle: string } {
+function statusTone(value: number): 'good' | 'warn' | 'bad' {
+  if (value >= 60) return 'good';
+  if (value >= 35) return 'warn';
+  return 'bad';
+}
+
+function CountUpNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(value);
+
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
+    let rafId = 0;
+    const duration = 760;
+    const start = performance.now();
+
+    function tick(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(value * eased));
+      if (progress < 1) {
+        rafId = window.requestAnimationFrame(tick);
+      }
+    }
+
+    setDisplay(0);
+    rafId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [value]);
+
+  return <>{display}</>;
+}
+
+function findChoiceMeta(
+  round: number,
+  option: OptionId,
+): {
+  asset: AssetId | null;
+  scenarioTitle: string;
+  plot: number | null;
+  effects: { key: StatKey; label: string; delta: number }[];
+} {
   const sc = SCENARIOS.find((s) => s.round === round);
   const opt = sc?.options.find((o) => o.id === option);
+  const effects: { key: StatKey; label: string; delta: number }[] = [];
+  if (opt?.effects) {
+    for (const s of STATS) {
+      const d = opt.effects[s.key];
+      if (typeof d === 'number' && d !== 0) {
+        effects.push({ key: s.key, label: s.shortLabel, delta: d });
+      }
+    }
+  }
   return {
     asset: opt?.asset ?? null,
     scenarioTitle: sc?.title ?? `Ronde ${round}`,
+    plot: sc?.plot ?? null,
+    effects,
   };
 }
 
@@ -90,6 +148,7 @@ export function ResultsView() {
   const mapBox = useRef<HTMLDivElement>(null);
   const [making, setMaking] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [focusedRound, setFocusedRound] = useState<number | null>(null);
 
   const { leader, review, stats, choices, plots } = state;
 
@@ -116,8 +175,14 @@ export function ResultsView() {
     (stats.economy + stats.environment + stats.satisfaction + stats.energy) / 4,
   );
 
+  const focusedChoice = focusedRound !== null ? choices.find((c) => c.round === focusedRound) : undefined;
+  const focusedMeta =
+    focusedChoice !== undefined ? findChoiceMeta(focusedChoice.round, focusedChoice.option) : null;
+  const focusedPlot = focusedMeta?.plot ?? null;
+
   async function unduh() {
     setMaking(true);
+    setFocusedRound(null);
     play('click', state.muted);
     try {
       await downloadCertificate(
@@ -132,6 +197,7 @@ export function ResultsView() {
 
   async function bagikanStory() {
     setSharing(true);
+    setFocusedRound(null);
     play('click', state.muted);
     try {
       await downloadStoryCard(
@@ -148,12 +214,14 @@ export function ResultsView() {
     <main className="result">
       <section className="result__hero shell" aria-label="Dossier kepemimpinan Ecopolis 2050">
         <div className="result__dossier">
-          <div className="result__stage">
+          <div className="result__stage result-reveal result-reveal--1">
             <div className="result__stage-top">
               <span className="result__grade">
                 <b>Kelas {quadrant.grade}</b> · {quadrant.label}
               </span>
-              <span className="result__avg">Rata-rata {avgScore}/100</span>
+              <span className="result__avg">
+                Rata-rata <CountUpNumber value={avgScore} />/100
+              </span>
             </div>
 
             <div className="result__map" ref={mapBox}>
@@ -161,6 +229,7 @@ export function ResultsView() {
                 plots={plots}
                 avatar={leader.avatar}
                 satisfaction={stats.satisfaction}
+                cameraPlot={focusedPlot}
                 animate
                 label={`Kota Ecopolis pada 2050 dengan kelima kawasan terbangun: ${choices
                   .map((c) => c.label)
@@ -168,25 +237,69 @@ export function ResultsView() {
               />
             </div>
 
+            <div className="result__plot-bar" role="group" aria-label="Sorot kawasan bangunan per ronde">
+              <button
+                type="button"
+                className={`result__plot-pill${focusedRound === null ? ' result__plot-pill--active' : ''}`}
+                aria-pressed={focusedRound === null}
+                onClick={() => {
+                  play('click', state.muted);
+                  setFocusedRound(null);
+                }}
+              >
+                Semua
+              </button>
+              {choices.map((c) => {
+                const active = focusedRound === c.round;
+                return (
+                  <button
+                    key={c.round}
+                    type="button"
+                    className={`result__plot-pill${active ? ' result__plot-pill--active' : ''}`}
+                    aria-pressed={active}
+                    title={`Ronde ${c.round}: ${c.label}`}
+                    onClick={() => {
+                      play('click', state.muted);
+                      setFocusedRound(active ? null : c.round);
+                    }}
+                  >
+                    R{c.round}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="result__mini-stats" aria-label="Ringkasan indikator kota">
-              {STATS.map((s) => (
-                <div className="result__mini-stat" key={s.key}>
-                  <div className="result__mini-head">
-                    <span>{s.label}</span>
-                    <b>{stats[s.key]}</b>
+              {STATS.map((s, idx) => {
+                const val = stats[s.key];
+                const tone = statusTone(val);
+                return (
+                  <div
+                    className={`result__mini-stat result__mini-stat--${tone}`}
+                    key={s.key}
+                  >
+                    <div className="result__mini-head">
+                      <span>{s.shortLabel}</span>
+                      <b>
+                        <CountUpNumber value={val} />
+                      </b>
+                    </div>
+                    <span className="result__mini-track">
+                      <span
+                        className={`result__mini-fill result__mini-fill--${tone}`}
+                        style={{
+                          width: `${val}%`,
+                          animationDelay: `${140 + idx * 70}ms`,
+                        }}
+                      />
+                    </span>
                   </div>
-                  <span className="result__mini-track">
-                    <span
-                      className="result__mini-fill"
-                      style={{ width: `${stats[s.key]}%` }}
-                    />
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          <div className="result__brief">
+          <div className="result__brief result-reveal result-reveal--2">
             <div className="result__who-row">
               <div className="result__who">
                 <Avatar id={leader.avatar} size={68} className="result__face" />
@@ -215,26 +328,12 @@ export function ResultsView() {
                 ))}
               </div>
             </div>
-
-            <div className="result__actions" aria-label="Simpan dan bagikan laporan">
-              <button className="btn" type="button" onClick={unduh} disabled={making}>
-                {making ? 'Menyiapkan PDF...' : 'Unduh laporan PDF'}
-              </button>
-              <button
-                className="btn btn--paper"
-                type="button"
-                onClick={bagikanStory}
-                disabled={sharing}
-              >
-                {sharing ? 'Menyiapkan gambar...' : 'Simpan kartu Story (PNG)'}
-              </button>
-            </div>
           </div>
         </div>
       </section>
 
       <div className="result__bottom shell">
-        <section className="result__sdg" aria-labelledby="sdg">
+        <section className="result__sdg result-reveal result-reveal--3" aria-labelledby="sdg">
           <div className="result__panel-head">
             <span className="result__kicker">Dampak Pembangunan Berkelanjutan</span>
             <h2 id="sdg">Capaian dan SDG</h2>
@@ -242,40 +341,91 @@ export function ResultsView() {
           </div>
 
           <div className="sdgs">
-            {STATS.map((s) => (
-              <article className="sdg" key={s.key}>
-                <div className="sdg__top">
-                  <span className="sdg__tag">{s.sdg}</span>
-                  <b className="sdg__num">{stats[s.key]}</b>
-                </div>
-                <span className="sdg__label">{s.label}</span>
-                <span className="sdg__track">
-                  <span className="sdg__fill" style={{ width: `${stats[s.key]}%` }} />
-                </span>
-                <span className="sdg__name">{s.sdgName}</span>
-              </article>
-            ))}
+            {STATS.map((s, idx) => {
+              const val = stats[s.key];
+              const tone = statusTone(val);
+              return (
+                <article className={`sdg sdg--${tone}`} key={s.key}>
+                  <div className="sdg__top">
+                    <span className="sdg__tag">{s.sdg}</span>
+                    <b className="sdg__num">
+                      <CountUpNumber value={val} />
+                    </b>
+                  </div>
+                  <span className="sdg__label">{s.label}</span>
+                  <span className="sdg__track">
+                    <span
+                      className={`sdg__fill sdg__fill--${tone}`}
+                      style={{
+                        width: `${val}%`,
+                        animationDelay: `${220 + idx * 80}ms`,
+                      }}
+                    />
+                  </span>
+                  <span className="sdg__name">{s.sdgName}</span>
+                </article>
+              );
+            })}
           </div>
         </section>
 
-        <section className="result__close" aria-labelledby="jejak-kebijakan">
+        <section
+          className="result__close result-reveal result-reveal--4"
+          aria-labelledby="jejak-kebijakan"
+        >
           <div className="result__panel-head">
-            <span className="result__kicker">Rekam Jejak 5 Ronde</span>
+            <span className="result__kicker">Rekam Jejak 5 Ronde · Ketuk untuk sorot peta</span>
             <h2 id="jejak-kebijakan">Kebijakan yang Anda ambil</h2>
           </div>
 
           <ol className="result__list">
-            {choices.map((c) => {
+            {choices.map((c, idx) => {
               const meta = findChoiceMeta(c.round, c.option);
+              const isSelected = focusedRound === c.round;
               return (
-                <li key={c.round}>
-                  {meta.asset && <PolicyIcon asset={meta.asset} />}
-                  <div className="result__choice-copy">
-                    <small>
-                      Ronde {c.round} · {meta.scenarioTitle}
-                    </small>
-                    <span>{c.label}</span>
-                  </div>
+                <li
+                  key={c.round}
+                  className={`result__choice-item${isSelected ? ' result__choice-item--active' : ''}`}
+                  style={{ animationDelay: `${240 + idx * 70}ms` }}
+                >
+                  <button
+                    type="button"
+                    className="result__choice-btn"
+                    aria-pressed={isSelected}
+                    onClick={() => {
+                      play('click', state.muted);
+                      const next = isSelected ? null : c.round;
+                      setFocusedRound(next);
+                      if (next !== null) {
+                        mapBox.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                      }
+                    }}
+                  >
+                    {meta.asset && <PolicyIcon asset={meta.asset} />}
+                    <div className="result__choice-copy">
+                      <small>
+                        Ronde {c.round} · {meta.scenarioTitle}
+                      </small>
+                      <span>{c.label}</span>
+                      {meta.effects.length > 0 && (
+                        <div className="result__choice-deltas" aria-label="Dampak indikator">
+                          {meta.effects.map((ef) => (
+                            <span
+                              key={ef.key}
+                              className={`result__delta-pill ${
+                                ef.delta > 0 ? 'result__delta-pill--up' : 'result__delta-pill--down'
+                              }`}
+                            >
+                              {ef.delta > 0 ? `+${ef.delta}` : ef.delta} {ef.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <span className="result__choice-pin" aria-hidden="true">
+                      <MapPin size={16} strokeWidth={2.3} />
+                    </span>
+                  </button>
                 </li>
               );
             })}
@@ -283,28 +433,74 @@ export function ResultsView() {
         </section>
       </div>
 
-      <footer className="result__footer shell" aria-label="Navigasi permainan">
-        <div className="result__footer-copy">
-          <b>Ingin mencoba arah kebijakan lain untuk Ecopolis?</b>
-          <span>Setiap kombinasi 5 keputusan menghasilkan wajah kota dan evaluasi 2050 yang berbeda.</span>
-        </div>
-        <div className="result__nav-actions">
+      <nav className="result-dock result-reveal result-reveal--5" aria-label="Menu aksi laporan 2050">
+        <div className="result-dock__inner">
+          <Link
+            href="/"
+            className="result-dock__item"
+            onClick={() => play('click', state.muted)}
+          >
+            <Home size={19} strokeWidth={2.3} aria-hidden="true" />
+            <span>Beranda</span>
+          </Link>
+
           <button
-            className="btn btn--ink"
             type="button"
+            className="result-dock__item"
+            onClick={unduh}
+            disabled={making}
+            aria-label="Unduh laporan PDF"
+          >
+            <FileDown size={19} strokeWidth={2.3} aria-hidden="true" />
+            <span>{making ? 'Proses...' : 'PDF'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="result-dock__item"
+            onClick={bagikanStory}
+            disabled={sharing}
+            aria-label="Simpan atau bagikan kartu Story"
+          >
+            <Share2 size={19} strokeWidth={2.3} aria-hidden="true" />
+            <span>{sharing ? 'Proses...' : 'Story'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="result-dock__item result-dock__item--tara"
+            onClick={() => {
+              play('click', state.muted);
+              window.dispatchEvent(
+                new CustomEvent('ecopolis:ask-tara', {
+                  detail:
+                    'Bedah hasil evaluasi kota 2050 saya dan jelaskan sektor mana yang paling perlu diperbaiki.',
+                }),
+              );
+            }}
+            aria-label="Bedah evaluasi kota bersama AI TARA"
+          >
+            <span className="result-dock__tara-icon" aria-hidden="true">
+              <Bot size={19} strokeWidth={2.3} />
+              <small>AI</small>
+            </span>
+            <span>TARA</span>
+          </button>
+
+          <button
+            type="button"
+            className="result-dock__cta"
             onClick={() => {
               play('click', state.muted);
               dispatch({ type: 'reset' });
               router.push('/play');
             }}
           >
-            Main lagi
+            <RotateCcw size={17} strokeWidth={2.5} aria-hidden="true" />
+            <span>Main Lagi</span>
           </button>
-          <Link className="result__home" href="/">
-            Kembali ke beranda
-          </Link>
         </div>
-      </footer>
+      </nav>
     </main>
   );
 }

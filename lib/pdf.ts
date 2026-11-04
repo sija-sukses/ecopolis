@@ -467,15 +467,9 @@ export async function downloadStoryCard(
   );
   if (!blob) return;
 
-  // Unduh langsung berkas PNG
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 3000);
-
-  // Jika perangkat mendukung Web Share API dengan berkas gambar, buka share sheet.
+  // Jika perangkat mendukung Web Share API dengan berkas gambar, buka share sheet
+  // selagi user gesture masih aktif; jika tidak didukung atau gagal, unduh berkas PNG.
+  let shared = false;
   try {
     const file = new File([blob], fileName, { type: 'image/png' });
     if (
@@ -488,8 +482,20 @@ export async function downloadStoryCard(
         text: `Inilah masa depan kota Ecopolis di bawah kepemimpinan ${leader.name}: "${review.title}"!`,
         files: [file],
       });
+      shared = true;
     }
-  } catch {
-    // Pengguna menutup dialog share; unduhan PNG tetap sudah tersimpan.
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      shared = true;
+    }
+  }
+
+  if (!shared) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
   }
 }

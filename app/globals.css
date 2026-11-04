@@ -1535,6 +1535,104 @@ a { color: inherit; }
   animation: mayorCeremonyCut 0.65s ease-in-out infinite;
 }
 
+@keyframes furnacePulse {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+.furnace-glow {
+  animation: furnacePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes batteryLedBlink {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.battery-led {
+  animation: batteryLedBlink 2.1s ease-in-out infinite;
+}
+
+.battery-led--2 {
+  animation-delay: 0.4s;
+}
+
+.battery-led--3 {
+  animation-delay: 0.8s;
+}
+
+@keyframes brtBusGlide {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-10px, 5px); }
+}
+
+.brt-bus-mover {
+  animation: brtBusGlide 4.2s ease-in-out infinite;
+}
+
+.brt-bus-mover--alt {
+  animation: brtBusGlide 4.2s ease-in-out infinite reverse;
+}
+
+@keyframes brtCyclistRide {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(12px, -6px); }
+}
+
+.brt-cyclist {
+  animation: brtCyclistRide 3.6s ease-in-out infinite;
+}
+
+@keyframes birdSoar {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6px, -3.5px) scale(0.95); }
+}
+
+.bird-glide {
+  animation: birdSoar 3.2s ease-in-out infinite;
+}
+
+.bird-glide--2 {
+  animation-delay: 0.6s;
+}
+
+.bird-glide--3 {
+  animation-delay: 1.2s;
+}
+
+@keyframes ribbonCutLeft {
+  0%, 32% { transform: rotate(0deg) translateY(0); }
+  65%, 100% { transform: rotate(-18deg) translateY(2.5px); }
+}
+
+@keyframes ribbonCutRight {
+  0%, 32% { transform: rotate(0deg) translateY(0); }
+  65%, 100% { transform: rotate(18deg) translateY(2.5px); }
+}
+
+@keyframes ribbonKnotDrop {
+  0%, 32% { transform: translateY(0) scale(1); opacity: 1; }
+  65%, 100% { transform: translateY(5px) scale(0.75); opacity: 0; }
+}
+
+.ceremony-ribbon-left {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: ribbonCutLeft 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.ceremony-ribbon-right {
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  animation: ribbonCutRight 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.ceremony-ribbon-knot {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: ribbonKnotDrop 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
 .panel__pic { animation: driftin linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
 
 /* Masuk per bagian, dipicu oleh posisi gulir.
@@ -1577,6 +1675,14 @@ a { color: inherit; }
   .crane-load,
   .confetti-piece,
   .mayor-sprite--ceremony,
+  .furnace-glow,
+  .battery-led,
+  .brt-bus-mover,
+  .brt-cyclist,
+  .bird-glide,
+  .ceremony-ribbon-left,
+  .ceremony-ribbon-right,
+  .ceremony-ribbon-knot,
   .cloud-drift,
   .isle-float,
   .sky-cloud-drift,

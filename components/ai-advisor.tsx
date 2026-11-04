@@ -209,6 +209,8 @@ function getNudgeMessage(
 export function AiAdvisor() {
   const { state } = useGame();
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
   const hasLeader = Boolean(state.leader);
   const isCrisis =
     hasLeader &&
@@ -250,6 +252,47 @@ export function AiAdvisor() {
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+
+  function openPanel() {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setClosing(false);
+    setOpen(true);
+    setDismissedKey(currentKey);
+  }
+
+  function closePanel() {
+    stopSpeaking();
+    setSpeakingText(null);
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      setClosing(false);
+      setOpen(false);
+      return;
+    }
+    setClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      setClosing(false);
+      setOpen(false);
+    }, 180);
+  }
+
+  function togglePanel() {
+    if (open && !closing) {
+      closePanel();
+    } else {
+      openPanel();
+    }
+  }
 
   // Tempatkan orb di kanan bawah saat pertama kali dimuat, dan jaga agar tetap
   // di dalam layar ketika ukuran jendela berubah.
@@ -294,19 +337,21 @@ export function AiAdvisor() {
     return () => {
       stopSpeaking();
       recognitionRef.current?.stop();
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+      }
     };
   }, []);
 
   // Pintasan keyboard: Alt+T / T untuk buka-tutup TARA, Esc untuk tutup
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      const target = e.target as HTMLElement | null;
-      const isInput = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA';
+      const isInput =
+        e.target instanceof HTMLElement &&
+        (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA');
 
-      if (e.key === 'Escape' && open) {
-        setOpen(false);
-        stopSpeaking();
-        setSpeakingText(null);
+      if (e.key === 'Escape' && open && !closing) {
+        closePanel();
         return;
       }
 
@@ -315,20 +360,38 @@ export function AiAdvisor() {
         (!isInput && e.key.toLowerCase() === 't' && !e.ctrlKey && !e.metaKey)
       ) {
         e.preventDefault();
-        setOpen((prev) => {
-          if (!prev) setDismissedKey(currentKey);
-          if (prev) {
-            stopSpeaking();
-            setSpeakingText(null);
-          }
-          return !prev;
-        });
+        if (open && !closing) {
+          closePanel();
+        } else {
+          openPanel();
+        }
       }
     }
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, currentKey]);
+  });
+
+  // Dengarkan pemicu konsultasi langsung dari halaman evaluasi (/results)
+  useEffect(() => {
+    function onAskTara(e: Event) {
+      if (open && !closing) {
+        closePanel();
+        return;
+      }
+      openPanel();
+      if (
+        e instanceof CustomEvent &&
+        typeof e.detail === 'string' &&
+        e.detail.trim() &&
+        !messages.some((m) => m.role === 'user' && m.text === e.detail.trim())
+      ) {
+        void ask(e.detail);
+      }
+    }
+    window.addEventListener('ecopolis:ask-tara', onAskTara);
+    return () => window.removeEventListener('ecopolis:ask-tara', onAskTara);
+  });
 
   // Batasi durasi tayang balon petunjuk (nudge) hingga 9 detik
   useEffect(() => {
@@ -530,7 +593,7 @@ export function AiAdvisor() {
 
   return (
     <div
-      className={`assist${open ? ' assist--open' : ''}${dragging ? ' assist--drag' : ''} assist--${pos.side}`}
+      className={`assist${open && !closing ? ' assist--open' : ''}${dragging ? ' assist--drag' : ''} assist--${pos.side}`}
       style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
     >
       <button
@@ -548,17 +611,10 @@ export function AiAdvisor() {
           if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
             navigator.vibrate(8);
           }
-          setOpen((prev) => {
-            if (!prev) setDismissedKey(currentKey);
-            if (prev) {
-              stopSpeaking();
-              setSpeakingText(null);
-            }
-            return !prev;
-          });
+          togglePanel();
         }}
-        aria-expanded={open}
-        aria-label={open ? 'Tutup Staf Ahli AI' : 'Buka Staf Ahli AI (bisa digeser)'}
+        aria-expanded={open && !closing}
+        aria-label={open && !closing ? 'Tutup Staf Ahli AI' : 'Buka Staf Ahli AI (bisa digeser)'}
         title="TARA — Staf Ahli AI (Geser atau klik, Alt+T)"
       >
         <span className="assist__ring" aria-hidden="true">
@@ -582,8 +638,7 @@ export function AiAdvisor() {
             aria-label={`Buka saran TARA: ${nudgeText}`}
             onClick={() => {
               play('click', state.muted);
-              setOpen(true);
-              setDismissedKey(currentKey);
+              openPanel();
             }}
           >
             <span className="assist__nudge-icon" aria-hidden="true">
@@ -607,7 +662,10 @@ export function AiAdvisor() {
       )}
 
       {open && (
-        <section className="assist__panel" aria-label="Asisten AI Ecopolis">
+        <section
+          className={`assist__panel${closing ? ' assist__panel--closing' : ''}`}
+          aria-label="Asisten AI Ecopolis"
+        >
           <header className="assist__head">
             <div className="assist__identity">
               <span
@@ -653,9 +711,7 @@ export function AiAdvisor() {
                 className="assist__icon-btn"
                 onClick={() => {
                   play('click', state.muted);
-                  stopSpeaking();
-                  setSpeakingText(null);
-                  setOpen(false);
+                  closePanel();
                 }}
                 title="Tutup panel AI (Esc)"
                 aria-label="Tutup panel AI"

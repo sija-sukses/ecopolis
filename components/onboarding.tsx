@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Avatar } from '@/components/avatars.tsx';
 import { AVATARS, DEFAULT_AVATAR } from '@/lib/avatars.ts';
@@ -9,26 +9,55 @@ import { useGame } from '@/lib/game-context.tsx';
 import { play } from '@/lib/sfx.ts';
 
 const MAX = 20;
+const EXIT_MS = 210;
 
 export function Onboarding() {
   const { state, dispatch } = useGame();
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState<AvatarId>(DEFAULT_AVATAR);
   const [touched, setTouched] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const exitTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current !== null) {
+        window.clearTimeout(exitTimerRef.current);
+      }
+    };
+  }, []);
 
   const trimmed = name.trim();
   const valid = trimmed.length >= 1 && trimmed.length <= MAX;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (exiting) return;
     setTouched(true);
     if (!valid) return;
     play('click', state.muted);
-    dispatch({ type: 'start', leader: { name: trimmed, avatar } });
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducedMotion) {
+      dispatch({ type: 'start', leader: { name: trimmed, avatar } });
+      return;
+    }
+
+    setExiting(true);
+    exitTimerRef.current = window.setTimeout(() => {
+      dispatch({ type: 'start', leader: { name: trimmed, avatar } });
+    }, EXIT_MS);
   }
 
   return (
-    <form className="onboard" onSubmit={submit} noValidate>
+    <form
+      className={`onboard${exiting ? ' onboard--exiting' : ''}`}
+      onSubmit={submit}
+      noValidate
+    >
       <h1 className="onboard__title">Siapa yang memimpin?</h1>
       <p className="onboard__lead">
         Nama dan avatar Anda muncul di papan indikator sepanjang permainan, lalu di laporan kota
