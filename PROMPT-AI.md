@@ -65,7 +65,7 @@ sudah di `main`.
   sendiri dan pecah pada gradien, `backdrop-filter`, dan warna `oklch`.
   PDF memakai `jspdf` saja lewat `await import()`.
 - **Jangan hardcode ID model Gemini.** Pakai `process.env.GEMINI_MODEL`
-  (bawaan `gemini-3.8-flash`). `gemini-1.5-flash` yang ditulis di PRD **sudah
+  (bawaan `gemini-3.5-flash-lite`). `gemini-1.5-flash` yang ditulis di PRD **sudah
   tidak ada** di dokumentasi Google, dan `gemini-2.0-flash` juga sudah
   dimatikan. Ini pernah jadi bug fatal yang nyaris lolos.
 - **Jangan tambah dependensi** tanpa alasan yang bisa dinyatakan. Seluruh

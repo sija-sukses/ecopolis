@@ -13,7 +13,7 @@ Tiga hal di PRD tidak bisa dijalankan apa adanya.
 
 | # | Di PRD | Masalah | Keputusan |
 |---|--------|---------|-----------|
-| 1 | `gemini-1.5-flash` via `@google/genai` | Model ini **sudah tidak ada** di dokumentasi Google. `gemini-2.0-flash` juga sudah shut down. Fitur AI akan mati di depan juri. | Pakai `gemini-3.8-flash`. ID model disimpan di env var `GEMINI_MODEL`, bukan hardcode, supaya pensiunnya model tidak lagi mematikan aplikasi. SDK `@google/genai` dibuang — satu `fetch` ke REST endpoint sudah cukup dan tidak menambah dependency. |
+| 1 | `gemini-1.5-flash` via `@google/genai` | Model ini **sudah tidak ada** di dokumentasi Google. `gemini-2.0-flash` juga sudah shut down. Fitur AI akan mati di depan juri. | Pakai `gemini-3.5-flash-lite`. ID model disimpan di env var `GEMINI_MODEL`, bukan hardcode, supaya pensiunnya model tidak lagi mematikan aplikasi. SDK `@google/genai` dibuang — satu `fetch` ke REST endpoint sudah cukup dan tidak menambah dependency. |
 | 2 | `jspdf` + `html2canvas` | `html2canvas` me-render ulang CSS dengan mesinnya sendiri dan pecah pada gradient, `backdrop-filter`, dan warna `oklch` (default Tailwind v4). 550KB untuk hasil raster. | `jspdf` saja, lewat `await import()`. Sertifikat digambar dengan primitif jsPDF; peta disuntikkan sebagai SVG yang memang sudah kita kendalikan. Teks tetap bisa diseleksi. |
 | 3 | Prompt Gemini seluruhnya bahasa Inggris | Tidak ada instruksi bahasa output. Narasi bisa keluar dalam bahasa Inggris di UI berbahasa Indonesia. | Prompt secara eksplisit meminta output **Bahasa Indonesia**, dan struktur JSON dipaksa lewat `responseSchema` (bukan lewat kalimat "Return ONLY valid JSON", yang tidak dijamin). |
 
@@ -348,7 +348,7 @@ Posisi dan animasi kini dipisah ke dua elemen bersarang.
    komponen apa pun; inti logika di atas tidak terpengaruh dan sudah jalan.
 2. **`GEMINI_API_KEY`** — dibutuhkan untuk memverifikasi model mana yang benar-benar
    bisa diakses kunci Anda (`GET /v1beta/models`) sebelum mengandalkan
-   `gemini-3.8-flash`. Tanpa kunci, aplikasi tetap jalan memakai narasi lokal.
+   `gemini-3.5-flash-lite`. Tanpa kunci, aplikasi tetap jalan memakai narasi lokal.
 3. **Koreksi isi 5 skenario** — draf sudah ada di `lib/scenarios.ts`. Yang perlu
    Anda nilai: apakah dilemanya terasa realistis untuk konteks Indonesia.
 4. **Kunci Gemini di Vercel** — tanpa `GEMINI_API_KEY`, `/results` selalu

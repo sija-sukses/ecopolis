@@ -15,9 +15,8 @@ import { fallbackReview } from '@/lib/fallback.ts';
 
 const TIMEOUT_MS = 4000;
 
-const rawModel = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
+const rawModel = process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash-lite';
 const MODEL = rawModel.replace(/^models\//, '');
-const FALLBACK_MODEL = 'gemini-2.5-flash';
 
 const RESPONSE_SCHEMA = {
   type: 'object',
@@ -82,10 +81,7 @@ export async function generateReview(payload: ReviewPayload): Promise<Review> {
 
   try {
     const prompt = buildPrompt(payload);
-    let res = await requestGemini(MODEL, key, prompt);
-    if (res.status === 404 && MODEL !== FALLBACK_MODEL) {
-      res = await requestGemini(FALLBACK_MODEL, key, prompt);
-    }
+    const res = await requestGemini(MODEL, key, prompt);
 
     if (!res.ok) throw new Error(`Gemini ${res.status}`);
 

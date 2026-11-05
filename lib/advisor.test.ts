@@ -3,7 +3,9 @@ import test from 'node:test';
 
 import {
   getPolicyProjection,
+  isAdvisorTopic,
   localAdvisorReply,
+  OUT_OF_SCOPE_REPLY,
   quickPromptsFor,
   type AdvisorContext,
 } from './advisor.ts';
@@ -40,6 +42,17 @@ test('pertanyaan prediksi 2050 memetakan kuadran kota dengan benar', () => {
     question: 'Prediksi nasib kotaku di 2050',
   });
   assert.match(res.reply, /Kota Metropol Polutan/);
+});
+
+test('asisten menolak topik yang tidak terkait Ecopolis atau sustainability', () => {
+  assert.equal(isAdvisorTopic('Bagaimana cara membuat energi kota lebih bersih?'), true);
+  assert.equal(isAdvisorTopic('Siapa juara liga sepak bola?'), false);
+
+  const res = localAdvisorReply({
+    ...baseContext,
+    question: 'Tuliskan resep kue cokelat',
+  });
+  assert.equal(res.reply, OUT_OF_SCOPE_REPLY);
 });
 
 test('quickPromptsFor menyesuaikan dengan status pemain dan ronde', () => {

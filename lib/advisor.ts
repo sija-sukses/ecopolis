@@ -32,6 +32,16 @@ const STAT_NAMES: Record<StatKey, string> = {
   energy: 'Energi',
 };
 
+export const OUT_OF_SCOPE_REPLY =
+  'Maaf, saya hanya dapat membantu topik Ecopolis dan pembangunan berkelanjutan.';
+
+const ADVISOR_TOPIC =
+  /\b(ecopolis|kota|wali kota|ronde|skenario|kebijakan|strategi|indikator|skor|audit|darurat|kontinjensi|krisis|ekonomi|kepuasan|energi|lingkungan|iklim|sustainab\w*|berkelanjutan|sdg|emisi|karbon|polusi|hijau|ekologi|biodiversitas|konservasi|sampah|limbah|daur ulang|kompos|transportasi|mobilitas|brt|bus|tol|pltu|plts|surya|batu bara|industri|hutan|resapan|banjir|tpa|hunian|perumahan|apartemen|permukiman|tata ruang|2050)\b/i;
+
+export function isAdvisorTopic(question: string): boolean {
+  return ADVISOR_TOPIC.test(question.trim());
+}
+
 function salutation(leader: Leader | null): string {
   if (!leader) return 'Wali Kota';
   return `${honorificOf(leader.avatar)} ${leader.name}`;
@@ -91,6 +101,8 @@ export function quickPromptsFor(round: number, hasLeader: boolean, isCrisis = fa
 
 export function localAdvisorReply(payload: AdvisorPayload): AdvisorReply {
   const { leader, round, stats, choices, question } = payload;
+  if (!isAdvisorTopic(question)) return { reply: OUT_OF_SCOPE_REPLY, fallback: true };
+
   const who = salutation(leader);
   const q = question.toLowerCase();
   const { lowest, highest } = extremeStats(stats);
