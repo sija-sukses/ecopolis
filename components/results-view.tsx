@@ -213,14 +213,45 @@ export function ResultsView() {
   return (
     <main className="result">
       <section className="result__hero shell" aria-label="Dossier kepemimpinan Ecopolis 2050">
-        <div className="result__dossier">
-          <div className="result__stage result-reveal result-reveal--1">
-            <div className="result__stage-top">
-              <span className="result__grade">
+        <header className="result__masthead result-reveal result-reveal--1">
+          <div className="result__who">
+            <Avatar id={leader.avatar} size={64} className="result__face" />
+            <div className="result__who-copy">
+              <span className="result__eyebrow">
+                Laporan Evaluasi 2050 · {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI'}
+              </span>
+              <b className="result__leader-name">
+                {honorific} {leader.name}
+              </b>
+              <span className="result__quadrant-tag">
                 <b>Kelas {quadrant.grade}</b> · {quadrant.label}
               </span>
-              <span className="result__avg">
-                Rata-rata <CountUpNumber value={avgScore} />/100
+            </div>
+          </div>
+
+          <div className="result__masthead-right">
+            <EvaluationStamp grade={quadrant.grade} label={quadrant.label} />
+            <div
+              className="result__score-hero"
+              aria-label={`Skor rata-rata indeks kota ${avgScore} dari 100`}
+            >
+              <span className="result__score-label">Indeks Kota</span>
+              <b className="result__score-num">
+                <CountUpNumber value={avgScore} />
+                <small>/100</small>
+              </b>
+            </div>
+          </div>
+        </header>
+
+        <div className="result__dossier">
+          <div className="result__stage result-reveal result-reveal--2">
+            <div className="result__stage-top">
+              <span className="result__section-label">Diorama Tata Kota 2050</span>
+              <span className="result__stage-sub">
+                {focusedRound === null
+                  ? '5 kawasan terbangun'
+                  : `Fokus Kawasan · Ronde ${focusedRound}`}
               </span>
             </div>
 
@@ -269,64 +300,59 @@ export function ResultsView() {
               })}
             </div>
 
-            <div className="result__mini-stats" aria-label="Ringkasan indikator kota">
-              {STATS.map((s, idx) => {
-                const val = stats[s.key];
-                const tone = statusTone(val);
-                return (
-                  <div
-                    className={`result__mini-stat result__mini-stat--${tone}`}
-                    key={s.key}
-                  >
-                    <div className="result__mini-head">
-                      <span>{s.shortLabel}</span>
-                      <b>
-                        <CountUpNumber value={val} />
-                      </b>
-                    </div>
-                    <span className="result__mini-track">
-                      <span
-                        className={`result__mini-fill result__mini-fill--${tone}`}
-                        style={{
-                          width: `${val}%`,
-                          animationDelay: `${140 + idx * 70}ms`,
-                        }}
-                      />
-                    </span>
+            <div className="result__inspector" aria-live="polite">
+              {focusedChoice && focusedMeta ? (
+                <div className="result__inspector-active">
+                  {focusedMeta.asset && <PolicyIcon asset={focusedMeta.asset} />}
+                  <div className="result__inspector-copy">
+                    <small>
+                      Ronde {focusedChoice.round} · {focusedMeta.scenarioTitle}
+                    </small>
+                    <b>{focusedChoice.label}</b>
                   </div>
-                );
-              })}
+                  {focusedMeta.effects.length > 0 && (
+                    <div className="result__inspector-deltas">
+                      {focusedMeta.effects.map((ef) => (
+                        <span
+                          key={ef.key}
+                          className={`result__delta-pill ${
+                            ef.delta > 0 ? 'result__delta-pill--up' : 'result__delta-pill--down'
+                          }`}
+                        >
+                          {ef.delta > 0 ? `+${ef.delta}` : ef.delta} {ef.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="result__inspector-idle">
+                  <MapPin size={15} strokeWidth={2.2} aria-hidden="true" />
+                  <span>
+                    Menampilkan seluruh pulau. Pilih <b>R1–R5</b> di atas untuk menginspeksi kawasan dan dampak kebijakannya.
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="result__brief result-reveal result-reveal--2">
-            <div className="result__who-row">
-              <div className="result__who">
-                <Avatar id={leader.avatar} size={68} className="result__face" />
-                <p>
-                  <span>Dossier Kepemimpinan 2050</span>
-                  <b>
-                    {honorific} {leader.name}
-                  </b>
-                </p>
-              </div>
-              <span className="result__badge">
-                {review.fallback ? 'Evaluasi Standar' : 'Evaluasi AI 2050'}
-              </span>
-            </div>
+            <div className="result__brief-main">
+              <span className="result__section-label">Tinjauan Eksekutif 2050</span>
+              <h1 className="result__title">{review.title}</h1>
 
-            <h1 className="result__title">{review.title}</h1>
-
-            <div className="result__story-wrap">
-              <EvaluationStamp grade={quadrant.grade} label={quadrant.label} />
               <div className="result__story-box" aria-label="Ecopolis pada 2050">
-                <div className="result__story-stamp-spacer" aria-hidden="true" />
                 {review.narrative.split('\n\n').map((p, i) => (
                   <p className="result__para" key={i}>
                     {p.trim()}
                   </p>
                 ))}
               </div>
+            </div>
+
+            <div className="result__sdg-synthesis">
+              <span className="result__section-label">Sintesis Pembangunan Berkelanjutan</span>
+              <p className="result__reflect">{review.sdgReflection}</p>
             </div>
           </div>
         </div>
@@ -335,9 +361,8 @@ export function ResultsView() {
       <div className="result__bottom shell">
         <section className="result__sdg result-reveal result-reveal--3" aria-labelledby="sdg">
           <div className="result__panel-head">
-            <span className="result__kicker">Dampak Pembangunan Berkelanjutan</span>
-            <h2 id="sdg">Capaian dan SDG</h2>
-            <p className="result__reflect">{review.sdgReflection}</p>
+            <span className="result__section-label">Matriks Kinerja & Target Global</span>
+            <h2 id="sdg">Capaian Indikator & SDG</h2>
           </div>
 
           <div className="sdgs">
@@ -347,12 +372,13 @@ export function ResultsView() {
               return (
                 <article className={`sdg sdg--${tone}`} key={s.key}>
                   <div className="sdg__top">
+                    <span className="sdg__label">{s.label}</span>
                     <span className="sdg__tag">{s.sdg}</span>
-                    <b className="sdg__num">
-                      <CountUpNumber value={val} />
-                    </b>
                   </div>
-                  <span className="sdg__label">{s.label}</span>
+                  <b className="sdg__num">
+                    <CountUpNumber value={val} />
+                    <small>/100</small>
+                  </b>
                   <span className="sdg__track">
                     <span
                       className={`sdg__fill sdg__fill--${tone}`}
@@ -374,8 +400,8 @@ export function ResultsView() {
           aria-labelledby="jejak-kebijakan"
         >
           <div className="result__panel-head">
-            <span className="result__kicker">Rekam Jejak 5 Ronde · Ketuk untuk sorot peta</span>
-            <h2 id="jejak-kebijakan">Kebijakan yang Anda ambil</h2>
+            <span className="result__section-label">Rekam Jejak 5 Ronde · Ketuk untuk sorot peta</span>
+            <h2 id="jejak-kebijakan">Keputusan Kebijakan</h2>
           </div>
 
           <ol className="result__list">
@@ -401,11 +427,10 @@ export function ResultsView() {
                       }
                     }}
                   >
+                    <span className="result__choice-round">R{c.round}</span>
                     {meta.asset && <PolicyIcon asset={meta.asset} />}
                     <div className="result__choice-copy">
-                      <small>
-                        Ronde {c.round} · {meta.scenarioTitle}
-                      </small>
+                      <small>{meta.scenarioTitle}</small>
                       <span>{c.label}</span>
                       {meta.effects.length > 0 && (
                         <div className="result__choice-deltas" aria-label="Dampak indikator">
@@ -423,7 +448,7 @@ export function ResultsView() {
                       )}
                     </div>
                     <span className="result__choice-pin" aria-hidden="true">
-                      <MapPin size={16} strokeWidth={2.3} />
+                      <MapPin size={15} strokeWidth={2.2} />
                     </span>
                   </button>
                 </li>
