@@ -257,8 +257,8 @@ export type MayorPoseMode = 'idle' | 'ceremony' | 'inspection';
 /**
  * Tahap sinematik saat sebuah kawasan dibangun.
  *
- * Kamera mendekat ke petaknya, layar ditutup iris hitam dari kanan bawah,
- * lalu dibuka lagi dalam mode sinematik: Walikota berhelm meninjau lokasi,
+ * Kamera mendekat ke petaknya, layar ditutup iris hitam dari sudut kanan bawah
+ * lalu dibuka ke arah kiri atas dalam mode sinematik: Walikota berhelm meninjau lokasi,
  * pekerja bekerja, dan berlanjut ke pemotongan pita. Indikator baru berubah
  * di tahap 'ceremony', supaya dampaknya terbaca sebagai hasil dari yang baru
  * saja ditonton, bukan terjadi di balik layar hitam.

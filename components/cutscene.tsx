@@ -9,7 +9,7 @@ import type { CutscenePhase } from '@/lib/city-effects.ts';
  *
  * Dua bagian terpisah:
  *
- * 1. **Iris hitam** berbentuk lingkaran yang tumbuh dari sudut kanan bawah.
+ * 1. **Iris hitam** berbentuk lingkaran (animasi diagonal melintang layar).
  *    Ia menutup sebelum setiap pergantian keadaan, lalu membuka lagi sesudahnya.
  *    Selain sebagai transisi, iris inilah yang menyembunyikan momen Walikota
  *    berganti pose ke helm dan bingkai sinematik masuk, sehingga pergantiannya
@@ -34,11 +34,13 @@ type Props = {
  * Iris menutup sebelum keadaan berganti dan membuka sesudahnya, jadi dua tahap
  * yang sama dipakai dua kali dengan arah berbeda.
  */
-const IRIS: Partial<Record<CutscenePhase, 'close' | 'open'>> = {
-  'iris-in': 'close',
-  inspect: 'open',
-  'iris-out': 'close',
-  'zoom-out': 'open',
+type IrisMode = 'in-close' | 'in-open' | 'out-close' | 'out-open';
+
+const IRIS: Partial<Record<CutscenePhase, IrisMode>> = {
+  'iris-in': 'in-close',
+  inspect: 'in-open',
+  'iris-out': 'out-close',
+  'zoom-out': 'out-open',
 };
 
 /** Tahap yang layarnya berada dalam mode sinematik penuh. */
