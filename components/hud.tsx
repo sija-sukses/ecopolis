@@ -83,7 +83,7 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
             {muted ? 'Suara mati [M]' : 'Suara nyala [M]'}
           </span>
           <span className="hud__mute-compact" aria-hidden="true">
-            {muted ? <span><VolumeX size={4}/> Bisu</span> : <span><Volume2 size={4}/>Suara</span>}
+            {muted ? <VolumeX/> : <Volume2/>}
           </span>
         </button>
       </div>
