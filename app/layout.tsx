@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: 'Ecopolis. Simulator Kebijakan Iklim',
   description:
     'Pelajari lima persoalan iklim Indonesia, lalu pimpin sebuah kota lewat lima keputusan kebijakan dan lihat wujudnya di tahun 2050.',
+     manifest: "/site.webmanifest",
+  icons: {
+    icon: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
