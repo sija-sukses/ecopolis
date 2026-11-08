@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Avatar } from '@/components/avatars.tsx';
 import { ROUNDS } from '@/lib/scenarios.ts';
 import type { Stats, StatKey } from '@/lib/types.ts';
+import { Volume2, VolumeX } from 'lucide-react';
 
 const LABELS: Record<StatKey, string> = {
   economy: 'Ekonomi',
@@ -82,7 +83,7 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
             {muted ? 'Suara mati [M]' : 'Suara nyala [M]'}
           </span>
           <span className="hud__mute-compact" aria-hidden="true">
-            {muted ? '🔇 Bisu' : '🔊 Suara'}
+            {muted ? <span><VolumeX/> Bisu</span> : <span><Volume2/>Suara</span>}
           </span>
         </button>
       </div>

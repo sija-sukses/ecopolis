@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Bot, Mic, MicOff, Send, Sparkles, Square, Volume2, VolumeX, X } from 'lucide-react';
+import { AlertTriangle, Bot, BotMessageSquare, Mic, MicOff, Send, Sparkles, Square, Volume2, VolumeX, X } from 'lucide-react';
 
 import { askAdvisor } from '@/app/actions/askAdvisor.ts';
 import {
@@ -675,7 +675,7 @@ export function AiAdvisor() {
                 {speakingText ? (
                   <VoiceWave active={true} />
                 ) : (
-                  <Sparkles size={18} strokeWidth={2.4} />
+                  <BotMessageSquare size={18} strokeWidth={2.4} />
                 )}
               </span>
               <div>
