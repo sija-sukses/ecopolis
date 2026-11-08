@@ -38,7 +38,7 @@ Sebelum memimpin, Anda belajar dulu.
 
 Ecopolis membuka dengan lima persoalan iklim yang benar-benar dihadapi kota-kota di Indonesia. Dari mana listrik kita datang, ketika bauran energi nasional masih bertumpu pada batu bara. Kenapa menambah lajur jalan jarang menyelesaikan kemacetan, sebab ruang baru biasanya terisi kendaraan baru. Kenapa lahan kosong hanya bisa dipakai satu kali. Ke mana sampah kita pergi, ketika Bantar Gebang terus bertambah tinggi setiap hari. Dan di mana satu juta warga baru akan tinggal.
 
-Setiap materi disertai foto keadaan yang sesungguhnya. Dan setiap materi menyiapkan satu ronde dengan persoalan yang sama. Jadi belajar di sini bukan jalan memutar, melainkan pengarahan.
+Setiap persoalan disandingkan dua pilihan sekaligus, lengkap dengan dampaknya pada keempat indikator. Dan setiap persoalan menyiapkan satu ronde dengan dilema yang sama. Jadi belajar di sini bukan jalan memutar, melainkan pengarahan.
 ```
 
 ### Segmen 3 — Masuk permainan (1:03 – 1:32)
@@ -86,7 +86,7 @@ Dan ketika sebuah indikator jatuh ke titik berbahaya, TARA tidak menunggu ditany
 ```
 Setelah ronde kelima, kota Anda melompat ke tahun dua ribu lima puluh.
 
-Kecerdasan buatan menyusun dossier kepemimpinan Anda. Sebuah kelas penilaian, narasi tentang kota yang Anda tinggalkan, dan refleksi yang mengaitkannya dengan Tujuan Pembangunan Berkelanjutan nomor delapan, sembilan, sebelas, dan tiga belas.
+Kecerdasan buatan menyusun dossier kepemimpinan Anda. Sebuah kelas penilaian, narasi tentang kota yang Anda tinggalkan, dan refleksi yang mengaitkannya dengan Tujuan Pembangunan Berkelanjutan nomor sebelas dan tiga belas.
 
 Kelima kebijakan yang Anda ambil dibentangkan kembali, lengkap dengan angka untung dan ruginya di setiap indikator. Peta akhirnya pun dapat disaring ronde demi ronde, untuk melihat persis kapan kota Anda berbelok arah.
 
@@ -117,7 +117,7 @@ kali jalan dari awal sampai akhir: hasilnya akan penuh jeda mati.
 | 0:00 – 0:10 | Halaman depan, diam sebentar di judul besar | — |
 | 0:10 – 0:20 | Gulir pelan menuruni halaman depan | **ECOPOLIS** muncul di 0:15 |
 | 0:21 – 0:40 | Masuk bagian edukasi, gulir pelan melewati materi energi dan transportasi | Nama tiap materi menyusul VO |
-| 0:40 – 1:02 | Lanjut melewati materi lahan, sampah, dan hunian. Berhenti sebentar di tiap foto | — |
+| 0:40 – 1:02 | Lanjut melewati materi lahan, sampah, dan hunian. Berhenti sebentar di tiap kartu | — |
 | 1:03 – 1:14 | Klik **Mulai simulasi**, isi nama, pilih avatar, tekan tombol lanjut | — |
 | 1:14 – 1:32 | Potong ke layar permainan. Sorot papan indikator, lalu peta kotanya | **4 indikator · 5 kawasan** |
 | 1:33 – 1:45 | Kartu kebijakan ronde satu, kursor bergerak di antara dua pilihan | — |
@@ -183,3 +183,58 @@ kali jalan dari awal sampai akhir: hasilnya akan penuh jeda mati.
   menit 1:45: itu bagian yang paling membedakan Ecopolis.
 - Beri ruang napas satu detik di antara segmen; jangan menempelkan suara
   rapat-rapat.
+
+---
+
+## Bagian D — Rekaman yang sudah jadi
+
+Sembilan adegan sudah difilmkan dari situs yang tayang di
+`https://ecopolis-web.vercel.app`, **1920 × 1080, tanpa suara**, dengan jeda
+kamera yang sudah dipaskan ke tempo baca 150 kata per menit. Jadi VO dari
+ElevenLabs tinggal ditumpuk, tidak perlu dipanjang-pendekkan lagi.
+
+Berkasnya ada di `C:\Users\althof\.video-demo\ecopolis-web.vercel.app\demo-out\`.
+Buka `index.html` di folder itu untuk melihat semuanya sekaligus.
+
+| Klip | Segmen naskah | Durasi | Isi |
+|---|---|---|---|
+| `beranda.mp4` | 1 | 0:27 | Halaman depan, judul besar, pulau, bagian Tentang |
+| `belajar.mp4` | 2 | 0:58 | Lima dilema satu per satu, dengan dampak tiap indikator |
+| `mulai.mp4` | 3a | 0:13 | Isi nama, pilih avatar, dilantik |
+| `indikator.mp4` | 3b | 0:29 | Papan indikator, lalu pulau isometrik dari dekat |
+| `keputusan.mp4` | 4a | 0:26 | Kartu ronde satu, kursor menimbang dua pilihan |
+| `sinematik.mp4` | 4b | 0:39 | **Tiga pembangunan berturut-turut**, yang terakhir dilewati dengan spasi |
+| `tara.mp4` | 5 | 0:45 | TARA menjawab dengan model sungguhan, mengetik huruf demi huruf |
+| `laporan.mp4` | 6 | 0:37 | Dossier 2050 yang ditulis AI saat perekaman, peta disaring per ronde |
+| `sertifikat.mp4` | 7 | 0:46 | Dok aksi, unduh PDF, kembali ke halaman depan |
+
+Totalnya **5 menit 19 detik**, lebih panjang dari naskah 3 menit 55 detik.
+Itu memang disengaja: lebih mudah memotong gambar yang berlebih daripada
+mengulur yang kurang.
+
+`full-tour.mp4` di folder yang sama adalah kesembilan klip yang sudah
+disambung berurutan.
+
+**Sertifikat PDF-nya sudah ikut dibuat**: `sertifikat-ecopolis.pdf`, dari
+permainan yang sama dengan klip laporan. Sisipkan sebagai gambar diam di
+menit 3:27 sampai 3:40, karena pengunduhan PDF membuka berkas di luar
+halaman dan tidak bisa direkam sebagai bagian dari situsnya.
+
+### Dua hal yang diperbaiki dari naskah awal
+
+Naskah versi pertama menjanjikan dua hal yang tidak ada di situs yang tayang,
+dan keduanya sudah dikoreksi di Bagian A:
+
+1. **Foto keadaan sungguhan di tiap materi.** Tidak ada. Berkasnya memang
+   tersimpan di `public/foto`, tetapi tidak dipakai di halaman mana pun.
+   Yang ada, dan lebih kuat, adalah dua pilihan disandingkan lengkap dengan
+   angka dampaknya di keempat indikator.
+2. **SDG nomor 8, 9, 11, dan 13.** Model hanya diminta mengaitkan hasil
+   dengan SDG 11 dan 13, dan itu pula yang keluar di layar.
+
+### Catatan perekaman
+
+Halaman depan dan halaman laporan hanya sanggup digambar ulang sekitar 20
+sampai 25 kali per detik saat halamannya bergerak, karena keduanya memuat
+satu SVG isometrik berukuran besar yang terus beranimasi. Enam klip sisanya
+berjalan di 46 sampai 57 fps. Ini sudah diputuskan untuk diterima apa adanya.
