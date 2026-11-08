@@ -157,4 +157,4 @@ Ecopolis dirancang agar ramah pembaca layar (`aria-live="polite"`, fokus otomati
 
 ## Lisensi & Kredit
 
-Dikembangkan oleh tim **SIJA Sukses** untuk kompetisi desain web nasional **INVOFEST 2026**. Seluruh ilustrasi SVG isometrik, mesin simulasi, dan sintesis audio ditulis khusus untuk proyek ini.
+Dikembangkan oleh tim **Bismillah Sakses** untuk kompetisi desain web nasional **INVOFEST 2026**. Seluruh ilustrasi SVG isometrik, mesin simulasi, dan sintesis audio ditulis khusus untuk proyek ini.
