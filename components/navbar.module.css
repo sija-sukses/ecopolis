@@ -1,5 +1,6 @@
 /* ===========================================================================
    Morphing / Shrinking Low-Poly Fixed Navbar
+   Optimized per Emil Kowalski's animation-performance (no per-frame layout transition)
    =========================================================================== */
 
 .headerWrapper {
@@ -14,11 +15,11 @@
   padding-inline: 16px;
   padding-top: 14px;
   pointer-events: none;
-  transition: padding-top 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 220ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .headerWrapper.scrolled {
-  padding-top: 10px;
+  transform: translate3d(0, -4px, 0);
 }
 
 /* Nav container bar that morphs between full hero header and compact low-poly floating dock */
@@ -39,15 +40,10 @@
   -webkit-backdrop-filter: blur(10px) saturate(140%);
   box-shadow: 0 6px 20px rgba(16, 46, 75, 0.16);
   transition:
-    width 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    max-width 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    height 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    padding 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    background 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-radius 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 340ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform 240ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    background-color 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
 }
 
 /* Shrunk / Morphed Floating Low-Poly State */
@@ -78,11 +74,7 @@
   color: #ffffff;
   text-decoration: none;
   user-select: none;
-  transition: transform 180ms ease, font-size 320ms ease;
-}
-
-.brand:hover {
-  transform: translateY(-1px);
+  transition: transform 180ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .brand b {
@@ -96,12 +88,10 @@
   width: 36px;
   height: 36px;
   filter: drop-shadow(0 4px 4px rgba(12, 42, 68, 0.35));
-  transition: width 320ms ease, height 320ms ease, transform 320ms ease;
+  transition: transform 240ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .navBar.morphed .brandMark {
-  width: 30px;
-  height: 30px;
   transform: scale(0.88);
 }
 
@@ -115,7 +105,7 @@
   width: 20px;
   height: 20px;
   transform: rotate(30deg) skewY(-30deg) scaleY(0.86);
-  transition: transform 300ms ease;
+  transition: transform 240ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .brandMark i:nth-child(1) {
@@ -156,20 +146,15 @@
   color: rgba(255, 255, 255, 0.88);
   text-decoration: none;
   border-radius: 10px;
-  transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .navBar.morphed .navLink {
   padding: 6px 12px;
   font-size: 0.82rem;
-}
-
-.navLink:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
-  /* Low-poly chamfered highlight */
-  clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px);
-  transform: translateY(-1px);
 }
 
 /* CTA Button with Low-Poly 3D Bevel & Chamfer */
@@ -188,10 +173,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 0 #0e285b, 0 8px 16px rgba(14, 40, 91, 0.28);
   transition:
-    min-height 320ms ease,
-    padding 320ms ease,
-    font-size 320ms ease,
-    transform 160ms ease,
+    transform 160ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
     box-shadow 160ms ease,
     background-color 160ms ease;
   user-select: none;
@@ -204,17 +186,6 @@
   font-size: 0.8rem;
   border-radius: 10px;
   box-shadow: 0 3px 0 #0e285b, 0 6px 12px rgba(14, 40, 91, 0.24);
-}
-
-.navCta:hover {
-  transform: translateY(-2px);
-  background: #1c489d;
-  box-shadow: 0 6px 0 #0e285b, 0 10px 20px rgba(14, 40, 91, 0.35);
-}
-
-.navBar.morphed .navCta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 0 #0e285b, 0 8px 16px rgba(14, 40, 91, 0.3);
 }
 
 .navCta:active {
@@ -241,17 +212,44 @@
   color: #ffffff;
   cursor: pointer;
   box-shadow: 0 3px 0 rgba(10, 32, 54, 0.4);
-  transition: background-color 160ms ease, transform 160ms ease;
-}
-
-.mobileToggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  transition:
+    background-color 160ms ease,
+    transform 160ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .mobileToggle:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 rgba(10, 32, 54, 0.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover {
+    transform: translateY(-1px);
+  }
+
+  .navLink:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+    /* Low-poly chamfered highlight */
+    clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px);
+    transform: translateY(-1px);
+  }
+
+  .navCta:hover {
+    transform: translateY(-2px);
+    background: #1c489d;
+    box-shadow: 0 6px 0 #0e285b, 0 10px 20px rgba(14, 40, 91, 0.35);
+  }
+
+  .navBar.morphed .navCta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #0e285b, 0 8px 16px rgba(14, 40, 91, 0.3);
+  }
+
+  .mobileToggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
 }
 
 /* Low-Poly Hamburger Icon */
@@ -271,7 +269,9 @@
   height: 2px;
   background: #ffffff;
   border-radius: 1px;
-  transition: transform 220ms ease, opacity 220ms ease;
+  transition:
+    transform 200ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    opacity 200ms ease;
 }
 
 .burgerOpen span:nth-child(1) {
@@ -340,7 +340,8 @@
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     box-shadow: 0 6px 0 #091c30, 0 18px 36px rgba(8, 26, 44, 0.5);
-    animation: drawerReveal 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: top right;
+    animation: drawerReveal 220ms var(--ease-drawer, cubic-bezier(0.32, 0.72, 0, 1)) both;
   }
 
   .mobileDrawer .navLink {
@@ -353,9 +354,11 @@
     background: rgba(255, 255, 255, 0.06);
   }
 
-  .mobileDrawer .navLink:hover {
-    background: rgba(255, 255, 255, 0.16);
-    color: #8af36f;
+  @media (hover: hover) and (pointer: fine) {
+    .mobileDrawer .navLink:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #8af36f;
+    }
   }
 
   .mobileDrawer .mobileCta {
@@ -384,7 +387,7 @@
 @keyframes drawerReveal {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-8px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -405,4 +408,3 @@
     animation: none;
   }
 }
-

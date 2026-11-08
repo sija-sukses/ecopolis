@@ -11,6 +11,12 @@ import { SCENARIOS } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId, StatKey, Stats } from '@/lib/types.ts';
 import { CityMap, type ActivePlotTransition } from './city-map.tsx';
+import {
+  Reveal,
+  StaggerGroup,
+  StaggerItem,
+  ViewportPause,
+} from './motion/reveal.tsx';
 import { PolicyIcon } from './policy-icon.tsx';
 
 /**
@@ -114,11 +120,15 @@ export function TryRound() {
 
   return (
     <div className="tryout__grid">
-      <div>
-        <h2 className="enter">Coba satu keputusan</h2>
-        <p className="tryout__ctx enter enter--2">{ROUND_ONE.context}</p>
+      <StaggerGroup staggerMs={55}>
+        <StaggerItem as="h2" variant="slide-up" duration={450}>
+          Coba satu keputusan
+        </StaggerItem>
+        <StaggerItem as="p" variant="slide-up" duration={450} className="tryout__ctx">
+          {ROUND_ONE.context}
+        </StaggerItem>
 
-        <div className="tryout__opts enter enter--3">
+        <StaggerItem variant="slide-up" duration={450} className="tryout__opts">
           {ROUND_ONE.options.map((o) => (
             <button
               key={o.id}
@@ -139,57 +149,59 @@ export function TryRound() {
               </span>
             </button>
           ))}
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerGroup>
 
-      <div className="tryout__panel">
-        <CityMap
-          className="tryout__city"
-          plots={plots}
-          satisfaction={stats.satisfaction}
-          activeTransition={activeTransition}
-          animate
-          label={
-            option
-              ? `Kawasan pertama Ecopolis terisi ${option.label}.`
-              : 'Lima kawasan Ecopolis, semuanya masih kosong.'
-          }
-        />
+      <Reveal variant="scale-up" duration={460}>
+        <ViewportPause className="tryout__panel">
+          <CityMap
+            className="tryout__city"
+            plots={plots}
+            satisfaction={stats.satisfaction}
+            activeTransition={activeTransition}
+            animate
+            label={
+              option
+                ? `Kawasan pertama Ecopolis terisi ${option.label}.`
+                : 'Lima kawasan Ecopolis, semuanya masih kosong.'
+            }
+          />
 
-        <div className="bars" aria-live="polite">
-          {KEYS.map((k) => {
-            const delta = stats[k] - INITIAL_STATS[k];
-            const fillClass = [
-              'bar__fill',
-              delta > 0 ? 'bar__fill--up' : delta < 0 ? 'bar__fill--down' : '',
-            ]
-              .filter(Boolean)
-              .join(' ');
-            return (
-              <div className="bar" key={k}>
-                <span className="bar__name">{LABELS[k]}</span>
-                <span className="bar__track">
-                  <span className={fillClass} style={{ width: `${stats[k]}%` }}>
-                    {picked && <span key={picked} className="bar__shimmer" aria-hidden="true" />}
+          <div className="bars" aria-live="polite">
+            {KEYS.map((k) => {
+              const delta = stats[k] - INITIAL_STATS[k];
+              const fillClass = [
+                'bar__fill',
+                delta > 0 ? 'bar__fill--up' : delta < 0 ? 'bar__fill--down' : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
+              return (
+                <div className="bar" key={k}>
+                  <span className="bar__name">{LABELS[k]}</span>
+                  <span className="bar__track">
+                    <span className={fillClass} style={{ width: `${stats[k]}%` }}>
+                      {picked && <span key={picked} className="bar__shimmer" aria-hidden="true" />}
+                    </span>
                   </span>
-                </span>
-                <span className="bar__num">
-                  {animatedStats[k]}
-                  {delta !== 0 && (
-                    <b
-                      className={
-                        delta > 0 ? 'bar__delta bar__delta--up' : 'bar__delta bar__delta--down'
-                      }
-                    >
-                      {delta > 0 ? `+${delta}` : delta}
-                    </b>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                  <span className="bar__num">
+                    {animatedStats[k]}
+                    {delta !== 0 && (
+                      <b
+                        className={
+                          delta > 0 ? 'bar__delta bar__delta--up' : 'bar__delta bar__delta--down'
+                        }
+                      >
+                        {delta > 0 ? `+${delta}` : delta}
+                      </b>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </ViewportPause>
+      </Reveal>
     </div>
   );
 }

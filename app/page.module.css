@@ -11,7 +11,8 @@
 /* Peta hidup yang sama dengan di dalam permainan, menggantikan gambar diam.
    `fill` pada CityMap membuatnya memakai preserveAspectRatio "slice", jadi ia
    menutupi bingkainya persis seperti object-fit: cover. */
-.heroCity,.finalCity { position: absolute; z-index: -3; inset: 0; width: 100%; height: 100%; }
+.cityStage,.heroCity,.finalCity { position: absolute; z-index: -3; inset: 0; width: 100%; height: 100%; }
+.cityStage { pointer-events: none; }
 .heroCity {
   translate: 18% 0;
   animation: heroReveal 1.25s cubic-bezier(.16,1,.3,1) both;
@@ -49,7 +50,7 @@
 .heroLead { max-width: 45ch; margin-top: 28px!important; font-size: clamp(1.05rem,1.35vw,1.22rem); font-weight: 700; line-height: 1.55; text-shadow: 0 2px 12px rgb(29 80 120 / 30%); }
 .heroActions { display: flex; align-items: center; gap: 26px; margin-top: 34px; }
 .primaryButton { display: inline-flex; min-height: 56px; align-items: center; justify-content: center; padding-inline: 30px; border: 0; border-radius: 13px; background: var(--solar); color: white!important; font-size: .94rem; font-weight: 900; text-decoration: none; box-shadow: 0 7px 0 #0e285b,0 18px 34px rgb(25 70 113 / 24%); transition: transform 180ms ease,box-shadow 180ms ease; }
-.primaryButton:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #0e285b,0 22px 38px rgb(25 70 113 / 28%); }
+@media (hover: hover) and (pointer: fine) { .primaryButton:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #0e285b,0 22px 38px rgb(25 70 113 / 28%); } }
 .primaryButton:active { transform: translateY(4px); box-shadow: 0 3px 0 #0e285b; }
 .textLink { padding-block: 7px; border-bottom: 2px solid rgb(255 255 255 / 75%); }
 .heroHud { position: absolute; z-index: 3; right: max(32px,calc((100vw - 1240px)/2)); bottom: 52px; display: flex; overflow: hidden; border: 1px solid rgb(255 255 255 / 38%); border-radius: 14px; background: rgb(18 61 93 / 78%); box-shadow: 0 18px 40px rgb(34 82 123 / 22%); backdrop-filter: blur(12px); }
@@ -150,7 +151,7 @@
   box-shadow: 0 6px 0 #b8d8ab;
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
-.duelCard:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #b8d8ab; }
+@media (hover: hover) and (pointer: fine) { .duelCard:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #b8d8ab; } }
 .duelCardA .duelVisual { background: linear-gradient(180deg, #ffe9d6, #ffd4b8); }
 .duelCardB .duelVisual { background: linear-gradient(180deg, #d8f3ff, #b8e8ca); }
 .duelVisual {
@@ -190,6 +191,8 @@
   font-size: .78rem;
   font-weight: 900;
   box-shadow: 0 5px 0 #0e285b;
+  clip-path: none !important;
+  overflow: visible;
 }
 .effectRow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 12px; }
 .chipUp, .chipDown {
@@ -277,7 +280,7 @@
   .dilemmaHead h3 { font-size: 1.45rem; }
   .dilemmaHead p { font-size: .9rem; }
   .dilemmaDuel { position: relative; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .vsBadge { position: absolute; z-index: 2; top: 44px; left: 50%; width: 34px; height: 34px; translate: -50% 0; font-size: .7rem; }
+  .vsBadge { position: absolute; z-index: 2; top: 44px; left: 50%; width: 34px; height: 34px; translate: -50% 0; font-size: .7rem; box-shadow: 0 4px 0 #0e285b; clip-path: none !important; }
   .duelCard { padding: 8px; border-radius: 14px; }
   .duelVisual { height: 96px; border-radius: 10px; }
   .miniSvg { width: 92px; height: 86px; }

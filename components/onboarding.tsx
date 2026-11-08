@@ -9,7 +9,7 @@ import { useGame } from '@/lib/game-context.tsx';
 import { play } from '@/lib/sfx.ts';
 
 const MAX = 20;
-const EXIT_MS = 210;
+const EXIT_MS = 180;
 
 export function Onboarding() {
   const { state, dispatch } = useGame();

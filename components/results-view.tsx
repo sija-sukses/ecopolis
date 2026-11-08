@@ -7,6 +7,7 @@ import { Bot, FileDown, Home, MapPin, RotateCcw, Share2 } from 'lucide-react';
 
 import { CityMap } from '@/components/city-map.tsx';
 import { Avatar } from '@/components/avatars.tsx';
+import { Reveal } from '@/components/motion/reveal.tsx';
 import { PolicyIcon } from '@/components/policy-icon.tsx';
 import { honorificOf } from '@/lib/avatars.ts';
 import { useGame } from '@/lib/game-context.tsx';
@@ -14,11 +15,12 @@ import { downloadCertificate, downloadStoryCard } from '@/lib/pdf.ts';
 import { SCENARIOS } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId, StatKey } from '@/lib/types.ts';
+import { useInView } from '@/lib/use-in-view.ts';
 
 const STATS: { key: StatKey; label: string; shortLabel: string; sdg: string; sdgName: string }[] = [
-  { key: 'economy', label: 'Ekonomi', shortLabel: 'Ekonomi', sdg: 'SDG 8', sdgName: 'Pekerjaan Layak dan Pertumbuhan Ekonomi' },
-  { key: 'environment', label: 'Lingkungan', shortLabel: 'Lingkungan', sdg: 'SDG 13', sdgName: 'Penanganan Perubahan Iklim' },
-  { key: 'satisfaction', label: 'Kepuasan Warga', shortLabel: 'Kepuasan', sdg: 'SDG 11', sdgName: 'Kota dan Permukiman Berkelanjutan' },
+  { key: 'economy', label: 'Ekonomi', shortLabel: 'Eko', sdg: 'SDG 8', sdgName: 'Pekerjaan Layak dan Pertumbuhan Ekonomi' },
+  { key: 'environment', label: 'Lingkungan', shortLabel: 'Ling', sdg: 'SDG 13', sdgName: 'Penanganan Perubahan Iklim' },
+  { key: 'satisfaction', label: 'Kepuasan Warga', shortLabel: 'Warga', sdg: 'SDG 11', sdgName: 'Kota dan Permukiman Berkelanjutan' },
   { key: 'energy', label: 'Energi', shortLabel: 'Energi', sdg: 'SDG 9', sdgName: 'Industri, Inovasi, dan Infrastruktur' },
 ];
 
@@ -28,10 +30,11 @@ function statusTone(value: number): 'good' | 'warn' | 'bad' {
   return 'bad';
 }
 
-function CountUpNumber({ value }: { value: number }) {
+function CountUpNumber({ value, active = true }: { value: number; active?: boolean }) {
   const [display, setDisplay] = useState(value);
 
   useEffect(() => {
+    if (!active) return;
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -52,12 +55,11 @@ function CountUpNumber({ value }: { value: number }) {
       }
     }
 
-    setDisplay(0);
     rafId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(rafId);
-  }, [value]);
+  }, [value, active]);
 
-  return <>{display}</>;
+  return <>{active ? display : 0}</>;
 }
 
 function findChoiceMeta(
@@ -149,6 +151,9 @@ export function ResultsView() {
   const [making, setMaking] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [focusedRound, setFocusedRound] = useState<number | null>(null);
+
+  const [sdgRef, sdgInView] = useInView<HTMLElement>({ once: true, amount: 0.2 });
+  const [closeRef, closeInView] = useInView<HTMLElement>({ once: true, amount: 0.2 });
 
   const { leader, review, stats, choices, plots } = state;
 
@@ -350,16 +355,23 @@ export function ResultsView() {
               </div>
             </div>
 
-            <div className="result__sdg-synthesis">
+            <Reveal variant="blur-in" duration={500} className="result__sdg-synthesis">
               <span className="result__section-label">Sintesis Pembangunan Berkelanjutan</span>
               <p className="result__reflect">{review.sdgReflection}</p>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <div className="result__bottom shell">
-        <section className="result__sdg result-reveal result-reveal--3" aria-labelledby="sdg">
+        <section
+          ref={sdgRef}
+          data-io-reveal=""
+          data-variant="slide-up"
+          data-in-view={sdgInView ? 'true' : 'false'}
+          className="result__sdg"
+          aria-labelledby="sdg"
+        >
           <div className="result__panel-head">
             <span className="result__section-label">Matriks Kinerja & Target Global</span>
             <h2 id="sdg">Capaian Indikator & SDG</h2>
@@ -370,13 +382,20 @@ export function ResultsView() {
               const val = stats[s.key];
               const tone = statusTone(val);
               return (
-                <article className={`sdg sdg--${tone}`} key={s.key}>
+                <article
+                  className={`sdg sdg--${tone}`}
+                  key={s.key}
+                  data-io-reveal=""
+                  data-variant="scale-up"
+                  data-in-view={sdgInView ? 'true' : 'false'}
+                  style={{ '--io-delay': `${idx * 55}ms` } as React.CSSProperties}
+                >
                   <div className="sdg__top">
                     <span className="sdg__label">{s.label}</span>
                     <span className="sdg__tag">{s.sdg}</span>
                   </div>
                   <b className="sdg__num">
-                    <CountUpNumber value={val} />
+                    <CountUpNumber value={val} active={sdgInView} />
                     <small>/100</small>
                   </b>
                   <span className="sdg__track">
@@ -384,7 +403,7 @@ export function ResultsView() {
                       className={`sdg__fill sdg__fill--${tone}`}
                       style={{
                         width: `${val}%`,
-                        animationDelay: `${220 + idx * 80}ms`,
+                        animationDelay: `${180 + idx * 60}ms`,
                       }}
                     />
                   </span>
@@ -396,8 +415,13 @@ export function ResultsView() {
         </section>
 
         <section
-          className="result__close result-reveal result-reveal--4"
+          ref={closeRef}
+          data-io-reveal=""
+          data-variant="slide-up"
+          data-in-view={closeInView ? 'true' : 'false'}
+          className="result__close"
           aria-labelledby="jejak-kebijakan"
+          style={{ '--io-duration': '360ms' } as React.CSSProperties}
         >
           <div className="result__panel-head">
             <span className="result__section-label">Rekam Jejak 5 Ronde · Ketuk untuk sorot peta</span>
@@ -408,15 +432,24 @@ export function ResultsView() {
             {choices.map((c, idx) => {
               const meta = findChoiceMeta(c.round, c.option);
               const isSelected = focusedRound === c.round;
+              const cappedIdx = Math.min(idx, 4);
               return (
                 <li
                   key={c.round}
+                  data-io-reveal=""
+                  data-variant="slide-up"
+                  data-in-view={closeInView ? 'true' : 'false'}
                   className={`result__choice-item${isSelected ? ' result__choice-item--active' : ''}`}
-                  style={{ animationDelay: `${240 + idx * 70}ms` }}
+                  style={
+                    {
+                      '--io-delay': `${cappedIdx * 55}ms`,
+                      '--io-duration': '360ms',
+                    } as React.CSSProperties
+                  }
                 >
                   <button
                     type="button"
-                    className="result__choice-btn"
+                    className="result__choice-btn py-2"
                     aria-pressed={isSelected}
                     onClick={() => {
                       play('click', state.muted);
@@ -427,11 +460,13 @@ export function ResultsView() {
                       }
                     }}
                   >
-                    <span className="result__choice-round">R{c.round}</span>
                     {meta.asset && <PolicyIcon asset={meta.asset} />}
                     <div className="result__choice-copy">
-                      <small>{meta.scenarioTitle}</small>
-                      <span>{c.label}</span>
+                      <div className="result__choice-eyebrow">
+                        <span className="result__choice-round">R{c.round}</span>
+                        <small>{meta.scenarioTitle}</small>
+                      </div>
+                      <span className="result__choice-title">{c.label}</span>
                       {meta.effects.length > 0 && (
                         <div className="result__choice-deltas" aria-label="Dampak indikator">
                           {meta.effects.map((ef) => (

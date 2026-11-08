@@ -2,6 +2,12 @@ import Link from 'next/link';
 
 import { CityMap } from '@/components/city-map.tsx';
 import { Building } from '@/components/iso.tsx';
+import {
+  Reveal,
+  StaggerGroup,
+  StaggerItem,
+  ViewportPause,
+} from '@/components/motion/reveal.tsx';
 import { Navbar } from '@/components/navbar.tsx';
 import { TryRound } from '@/components/try-round.tsx';
 import { SCENARIOS } from '@/lib/scenarios.ts';
@@ -95,41 +101,63 @@ export default function Home() {
     <main className={styles.page} id="atas">
       <Navbar />
       <section className={styles.hero} aria-labelledby="hero-title">
-        <CityMap
-          className={styles.heroCity}
-          plots={SHOWCASE}
-          avatar="rian"
-          animate
-          fill
-          label="Pulau kota Ecopolis bergaya isometrik: balai kota, panel surya, halte bus listrik, hutan kota, pusat daur ulang, apartemen hijau, dan sungai yang mengalir."
-        />
+        <ViewportPause className={styles.cityStage}>
+          <CityMap
+            className={styles.heroCity}
+            plots={SHOWCASE}
+            avatar="rian"
+            animate
+            fill
+            label="Pulau kota Ecopolis bergaya isometrik: balai kota, panel surya, halte bus listrik, hutan kota, pusat daur ulang, apartemen hijau, dan sungai yang mengalir."
+          />
+        </ViewportPause>
         <div className={styles.heroWash} />
         <div className={styles.headerSpacer} aria-hidden="true" />
 
-        <div className={styles.heroCopy}>
-          <p className={styles.kicker}>Simulator kebijakan iklim Indonesia</p>
-          <h1 id="hero-title">Bangun kota. Tentukan masa depannya.</h1>
-          <p className={styles.heroLead}>Lima keputusan hari ini akan mengubah ekonomi, lingkungan, energi, dan hidup warga Ecopolis pada tahun 2050.</p>
-          <div className={styles.heroActions}>
+        <StaggerGroup className={styles.heroCopy} staggerMs={55}>
+          <StaggerItem as="p" variant="slide-up" duration={460} className={styles.kicker}>
+            Simulator kebijakan iklim Indonesia
+          </StaggerItem>
+          <StaggerItem as="h1" variant="slide-up" duration={460} id="hero-title">
+            Bangun kota. Tentukan masa depannya.
+          </StaggerItem>
+          <StaggerItem as="p" variant="slide-up" duration={460} className={styles.heroLead}>
+            Lima keputusan hari ini akan mengubah ekonomi, lingkungan, energi, dan hidup warga Ecopolis pada tahun 2050.
+          </StaggerItem>
+          <StaggerItem variant="slide-up" duration={460} className={styles.heroActions}>
             <Link className={styles.primaryButton} href="/play">Mulai simulasi</Link>
             <a className={styles.textLink} href="#tentang">Jelajahi kotanya</a>
-          </div>
-        </div>
-        <div className={styles.heroHud} aria-label="Ringkasan permainan">
+          </StaggerItem>
+        </StaggerGroup>
+
+        <Reveal
+          variant="scale-up"
+          delay={180}
+          className={styles.heroHud}
+          aria-label="Ringkasan permainan"
+        >
           <span><b>5</b> keputusan</span><span><b>3</b> menit bermain</span><span><b>2050</b> laporan kota</span>
-        </div>
+        </Reveal>
       </section>
 
       <section className={styles.intro} id="tentang" aria-labelledby="intro-title">
         <FloatingIsland className={styles.islandOne} /><FloatingIsland className={styles.islandTwo} />
         <div className={styles.cloudOne} aria-hidden="true" /><div className={styles.cloudTwo} aria-hidden="true" />
         <div className={styles.sectionInner}>
-          <p className={styles.sectionTag}>Selamat datang, Wali Kota</p>
-          <h2 id="intro-title">Kota hijau tidak lahir dari pilihan yang mudah.</h2>
-          <div className={styles.introGrid}>
-            <p>Setiap proyek membantu satu sisi kota dan menekan sisi lainnya. Naikkan ekonomi, emisi bisa ikut naik. Lindungi alam, lapangan kerja bisa berkurang.</p>
-            <p>Tidak ada jawaban sempurna. Ada kota yang harus Anda pertanggungjawabkan kepada warganya.</p>
-          </div>
+          <Reveal as="p" variant="fade-in" duration={360} className={styles.sectionTag}>
+            Selamat datang, Wali Kota
+          </Reveal>
+          <Reveal as="h2" variant="slide-up" duration={480} id="intro-title">
+            Kota hijau tidak lahir dari pilihan yang mudah.
+          </Reveal>
+          <StaggerGroup className={styles.introGrid} staggerMs={60}>
+            <StaggerItem as="p" variant="slide-up" duration={480}>
+              Setiap proyek membantu satu sisi kota dan menekan sisi lainnya. Naikkan ekonomi, emisi bisa ikut naik. Lindungi alam, lapangan kerja bisa berkurang.
+            </StaggerItem>
+            <StaggerItem as="p" variant="slide-up" duration={480}>
+              Tidak ada jawaban sempurna. Ada kota yang harus Anda pertanggungjawabkan kepada warganya.
+            </StaggerItem>
+          </StaggerGroup>
         </div>
       </section>
 
@@ -151,10 +179,13 @@ export default function Home() {
           />
         </svg>
         <div className={styles.sectionInner}>
-          <div className={styles.sectionHeading}>
-            <div><p className={styles.sectionTag}>Peta keputusan</p><h2 id="dilema-title">Lima petak. Lima konsekuensi.</h2></div>
+          <Reveal variant="slide-up" duration={460} className={styles.sectionHeading}>
+            <div>
+              <p className={styles.sectionTag}>Peta keputusan</p>
+              <h2 id="dilema-title">Lima petak. Lima konsekuensi.</h2>
+            </div>
             <p>Isi satu petak setiap ronde. Lihat kota tumbuh, indikator bergerak, dan masa depan berubah langsung di depan Anda.</p>
-          </div>
+          </Reveal>
           <div className={styles.dilemmaList}>
             {DILEMMAS.map(([name, question, copy], index) => {
               const scenario = SCENARIOS[index];
@@ -165,7 +196,11 @@ export default function Home() {
                   className={`${styles.dilemma}${flip ? ` ${styles.dilemmaFlip}` : ''}`}
                   key={name}
                 >
-                  <div className={styles.dilemmaHead}>
+                  <Reveal
+                    variant={flip ? 'slide-right' : 'slide-left'}
+                    amount={0.16}
+                    className={styles.dilemmaHead}
+                  >
                     <div className={styles.dilemmaMeta}>
                       <span className={styles.dilemmaNum}>
                         PETAK {String(index + 1).padStart(2, '0')}
@@ -174,10 +209,17 @@ export default function Home() {
                     </div>
                     <h3>{question}</h3>
                     <p>{copy}</p>
-                  </div>
+                  </Reveal>
 
-                  <div className={styles.dilemmaDuel}>
-                    <div className={`${styles.duelCard} ${styles.duelCardA}`}>
+                  <StaggerGroup
+                    className={styles.dilemmaDuel}
+                    staggerMs={55}
+                    amount={0.16}
+                  >
+                    <StaggerItem
+                      variant="scale-up"
+                      className={`${styles.duelCard} ${styles.duelCardA}`}
+                    >
                       <div className={styles.duelVisual}>
                         <span className={styles.duelBadge}>Opsi A</span>
                         <PlotMiniature asset={optA.asset} />
@@ -187,13 +229,21 @@ export default function Home() {
                         <p>{optA.blurb}</p>
                         <EffectChips effects={optA.effects} />
                       </div>
-                    </div>
+                    </StaggerItem>
 
-                    <span className={styles.vsBadge} aria-hidden="true">
+                    <StaggerItem
+                      as="span"
+                      variant="scale-up"
+                      className={styles.vsBadge}
+                      aria-hidden="true"
+                    >
                       VS
-                    </span>
+                    </StaggerItem>
 
-                    <div className={`${styles.duelCard} ${styles.duelCardB}`}>
+                    <StaggerItem
+                      variant="scale-up"
+                      className={`${styles.duelCard} ${styles.duelCardB}`}
+                    >
                       <div className={styles.duelVisual}>
                         <span className={styles.duelBadge}>Opsi B</span>
                         <PlotMiniature asset={optB.asset} />
@@ -203,8 +253,8 @@ export default function Home() {
                         <p>{optB.blurb}</p>
                         <EffectChips effects={optB.effects} />
                       </div>
-                    </div>
-                  </div>
+                    </StaggerItem>
+                  </StaggerGroup>
                 </article>
               );
             })}
@@ -214,36 +264,75 @@ export default function Home() {
 
       <section className={styles.playground} id="coba" aria-label="Coba satu keputusan Ecopolis">
         <FloatingIsland className={styles.islandThree} />
-        <div className={styles.sectionInner}><p className={styles.sectionTag}>Ronde percobaan</p><TryRound /></div>
+        <div className={styles.sectionInner}>
+          <Reveal as="p" variant="fade-in" duration={360} className={styles.sectionTag}>
+            Ronde percobaan
+          </Reveal>
+          <TryRound />
+        </div>
       </section>
 
       <section className={styles.how} aria-labelledby="how-title">
         <div className={styles.sectionInner}>
-          <p className={styles.sectionTag}>Cara bermain</p><h2 id="how-title">Tiga langkah menuju 2050.</h2>
-          <div className={styles.steps}>
-            <article><span>01</span><h3>Baca dilemanya</h3><p>Pahami masalah nyata yang dihadapi kota-kota Indonesia.</p></article>
-            <article><span>02</span><h3>Pilih kebijakan</h3><p>Bangun satu proyek dan saksikan pulau Anda berubah.</p></article>
-            <article><span>03</span><h3>Terima laporannya</h3><p>Lihat warisan kota Anda dalam laporan tahun 2050.</p></article>
-          </div>
+          <Reveal as="p" variant="fade-in" duration={360} className={styles.sectionTag}>
+            Cara bermain
+          </Reveal>
+          <Reveal as="h2" variant="slide-up" duration={450} id="how-title">
+            Tiga langkah menuju 2050.
+          </Reveal>
+          <StaggerGroup className={styles.steps} staggerMs={60}>
+            <StaggerItem as="article" variant="slide-up" duration={480}>
+              <span>01</span>
+              <h3>Baca dilemanya</h3>
+              <p>Pahami masalah nyata yang dihadapi kota-kota Indonesia.</p>
+            </StaggerItem>
+            <StaggerItem as="article" variant="slide-up" duration={480}>
+              <span>02</span>
+              <h3>Pilih kebijakan</h3>
+              <p>Bangun satu proyek dan saksikan pulau Anda berubah.</p>
+            </StaggerItem>
+            <StaggerItem as="article" variant="slide-up" duration={480}>
+              <span>03</span>
+              <h3>Terima laporannya</h3>
+              <p>Lihat warisan kota Anda dalam laporan tahun 2050.</p>
+            </StaggerItem>
+          </StaggerGroup>
         </div>
       </section>
 
       <section className={styles.finalCta} aria-labelledby="cta-title">
-        <CityMap
-          className={styles.finalCity}
-          plots={SHOWCASE}
-          avatar="rian"
-          fill
-          label=""
-        />
+        <ViewportPause className={styles.cityStage}>
+          <CityMap
+            className={styles.finalCity}
+            plots={SHOWCASE}
+            avatar="rian"
+            animate
+            fill
+            label=""
+          />
+        </ViewportPause>
         <div className={styles.finalShade} />
         <div className={styles.finalContent}>
-          <p className={styles.sectionTag}>Pulau Anda menunggu</p><h2 id="cta-title">Kota seperti apa yang Anda tinggalkan?</h2>
-          <p>Lima ronde. Satu kota. Semua pilihan ada di tangan Anda.</p><Link className={styles.primaryButton} href="/play">Mulai membangun</Link>
+          <Reveal as="p" variant="fade-in" duration={360} className={styles.sectionTag}>
+            Pulau Anda menunggu
+          </Reveal>
+          <Reveal as="h2" variant="blur-in" duration={500} id="cta-title">
+            Kota seperti apa yang Anda tinggalkan?
+          </Reveal>
+          <Reveal as="p" variant="slide-up" duration={460} delay={60}>
+            Lima ronde. Satu kota. Semua pilihan ada di tangan Anda.
+          </Reveal>
+          <Reveal variant="scale-up" delay={120}>
+            <Link className={styles.primaryButton} href="/play">Mulai membangun</Link>
+          </Reveal>
         </div>
       </section>
 
-      <footer className={styles.footer}><Brand /><p>Simulator kebijakan iklim untuk INVOFEST 2026.</p><span>Bangun hari ini. Hidup dengan hasilnya.</span></footer>
+      <Reveal as="footer" variant="fade-in" duration={380} className={styles.footer}>
+        <Brand />
+        <p>Simulator kebijakan iklim untuk INVOFEST 2026.</p>
+        <span>Bangun hari ini. Hidup dengan hasilnya.</span>
+      </Reveal>
     </main>
   );
 }
