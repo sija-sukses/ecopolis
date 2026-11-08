@@ -330,7 +330,7 @@ export default function Home() {
 
       <Reveal as="footer" variant="fade-in" duration={380} className={styles.footer}>
         <Brand />
-        <p>Simulator kebijakan iklim untuk INVOFEST 2026.</p>
+        <p>Simulator kebijakan iklim untuk Indonesia 2050.</p>
         <span>Bangun hari ini. Hidup dengan hasilnya.</span>
       </Reveal>
     </main>

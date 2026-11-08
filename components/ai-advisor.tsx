@@ -778,7 +778,15 @@ export function AiAdvisor() {
 
           {voiceError && <p className="assist__err">{voiceError}</p>}
 
-          <div className="assist__chips" aria-label="Pertanyaan cepat">
+          <div
+            className="assist__chips"
+            aria-label="Pertanyaan cepat"
+            onWheel={(e) => {
+              if (e.deltaY !== 0 && e.deltaX === 0) {
+                e.currentTarget.scrollLeft += e.deltaY;
+              }
+            }}
+          >
             {prompts.map((p) => {
               const isCrisisPrompt = p.includes('Kontinjensi') || p.includes('Darurat');
               return (

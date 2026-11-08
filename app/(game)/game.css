@@ -3004,6 +3004,8 @@
     0 10px 0 #090b1c,
     0 24px 48px rgba(9, 11, 28, 0.45);
   overflow: hidden;
+  touch-action: auto;
+  user-select: text;
   transform-origin: bottom right;
   animation: assistPop 200ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)) both;
 }
@@ -3165,12 +3167,34 @@
 .assist__log {
   flex: 1;
   min-height: 170px;
-  max-height: 240px;
+  max-height: clamp(240px, 45vh, 320px);
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #4a569d rgba(18, 21, 46, 0.5);
+}
+
+.assist__log::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assist__log::-webkit-scrollbar-track {
+  background: rgba(18, 21, 46, 0.5);
+  border-radius: 6px;
+}
+
+.assist__log::-webkit-scrollbar-thumb {
+  background: #4a569d;
+  border-radius: 6px;
+}
+
+.assist__log::-webkit-scrollbar-thumb:hover {
+  background: #6875c7;
 }
 
 @keyframes msgPopIn {
@@ -3277,12 +3301,31 @@
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
   padding: 0 16px 10px;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: #4a569d rgba(18, 21, 46, 0.5);
+  scroll-behavior: smooth;
 }
 
 .assist__chips::-webkit-scrollbar {
-  display: none;
+  height: 5px;
+  display: block;
+}
+
+.assist__chips::-webkit-scrollbar-track {
+  background: rgba(18, 21, 46, 0.5);
+  border-radius: 4px;
+}
+
+.assist__chips::-webkit-scrollbar-thumb {
+  background: #4a569d;
+  border-radius: 4px;
+}
+
+.assist__chips::-webkit-scrollbar-thumb:hover {
+  background: #6875c7;
 }
 
 .assist__chip {

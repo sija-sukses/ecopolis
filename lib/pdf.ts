@@ -282,8 +282,8 @@ export async function downloadCertificate(
   );
   doc.text(
     review.fallback
-      ? 'Laporan Hasil Evaluasi Standar  ·  Ecopolis untuk INVOFEST 2026'
-      : 'Laporan dibangkitkan AI  ·  Ecopolis untuk INVOFEST 2026',
+      ? 'Laporan Hasil Evaluasi Standar  ·  Ecopolis untuk Indonesia 2050'
+      : 'Laporan dibangkitkan AI  ·  Ecopolis untuk Indonesia 2050',
     L,
     Y.footer2,
   );
