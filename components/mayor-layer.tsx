@@ -8,13 +8,9 @@ import {
 import { avatarOf } from '@/lib/avatars.ts';
 
 type Props = {
-  /** Indeks petak (0..4) yang sedang disorot, atau null jika Walikota di Balai Kota. */
   ceremonyPlotIndex?: number | null;
-  /** Pose yang diminta saat berada di petak: meninjau atau meresmikan. */
   plotMode?: 'inspection' | 'ceremony';
-  /** ID avatar pemimpin terpilih. */
   avatar?: string;
-  /** Apakah warga sedang berdemo (kepuasan < 30). */
   protesting?: boolean;
 };
 
@@ -81,15 +77,6 @@ function getCharacterConfig(avatar: string): CharacterConfig {
   }
 }
 
-/**
- * Fitur kepala dan aksesoris khas masing-masing dari 6 avatar Walikota:
- * - Rian: Topi baseball biru terbalik + jambul pirang
- * - Bima: Snapback oranye-beige + janggut & kumis cokelat lebat
- * - Deni: Rambut gimbal kuncir atas + kacamata hitam dengan glare sian
- * - Lia: Rambut bob pirang rapi + kacamata biru + bibir koral
- * - Maya: Kupluk beanie sian + rambut bergelombang + anting teal
- * - Siti: Hijab pink menjuntai anggun + rona pipi manis + tunik hijau
- */
 function CharacterHeadFeatures({
   id,
   skin,
@@ -197,10 +184,6 @@ function CharacterHeadFeatures({
   }
 }
 
-/**
- * Komponen Figur Walikota 3D Isometrik yang disesuaikan secara dinamis
- * dengan profil avatar yang dipilih pengguna (`rian`, `bima`, `deni`, `lia`, `maya`, `siti`).
- */
 export function MayorFigurine({
   avatar = 'rian',
   mode = 'idle',
@@ -361,15 +344,6 @@ export function MayorFigurine({
   );
 }
 
-/**
- * Layer Figur Walikota Transparan & Dinamis (`MayorDynamicLayer`).
- *
- * Dipisahkan menjadi layer independen yang di-memoize dengan aset SVG transparan
- * (`/assets/mayor/mayor-idle-[avatar].svg` & `/assets/mayor/mayor-ceremony-[avatar].svg`)
- * dan rendering vektor 3D clay langsung, sehingga figur Walikota dapat bergerak secara
- * dinamis dari mimbar Balai Kota menuju karpet merah peresmian gedung di petak
- * mana pun tanpa me-render ulang seluruh pulau.
- */
 export const MayorDynamicLayer = memo(function MayorDynamicLayer({
   ceremonyPlotIndex = null,
   plotMode = 'ceremony',
@@ -403,8 +377,6 @@ export const MayorDynamicLayer = memo(function MayorDynamicLayer({
               ? 'worker worker--wave'
               : 'worker worker--bob'
         }
-        // Di atas petak ia memakai skala yang sama dengan adegannya, supaya
-        // tidak tampak lebih besar daripada para pekerja di sekitarnya.
         transform={onSite ? `scale(${BUILDING_SCALE})` : undefined}
       >
         <MayorFigurine avatar={info.id} mode={pos.mode} />

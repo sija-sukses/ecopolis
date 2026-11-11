@@ -1,21 +1,5 @@
 import type { GameState, StatKey } from './types.ts';
 
-/**
- * Sertifikat PDF digambar dengan primitif jsPDF, bukan tangkapan layar.
- *
- * html2canvas sengaja tidak dipakai: ia merender ulang CSS dengan mesinnya
- * sendiri dan pecah pada gradien, backdrop-filter, dan warna oklch. Hasilnya
- * pun raster, sehingga teksnya tidak bisa diseleksi.
- *
- * jsPDF di-import secara dinamis, jadi tidak satu byte pun masuk bundle awal.
- *
- * Seluruh tata letaknya memakai koordinat tetap yang dihitung di muka (lihat
- * konstanta Y di bawah). Versi sebelumnya menghitung posisi batang indikator
- * dari tinggi gambar peta, sehingga begitu petanya tinggi, keempat batang
- * terdorong keluar halaman dan menabrak baris kaki. Sekarang tidak ada satu
- * pun posisi yang bergantung pada tinggi isi; isinya yang dipaskan ke kotak.
- */
-
 const STAT_LABELS: Record<StatKey, string> = {
   economy: 'Ekonomi',
   environment: 'Lingkungan',
@@ -23,23 +7,19 @@ const STAT_LABELS: Record<StatKey, string> = {
   energy: 'Energi',
 };
 
-/* Semua satuan milimeter, A4 lanskap. */
 const W = 297;
 const H = 210;
 const M = 14;
 
-/* Kartu terang di dalam bidang ink. */
 const CARD = { x: M, y: M, w: W - M * 2, h: H - M * 2 };
 const PAD = 12;
 const L = CARD.x + PAD;
 const R = CARD.x + CARD.w - PAD;
 
-/* Kolom kiri untuk peta dan indikator, kolom kanan untuk narasi. */
 const COL_L_W = 94;
 const COL_R_X = L + 106;
 const COL_R_W = R - COL_R_X;
 
-/* Baris-baris yang posisinya dikunci. */
 const Y = {
   brand: 38,
   tagline: 44,
@@ -73,7 +53,6 @@ function token(name: string, fallback: Rgb): Rgb {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
-/** Menggambar sebuah sumber gambar ke canvas lalu mengembalikannya sebagai PNG. */
 async function rasterise(src: string, w: number, h: number, crisp: boolean) {
   const img = new Image();
   await new Promise<void>((resolve, reject) => {
@@ -91,14 +70,6 @@ async function rasterise(src: string, w: number, h: number, crisp: boolean) {
   return canvas.toDataURL('image/png');
 }
 
-/**
- * Menyalin peta SVG di halaman menjadi PNG.
- *
- * Warnanya memakai custom property CSS, yang tidak ikut terbawa ketika SVG
- * dilepas dari dokumen. Jadi setiap `var(--x)` diganti nilai nyatanya lebih
- * dulu, dibaca dari dokumen yang sedang tampil: tokennya tetap satu sumber,
- * tidak disalin ke dalam JavaScript.
- */
 async function mapToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | null> {
   try {
     const root = getComputedStyle(document.documentElement);
@@ -120,7 +91,6 @@ async function mapToPng(svg: SVGSVGElement, pxWidth: number): Promise<string | n
   }
 }
 
-/** Avatar dibaca dari berkasnya sendiri, dengan penghalusan dimatikan. */
 async function faceToPng(el: HTMLImageElement): Promise<string | null> {
   try {
     const res = await fetch(el.currentSrc || el.src);
@@ -158,7 +128,7 @@ export async function downloadCertificate(
   doc.setFillColor(...bg);
   doc.rect(CARD.x, CARD.y, CARD.w, CARD.h, 'F');
 
-  /* ---- Kepala ---- */
+  // Header
   doc.setTextColor(...ink);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
@@ -178,7 +148,7 @@ export async function downloadCertificate(
   doc.setFontSize(26);
   doc.text(leader.name, facePng ? L + FACE + 7 : L, Y.name, { maxWidth: COL_L_W + 54 });
 
-  /* ---- Kolom kiri: peta, dipaskan ke dalam kotak tetap ---- */
+  // Kolom Kiri (Peta)
   const mapPng = mapSvg ? await mapToPng(mapSvg, 700) : null;
   if (mapPng) {
     const boxH = Y.mapBottom - Y.band;
@@ -189,7 +159,7 @@ export async function downloadCertificate(
     doc.addImage(mapPng, 'PNG', L + (COL_L_W - w) / 2, Y.band + (boxH - h) / 2, w, h);
   }
 
-  /* ---- Kolom kiri: empat indikator ---- */
+  // Kolom Kiri 4 Indikator
   doc.setFontSize(9);
   (Object.keys(STAT_LABELS) as StatKey[]).forEach((k, i) => {
     const y = Y.stat0 + i * Y.statStep;
@@ -203,7 +173,6 @@ export async function downloadCertificate(
     const fill = (stats[k] / 100) * BAR_W;
     if (fill > 0.6) {
       doc.setFillColor(...ink);
-      // Jari-jari ikut lebar isian, supaya nilai kecil tidak jadi lingkaran.
       const r = Math.min(2.2, fill / 2);
       doc.roundedRect(BAR_X, y - 3.1, fill, 4.4, r, r, 'F');
     }
@@ -212,7 +181,7 @@ export async function downloadCertificate(
     doc.text(String(stats[k]), L + COL_L_W, y, { align: 'right' });
   });
 
-  /* ---- Kolom kanan: judul dari AI ---- */
+  // Kolom Kanan Judul
   doc.setFillColor(...accent);
   doc.roundedRect(COL_R_X, Y.titleTop, COL_R_W, 13, 3, 3, 'F');
   doc.setTextColor(...ink);
@@ -220,7 +189,7 @@ export async function downloadCertificate(
   doc.setFontSize(13);
   doc.text(review.title, COL_R_X + 5, Y.titleTop + 8.6, { maxWidth: COL_R_W - 10 });
 
-  /* ---- Kolom kanan: narasi, ukurannya diturunkan sampai muat ---- */
+  // Kolom Kanan Narasi
   const paras = review.narrative
     .split('\n\n')
     .map((p) => p.trim())
@@ -244,7 +213,6 @@ export async function downloadCertificate(
   let ty = Y.narrative;
   for (const block of blocks) {
     for (const line of block) {
-      // Pagar terakhir: apa pun yang tersisa berhenti di batas bawahnya.
       if (ty > Y.narrativeMax) break;
       doc.text(line, COL_R_X, ty);
       ty += lead;
@@ -252,7 +220,6 @@ export async function downloadCertificate(
     ty += 3;
   }
 
-  /* ---- Kolom kanan: refleksi SDG ---- */
   doc.setFillColor(...grass);
   doc.roundedRect(COL_R_X, Y.sdgTop, COL_R_W, Y.sdgH, 3, 3, 'F');
   doc.setTextColor(...ink);
@@ -267,7 +234,7 @@ export async function downloadCertificate(
     Y.sdgTop + 11,
   );
 
-  /* ---- Kaki ---- */
+  // Footer
   doc.setTextColor(...ink);
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
@@ -318,11 +285,6 @@ async function loadImage(src: string): Promise<HTMLImageElement | null> {
   return ok ? img : null;
 }
 
-/**
- * Menghasilkan Kartu Story Sosial Media (1080 × 1350 PNG) berisi pulau 2050,
- * avatar pemimpin, gelar kota, dan skor 4 indikator untuk diunduh atau
- * dibagikan lewat Web Share API.
- */
 export async function downloadStoryCard(
   state: GameState,
   mapSvg: SVGSVGElement | null,
@@ -467,8 +429,6 @@ export async function downloadStoryCard(
   );
   if (!blob) return;
 
-  // Jika perangkat mendukung Web Share API dengan berkas gambar, buka share sheet
-  // selagi user gesture masih aktif; jika tidak didukung atau gagal, unduh berkas PNG.
   let shared = false;
   try {
     const file = new File([blob], fileName, { type: 'image/png' });

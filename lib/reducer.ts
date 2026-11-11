@@ -34,11 +34,6 @@ export function applyEffects(stats: Stats, effects: Partial<Stats>): Stats {
 
 export const isFinished = (state: GameState) => state.round > ROUNDS;
 
-/**
- * Pemeriksa bentuk untuk state yang dibaca kembali dari sessionStorage.
- * Isinya datang dari luar program, jadi tidak pernah dipercaya begitu saja:
- * satu entri cacat membuat seluruh pemulihan dibatalkan.
- */
 export function isGameState(v: unknown): v is GameState {
   if (typeof v !== 'object' || v === null) return false;
   const s = v as Record<string, unknown>;
@@ -77,7 +72,6 @@ export function reducer(state: GameState, action: Action): GameState {
 
     case 'choose': {
       const scenario = scenarioFor(state.round);
-      // Ronde habis, atau nama pemimpin belum diisi: abaikan.
       if (!scenario || !state.leader) return state;
 
       const option = scenario.options.find((o) => o.id === action.option);

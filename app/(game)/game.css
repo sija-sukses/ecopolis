@@ -1,10 +1,3 @@
-/* ===========================================================================
-   Layar permainan dan laporan.
-
-   Berkas terpisah dan hanya di-import oleh layout (game), jadi landing page
-   tidak ikut memuat satu baris pun darinya. Token, tombol, dan bentuknya sama
-   dengan globals.css.
-   =========================================================================== */
 
 .stage {
   position: fixed;
@@ -1520,9 +1513,6 @@
   }
 }
 
-/* ==========================================================================
-   Floating Action Dock (/results) — Satu Navbar Terpadu (UI/UX Pro Max)
-   ========================================================================== */
 
 .result-dock {
   position: fixed;
@@ -2456,15 +2446,6 @@
   }
 }
 
-/* ===========================================================================
-   Sinematik pembangunan.
-
-   Kamera mendekat ke petak, iris hitam menutup dari kanan bawah lalu membuka
-   lagi dalam mode sinematik, dan kembali seperti semula setelah peresmian.
-   =========================================================================== */
-
-/* Kamera peta. Transform-nya dipasang dari JavaScript sebagai inline style;
-   di sini hanya temponya. */
 .city-camera {
   transition: transform 700ms cubic-bezier(0.33, 1, 0.68, 1);
 }
@@ -2723,10 +2704,6 @@
     transition: none;
   }
 }
-
-/* ===========================================================================
-   Staf Ahli AI (TARA) — Tombol mengambang ala AssistiveTouch + Panel Suara
-   =========================================================================== */
 
 .stage--sinematik ~ .assist {
   display: none;

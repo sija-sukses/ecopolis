@@ -19,13 +19,6 @@ export type RiverPalette = {
   cloudRight: string;
 };
 
-/**
- * Menghitung tingkat polusi udara kota berdasarkan keberadaan PLTU Batu Bara
- * dan Kawasan Industri:
- * - 'bersih': tidak ada keduanya
- * - 'sedang': salah satu terbangun (PLTU saja atau Industri saja)
- * - 'parah': keduanya terbangun (PLTU + Industri)
- */
 export function getPollutionLevel(plots: (AssetId | null)[]): PollutionLevel {
   const hasPltu = plots.includes('pltu');
   const hasIndustri = plots.includes('industri');
@@ -34,13 +27,6 @@ export function getPollutionLevel(plots: (AssetId | null)[]): PollutionLevel {
   return 'bersih';
 }
 
-/**
- * Menghitung tingkat kekeruhan air sungai berdasarkan keberadaan Kawasan
- * Industri dan TPA Terbuka:
- * - 'jernih': tidak ada keduanya (sungai biru sian jernih & air terjun bersih)
- * - 'sedang': Kawasan Industri terbangun (air keruh sedang kehijauan-coklat)
- * - 'parah': TPA Terbuka terbangun (air lumpur limbah coklat tua pekat)
- */
 export function getWaterTurbidity(plots: (AssetId | null)[]): WaterTurbidity {
   const hasTpa = plots.includes('tpa');
   const hasIndustri = plots.includes('industri');
@@ -49,10 +35,6 @@ export function getWaterTurbidity(plots: (AssetId | null)[]): WaterTurbidity {
   return 'jernih';
 }
 
-/**
- * Palet warna air sungai, air terjun berundak, dan kabut awan bawah sesuai
- * tingkat kekeruhan.
- */
 export function getRiverPalette(plots: (AssetId | null)[]): RiverPalette {
   const turbidity = getWaterTurbidity(plots);
   if (turbidity === 'parah') {
@@ -119,11 +101,6 @@ export type TolVehicleAsset = {
   height: number;
 };
 
-/**
- * Daftar aset kendaraan tol transparan (SVG terpisah & sprite sheet) agar
- * kendaraan dapat digerakkan secara dinamis di atas canvas peta tanpa
- * me-render ulang seluruh pulau.
- */
 export const TOL_VEHICLE_ASSETS: Record<TolVehicleKind, TolVehicleAsset> = {
   'car-blue': {
     id: 'car-blue',
@@ -176,15 +153,10 @@ export type TolSpineSample = {
   angleDeg: number;
 };
 
-/**
- * Menghitung titik sampel kurva 3D jalan tol layang dalam kota (ramping naik
- * dari permukaan tanah, melengkung halus di atas pilar silinder, lalu melandai).
- */
 export function sampleTolFlyoverSpine(t: number): TolSpineSample {
   const clamped = Math.max(0, Math.min(1, t));
   const inv = 1 - clamped;
 
-  // Kurva Bézier kuadratik horizontal di ruang ubin (u, v)
   const u0 = -0.98;
   const v0 = -0.05;
   const uCtrl = 0.04;
@@ -195,12 +167,10 @@ export function sampleTolFlyoverSpine(t: number): TolSpineSample {
   const u = inv * inv * u0 + 2 * inv * clamped * uCtrl + clamped * clamped * u1;
   const v = inv * inv * v0 + 2 * inv * clamped * vCtrl + clamped * clamped * v1;
 
-  // Profil elevasi: tanjakan mulus dari tanah (14.8) ke dek layang tinggi (42.0) lalu melandai ke tanah (14.8)
   const groundLift = 14;
   const arch = Math.sin(Math.PI * clamped);
   const lift = groundLift + 0.8 + Math.pow(arch, 0.85) * 27.2;
 
-  // Turunan kurva di layar untuk orientasi lajur kendaraan
   const du = 2 * inv * (uCtrl - u0) + 2 * clamped * (u1 - uCtrl);
   const dv = 2 * inv * (vCtrl - v0) + 2 * clamped * (v1 - vCtrl);
   const dx = (du - dv) * 64;
@@ -210,42 +180,19 @@ export function sampleTolFlyoverSpine(t: number): TolSpineSample {
   return { t: clamped, u, v, lift, groundLift, angleDeg };
 }
 
-/**
- * Tahap transisi petak pembangunan di Ecopolis:
- * [Petak Kosong / Paving] ('empty')
- * ↓ (User klik kartu kebijakan SDG)
- * [Aset Konstruksi: Crane + Pekerja + Rangka Gedung] ('construction')
- * ↓ (Timer berjalan / transisi round ~2.5 detik)
- * [Aset Peresmian: Walikota potong pita merah di karpet merah + Confetti] ('ceremony')
- * ↓ (Efek partikel confetti / suara peresmian selesai)
- * [Aset Gedung Jadi yang Beroperasi Penuh] ('operational')
- */
 export type PlotTransitionStage = 'empty' | 'construction' | 'ceremony' | 'operational';
 
-/** Durasi fase konstruksi (ms) sebelum masuk ke prosesi peresmian. */
 export const CONSTRUCTION_DURATION_MS = 1500;
 
-/** Durasi fase peresmian gunting pita Walikota (ms) sebelum gedung beroperasi penuh. */
 export const CEREMONY_DURATION_MS = 1500;
 
-/** Total durasi transisi konstruksi + peresmian (3.0 detik). */
 export const TOTAL_TRANSITION_MS = CONSTRUCTION_DURATION_MS + CEREMONY_DURATION_MS;
 
-/**
- * Skala dan ketinggian kelompok bangunan di atas petak.
- *
- * Ditaruh di sini, bukan di `iso.tsx`, karena posisi Walikota di layar
- * terpisah harus diturunkan dari angka yang sama. Sebelumnya keduanya ditulis
- * terpisah dan offset Walikota ditebak dengan tangan, sehingga ia berdiri
- * jauh dari pita yang harus dipotongnya. `iso.tsx` mengekspor ulang keduanya.
- */
 export const BUILDING_LIFT = -14;
 export const BUILDING_SCALE = 0.88;
 
-/** Jangkar halaman peresmian, dalam satuan ubin pada ruang bangunan. */
 export const CEREMONY_ANCHOR = { u: 0.18, v: 0.72, lift: 4 };
 
-/** Menerjemahkan titik di ruang bangunan ke offset relatif terhadap petak. */
 export function buildingPointToPlot(u: number, v: number, lift = 0): [number, number] {
   const lx = (u - v) * 64;
   const ly = (u + v) * 32 - lift;
@@ -254,15 +201,6 @@ export function buildingPointToPlot(u: number, v: number, lift = 0): [number, nu
 
 export type MayorPoseMode = 'idle' | 'ceremony' | 'inspection';
 
-/**
- * Tahap sinematik saat sebuah kawasan dibangun.
- *
- * Kamera mendekat ke petaknya, layar ditutup iris hitam dari sudut kanan bawah
- * lalu dibuka ke arah kiri atas dalam mode sinematik: Walikota berhelm meninjau lokasi,
- * pekerja bekerja, dan berlanjut ke pemotongan pita. Indikator baru berubah
- * di tahap 'ceremony', supaya dampaknya terbaca sebagai hasil dari yang baru
- * saja ditonton, bukan terjadi di balik layar hitam.
- */
 export type CutscenePhase =
   | 'zoom-in'
   | 'iris-in'
@@ -271,7 +209,6 @@ export type CutscenePhase =
   | 'iris-out'
   | 'zoom-out';
 
-/** Lama tiap tahap dalam milidetik. */
 export const CUTSCENE_TIMING: Record<CutscenePhase, number> = {
   'zoom-in': 700,
   'iris-in': 420,
@@ -292,24 +229,11 @@ export const CUTSCENE_ORDER: CutscenePhase[] = [
 
 export const CUTSCENE_TOTAL_MS = CUTSCENE_ORDER.reduce((n, p) => n + CUTSCENE_TIMING[p], 0);
 
-/** Seberapa dekat kamera mendekat saat menyorot satu petak. */
 export const CAMERA_ZOOM = 2.9;
 
-/**
- * Titik tengah viewBox peta dalam koordinat ruang pengguna.
- * viewBox-nya "-570 -145 1140 610", jadi tengahnya (0, 160).
- * Harus ikut berubah kalau viewBox di `CityMap` diubah.
- */
-const VIEW_CENTER: [number, number] = [0, 160];
+const VIEW_CENTER: [number, number] = [0, 16];
 
-/**
- * Transform CSS untuk mendekatkan kamera ke satu petak.
- *
- * Dipasang sebagai inline style pada `<g>` pembungkus yang **tidak punya
- * atribut transform sendiri**: pada elemen SVG, transform CSS menimpa atribut
- * transform, dan mencampur keduanya di satu elemen pernah menumpuk seluruh
- * kota di titik asal.
- */
+
 export function getPlotCameraTransform(
   plotIndex: number | null,
   isMobile = false,
@@ -323,9 +247,6 @@ export function getPlotCameraTransform(
   const px = (u - v) * 64;
   const py = (u + v) * 32;
 
-  // Di mode sinematik layar penuh mobile (`fill = true`), SVG memakai
-  // `preserveAspectRatio="xMidYMid slice"` pada `defaultViewBox`, sehingga
-  // viewport sudah memotong dan memperbesar pulau secara otomatis.
   if (isMobile && fill) {
     const actualScale = scale ?? 1.4;
     const focalX = px - 25;
@@ -335,10 +256,6 @@ export function getPlotCameraTransform(
     return `translate(${(cx - actualScale * focalX).toFixed(2)}px, ${(targetCy - actualScale * focalY).toFixed(2)}px) scale(${actualScale})`;
   }
 
-  // Di mode kartu / inspeksi kawasan (`fill = false`, mis. halaman /results):
-  // Mobile memakai `mobileViewBox = "-450 -170 830 570"` (titik tengah di -35, 115)
-  // dengan `preserveAspectRatio="xMidYMid meet"`, sehingga butuh zoom penuh (3.1x)
-  // tepat ke pusat visual bangunan (px, py - 14).
   const actualScale = scale ?? (isMobile ? 3.1 : CAMERA_ZOOM);
   const focalX = px;
   const focalY = isMobile ? py - 14 : py + 4;
@@ -357,17 +274,10 @@ export type MayorAssetSpec = {
   height: number;
 };
 
-/**
- * Aset transparan terpisah untuk figur Walikota (SVG & Sprite Sheet) agar
- * dapat digerakkan secara dinamis di atas canvas peta tanpa me-render ulang
- * seluruh pulau.
- */
 export const MAYOR_ASSETS: Record<MayorPoseMode, MayorAssetSpec> = {
   inspection: {
     mode: 'inspection',
     label: 'Walikota Ecopolis Meninjau Pembangunan dengan Helm Proyek',
-    // Pose ini digambar langsung sebagai vektor di MayorFigurine, bukan dari
-    // berkas tersendiri, jadi src-nya menunjuk ke berkas idle sebagai cadangan.
     src: '/assets/mayor/mayor-idle.svg',
     spriteSymbol: '/assets/mayor/mayor-sprite.svg#mayor-idle',
     width: 72,
@@ -391,13 +301,9 @@ export const MAYOR_ASSETS: Record<MayorPoseMode, MayorAssetSpec> = {
   },
 };
 
-/**
- * Mendapatkan spesifikasi aset Walikota sesuai mode pose dan avatar pilihan pemain.
- */
 export function getMayorAsset(mode: MayorPoseMode, avatar?: string): MayorAssetSpec {
   const info = avatarOf(avatar ?? 'rian');
   const base = MAYOR_ASSETS[mode];
-  // Hanya idle dan ceremony yang punya berkas per avatar.
   const fileMode = mode === 'inspection' ? 'idle' : mode;
   return {
     mode,
@@ -409,7 +315,6 @@ export function getMayorAsset(mode: MayorPoseMode, avatar?: string): MayorAssetS
   };
 }
 
-/** Koordinat ubin 5 petak pembangunan di pulau Ecopolis. */
 const PLOT_TILE_COORDS: [number, number][] = [
   [-0.75, -0.15],
   [-1.15, 2.25],
@@ -418,7 +323,6 @@ const PLOT_TILE_COORDS: [number, number][] = [
   [3.65, 3.25],
 ];
 
-/** Koordinat ubin podium kehormatan Walikota di depan Balai Kota. */
 const CITY_HALL_MAYOR_TILE: [number, number] = [0.96, 1.96];
 
 export type MayorWorldPosition = {
@@ -428,13 +332,6 @@ export type MayorWorldPosition = {
   plotIndex: number | null;
 };
 
-/**
- * Menghitung posisi layar isometrik `(x, y)` untuk layer dinamis Walikota.
- * - Saat tidak ada peresmian (`ceremonyPlotIndex === null`), Walikota berdiri
- *   di podium Balai Kota.
- * - Saat suatu petak sedang dalam tahap `'ceremony'`, Walikota bergerak secara
- *   dinamis ke depan karpet merah pintu masuk gedung yang diresmikan.
- */
 export function getMayorWorldPosition(
   ceremonyPlotIndex: number | null,
   mode: MayorPoseMode = 'ceremony',
@@ -447,12 +344,9 @@ export function getMayorWorldPosition(
     const [pu, pv] = PLOT_TILE_COORDS[ceremonyPlotIndex];
     const plotX = (pu - pv) * 64;
     const plotY = (pu + pv) * 32;
-    // Saat meninjau, Walikota berdiri di tepi lokasi agar tidak menutupi
-    // crane dan perancah; saat peresmian ia maju ke karpet merah.
     const inspecting = mode === 'inspection';
 
     if (inspecting) {
-      // Meninjau dari tepi lokasi, agar tidak menutupi crane dan perancah.
       const [dx, dy] = buildingPointToPlot(0.62, -0.1, 4);
       return {
         x: Number((plotX + dx).toFixed(1)),
@@ -462,8 +356,6 @@ export function getMayorWorldPosition(
       };
     }
 
-    // Berdiri tepat di ujung karpet merah, di sebelah kiri pitanya. Diturunkan
-    // dari jangkar yang sama dengan karpetnya, bukan ditebak.
     const [ax, ay] = buildingPointToPlot(
       CEREMONY_ANCHOR.u,
       CEREMONY_ANCHOR.v,
@@ -486,10 +378,6 @@ export function getMayorWorldPosition(
   };
 }
 
-/**
- * Menentukan tahap visual suatu petak berdasarkan keberadaan aset dan status
- * transisi aktif pada petak tersebut.
- */
 export function resolvePlotStage(
   asset: AssetId | null,
   activeTransition?: { plotIndex: number; stage: PlotTransitionStage } | null,

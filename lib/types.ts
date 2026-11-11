@@ -4,7 +4,6 @@ export type StatKey = 'economy' | 'environment' | 'satisfaction' | 'energy';
 
 export type Stats = Record<StatKey, number>;
 
-/** Setiap aset punya satu komponen SVG di components/assets. */
 export type AssetId =
   | 'pltu'
   | 'plts'
@@ -23,14 +22,12 @@ export type Option = {
   id: OptionId;
   label: string;
   blurb: string;
-  /** Delta per statistik. Kunci yang tidak disebut berarti 0. */
   effects: Partial<Stats>;
   asset: AssetId;
 };
 
 export type Scenario = {
   round: number;
-  /** Indeks plot di peta, 0..4. */
   plot: number;
   title: string;
   context: string;
@@ -52,13 +49,11 @@ export type Review = {
   title: string;
   narrative: string;
   sdgReflection: string;
-  /** true → tampilkan badge "Laporan Hasil Evaluasi Standar". */
   fallback: boolean;
 };
 
 export type GameState = {
   leader: Leader | null;
-  /** 1..5 saat bermain; ROUNDS + 1 berarti selesai. */
   round: number;
   stats: Stats;
   choices: Choice[];

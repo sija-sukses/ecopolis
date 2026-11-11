@@ -4,36 +4,12 @@ import { useEffect } from 'react';
 
 import type { CutscenePhase } from '@/lib/city-effects.ts';
 
-/**
- * Lapisan sinematik di atas layar permainan.
- *
- * Dua bagian terpisah:
- *
- * 1. **Iris hitam** berbentuk lingkaran (animasi diagonal melintang layar).
- *    Ia menutup sebelum setiap pergantian keadaan, lalu membuka lagi sesudahnya.
- *    Selain sebagai transisi, iris inilah yang menyembunyikan momen Walikota
- *    berganti pose ke helm dan bingkai sinematik masuk, sehingga pergantiannya
- *    tidak terlihat kasar.
- *
- * 2. **Bingkai sinematik**: bilah hitam atas-bawah, satu baris keterangan, dan
- *    tombol lewati. Inilah yang memberi tahu penonton bahwa ia sedang menonton
- *    dan bukan sedang bermain.
- *
- * Lapisan ini tidak menggambar adegannya sendiri: adegannya adalah peta yang
- * sama, didekati kamera. Jadi dunianya tidak pernah terputus.
- */
-
 type Props = {
   phase: CutscenePhase;
-  /** Keterangan satu baris, misalnya "Peninjauan pembangunan PLTS Surya". */
   caption: string;
   onSkip: () => void;
 };
 
-/**
- * Iris menutup sebelum keadaan berganti dan membuka sesudahnya, jadi dua tahap
- * yang sama dipakai dua kali dengan arah berbeda.
- */
 type IrisMode = 'in-close' | 'in-open' | 'out-close' | 'out-open';
 
 const IRIS: Partial<Record<CutscenePhase, IrisMode>> = {
@@ -43,12 +19,11 @@ const IRIS: Partial<Record<CutscenePhase, IrisMode>> = {
   'zoom-out': 'out-open',
 };
 
-/** Tahap yang layarnya berada dalam mode sinematik penuh. */
+
 const FRAMED: CutscenePhase[] = ['inspect', 'ceremony'];
 
 export function Cutscene({ phase, caption, onSkip }: Props) {
-  // Esc atau Spasi melewati adegan; klik di mana pun juga, lewat lapisan penangkap.
-  useEffect(() => {
+ useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const target = e.target;
@@ -92,7 +67,6 @@ export function Cutscene({ phase, caption, onSkip }: Props) {
 
       {canSkip && (
         <>
-          {/* Klik di mana pun melewati adegan. */}
           <button
             type="button"
             className="cut__catch"

@@ -36,7 +36,6 @@ let ctx: AudioContext | null = null;
 export function play(sound: Sound, muted: boolean): void {
   if (typeof window === 'undefined') return;
 
-  // Haptic feedback mikro pada smartphone sentuh (hanya saat ada gestur interaksi pengguna yang sah).
   if (
     typeof navigator !== 'undefined' &&
     typeof navigator.vibrate === 'function' &&
@@ -45,7 +44,6 @@ export function play(sound: Sound, muted: boolean): void {
     try {
       navigator.vibrate(HAPTICS[sound]);
     } catch {
-      // Abaikan jika peramban membatasi akses getar.
     }
   }
 
@@ -65,7 +63,6 @@ export function play(sound: Sound, muted: boolean): void {
       osc.type = type;
       osc.frequency.setValueAtTime(f, now + i * step);
 
-      // Naik cepat lalu meluruh, supaya tidak ada bunyi 'klik' di ujungnya.
       gain.gain.setValueAtTime(0.0001, now + i * step);
       gain.gain.exponentialRampToValueAtTime(0.12, now + i * step + 0.012);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + i * step + step);
@@ -75,6 +72,5 @@ export function play(sound: Sound, muted: boolean): void {
       osc.stop(now + i * step + step);
     }
   } catch {
-    // Peramban menolak audio. Permainan tidak boleh ikut berhenti karenanya.
   }
 }

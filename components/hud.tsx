@@ -50,8 +50,6 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
     return () => window.removeEventListener('keydown', onKey);
   }, [onToggleMute]);
 
-  // Avatar ikut bereaksi terhadap kepuasan warga: melompat kecil kalau naik,
-  // menggeleng kalau turun. Kuncinya ikut berganti supaya animasinya mengulang.
   const mood = deltas.satisfaction > 0 ? 'senang' : deltas.satisfaction < 0 ? 'kecewa' : '';
 
   return (
@@ -88,8 +86,6 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
         </button>
       </div>
 
-      {/* Perubahan dibacakan pembaca layar, supaya dampak pilihan terdengar
-          dan tidak hanya terlihat. */}
       <div className="hud__bars" aria-live="polite">
         {KEYS.map((k) => {
           const d = deltas[k];
@@ -171,7 +167,6 @@ function useAnimatedStats(target: Stats): Stats {
   return display;
 }
 
-/** Selisih terhadap nilai sebelumnya, ditahan sebentar lalu dilepas. */
 function useDeltas(stats: Stats) {
   const prev = useRef<Stats>(stats);
   const [deltas, setDeltas] = useState<Stats>({

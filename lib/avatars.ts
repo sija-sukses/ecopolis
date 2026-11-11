@@ -1,18 +1,9 @@
-/**
- * Katalog avatar.
- *
- * Data murni dan terpisah dari gambarnya (ada di components/avatars.tsx),
- * supaya fallback.ts dan server action tetap bisa membacanya tanpa menyentuh
- * JSX, dan tes `node --test` tetap jalan.
- */
-
 export type AvatarId = 'bima' | 'deni' | 'rian' | 'lia' | 'maya' | 'siti';
 
 export type Gender = 'pria' | 'wanita';
 
 export type AvatarInfo = {
   id: AvatarId;
-  /** Nama karakternya, seperti pada berkas di folder avatar. */
   label: string;
   gender: Gender;
 };
@@ -30,13 +21,6 @@ export const DEFAULT_AVATAR: AvatarId = 'rian';
 
 const BY_ID = new Map(AVATARS.map((a) => [a.id, a]));
 
-/**
- * Pencarian yang aman untuk nilai apa pun.
- *
- * State lama di sessionStorage masih menyimpan 'male' / 'female', dan isinya
- * datang dari luar program, jadi nilai yang tidak dikenal jatuh ke avatar
- * bawaan alih-alih membuat halaman gagal render.
- */
 const LEGACY: Record<string, AvatarId> = { male: 'rian', female: 'lia' };
 
 export function avatarOf(id: string): AvatarInfo {

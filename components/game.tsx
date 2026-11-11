@@ -24,13 +24,6 @@ import { ROUNDS, scenarioFor } from '@/lib/scenarios.ts';
 import { play } from '@/lib/sfx.ts';
 import type { AssetId, OptionId } from '@/lib/types.ts';
 
-/**
- * Sinematik yang sedang berjalan.
- *
- * `asset` disimpan di sini karena petaknya belum masuk ke state: pilihan baru
- * di-dispatch pada tahap 'ceremony', supaya angka indikator berubah sebagai
- * hasil dari yang baru saja ditonton, bukan di balik layar hitam.
- */
 type Cutscene = {
   plotIndex: number;
   asset: AssetId;
@@ -62,9 +55,6 @@ export function Game() {
     };
   }, []);
 
-  // Satu-satunya panggilan jaringan di seluruh permainan, dijalankan tepat
-  // sekali. Kalau pemanggilannya sendiri gagal (juri sedang offline), narasi
-  // cadangan dibangkitkan di sini juga, jadi permainan tidak pernah buntu.
   useEffect(() => {
     if (!ready || !state.leader || !done || busy || state.review || asked.current) return;
     asked.current = true;
@@ -82,13 +72,10 @@ export function Game() {
       });
   }, [ready, done, busy, state, dispatch, router]);
 
-  // Permainan sudah tamat dan laporannya ada: tempatnya di /results.
   useEffect(() => {
     if (ready && done && state.review) router.replace('/results');
   }, [ready, done, state.review, router]);
 
-  // Kunci gulir layar selama simulasi berlangsung sampai kelima pertanyaan
-  // terjawab semua, lalu buka kembali saat berpindah ke halaman laporan.
   useEffect(() => {
     if (done && state.review) return;
     const html = document.documentElement;
@@ -103,7 +90,6 @@ export function Game() {
     };
   }, [done, state.review]);
 
-  // Dukung ?autostart=1 untuk langsung memulai simulasi dari ronde pertama.
   useEffect(() => {
     if (!ready || state.leader) return;
     const params = new URLSearchParams(window.location.search);
@@ -127,7 +113,6 @@ export function Game() {
     timersRef.current = [];
   }
 
-  /** Menerapkan pilihan yang ditahan, kalau belum sempat diterapkan. */
   function commitPending() {
     const option = pendingRef.current;
     if (!option) return;
@@ -135,7 +120,6 @@ export function Game() {
     dispatch({ type: 'choose', option });
   }
 
-  /** Mengakhiri sinematik di titik mana pun: dipakai tombol lewati, Esc, dan klik. */
   function endCutscene() {
     clearTimers();
     commitPending();
@@ -154,7 +138,6 @@ export function Game() {
     clearTimers();
     setBusy(true);
 
-    // Gerak dikurangi: lewati seluruh sinematik, pakai transisi peta yang lama.
     if (prefersReducedMotion()) {
       setActiveTransition({ plotIndex: targetPlot, stage: 'construction' });
       dispatch({ type: 'choose', option });
@@ -169,13 +152,11 @@ export function Game() {
       return;
     }
 
-    // Pilihan ditahan sampai tahap 'ceremony'.
     pendingRef.current = option;
     setActiveTransition({ plotIndex: targetPlot, stage: 'construction' });
     setCutscene({ plotIndex: targetPlot, asset, option, label, phase: 'zoom-in' });
     play('construct', state.muted);
 
-    // Jadwalkan tiap tahap pada waktu kumulatifnya.
     let elapsed = 0;
     for (const phase of CUTSCENE_ORDER) {
       elapsed += CUTSCENE_TIMING[phase];
@@ -188,9 +169,6 @@ export function Game() {
           play('ceremony', state.muted);
         }
         if (phase === 'zoom-out') {
-          // Pilihan baru diterapkan di sini, bukan saat peresmian: papan
-          // indikator masih tersembunyi sepanjang adegan, jadi kalau angkanya
-          // berubah lebih awal, animasi deltanya habis sebelum papan kembali.
           commitPending();
           setActiveTransition(null);
         }
@@ -206,14 +184,10 @@ export function Game() {
     timersRef.current.push(endId);
   }
 
-  // Petak yang sedang dibangun belum masuk ke state sampai tahap 'ceremony',
-  // jadi asetnya disuntikkan di sini supaya kamera punya sesuatu untuk disorot.
   const displayPlots = cutscene
     ? state.plots.map((a, i) => (i === cutscene.plotIndex ? cutscene.asset : a))
     : state.plots;
 
-  // HUD dan kartu disembunyikan sepanjang adegan, dan baru kembali setelah
-  // iris menutup lagi, supaya kemunculannya tidak terlihat mendadak.
   const hideUi =
     cutscene?.phase === 'inspect' ||
     cutscene?.phase === 'ceremony' ||

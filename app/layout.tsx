@@ -10,7 +10,7 @@ const chivo = Chivo({
 });
 
 export const metadata: Metadata = {
-  title: 'Ecopolis. Simulator Kebijakan Iklim',
+  title: 'Ecopolis - Simulator Kebijakan Iklim',
   description:
     'Pelajari lima persoalan iklim Indonesia, lalu pimpin sebuah kota lewat lima keputusan kebijakan dan lihat wujudnya di tahun 2050.',
      manifest: "/site.webmanifest",

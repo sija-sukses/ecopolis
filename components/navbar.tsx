@@ -15,14 +15,12 @@ export function Navbar() {
       setScrolled(isPastThreshold);
     }
 
-    // Check immediately on mount
     handleScroll();
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile drawer on resize or Escape key
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') setMobileOpen(false);

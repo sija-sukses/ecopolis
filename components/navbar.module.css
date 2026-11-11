@@ -1,7 +1,3 @@
-/* ===========================================================================
-   Morphing / Shrinking Low-Poly Fixed Navbar
-   Optimized per Emil Kowalski's animation-performance (no per-frame layout transition)
-   =========================================================================== */
 
 .headerWrapper {
   position: fixed;

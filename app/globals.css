@@ -1,12 +1,5 @@
 @import "tailwindcss";
 
-/* ===========================================================================
-   Token
-   Warna diambil dari referensi visual proyek (ilustrasi isometrik datar,
-   pastel, tanpa garis tepi), dipasang pada peran yang dibagikan arah seni:
-   satu ground, satu ink, satu aksen, dan beberapa bidang warna penuh.
-   =========================================================================== */
-
 :root {
   /* Peran halaman */
   --bg: #c3cef6;

@@ -1,13 +1,6 @@
 import { honorificOf } from './avatars.ts';
 import type { Leader, Review, Stats } from './types.ts';
 
-/**
- * Narasi cadangan tanpa jaringan. Dipakai kalau Gemini gagal karena alasan apa
- * pun — timeout, rate limit, kuota habis, offline, atau JSON cacat.
- *
- * Pemilihannya deterministik atas kuadran lingkungan x ekonomi, jadi hasilnya
- * selalu bisa diprediksi dan diuji.
- */
 
 type Quadrant = {
   title: string;
@@ -17,7 +10,6 @@ type Quadrant = {
 
 type Ctx = {
   name: string;
-  /** "Bapak" / "Ibu" */
   honorific: string;
   stats: Stats;
 };

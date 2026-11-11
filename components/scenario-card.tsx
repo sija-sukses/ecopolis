@@ -8,7 +8,6 @@ import type { OptionId, Scenario } from '@/lib/types.ts';
 type Props = {
   scenario: Scenario;
   onChoose: (option: OptionId) => void;
-  /** Mengunci kartu selama animasi bangunan jatuh. */
   busy: boolean;
 };
 
@@ -16,7 +15,6 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
   const heading = useRef<HTMLHeadingElement>(null);
   const [selected, setSelected] = useState<OptionId | null>(null);
 
-  // Fokus berpindah ke judul saat kartu pertama kali dimuat.
   useEffect(() => {
     heading.current?.focus();
   }, []);
@@ -30,7 +28,6 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
     [busy, selected, onChoose],
   );
 
-  // Pintasan papan ketik ala konsol game: A / 1 untuk opsi A, B / 2 untuk opsi B.
   useEffect(() => {
     if (busy) return;
     const onKey = (e: KeyboardEvent) => {
@@ -58,8 +55,6 @@ export function ScenarioCard({ scenario, onChoose, busy }: Props) {
   }, [busy, chooseOption]);
 
   return (
-    // key membuat kartu dipasang ulang tiap ronde, jadi animasi masuknya
-    // berjalan lagi tanpa pustaka animasi apa pun.
     <article className="card" key={scenario.round}>
       <h2 className="card__title" ref={heading} tabIndex={-1}>
         {scenario.title}

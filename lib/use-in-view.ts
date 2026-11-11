@@ -3,11 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 export type UseInViewOptions = {
-  /** Hanya memicu satu kali saat elemen pertama kali masuk layar (default: true) */
   once?: boolean;
-  /** Persentase elemen yang terlihat untuk memicu (0..1, default: 0.12) */
   amount?: number;
-  /** rootMargin IntersectionObserver (default: '0px 0px -4% 0px') */
   margin?: string;
 };
 

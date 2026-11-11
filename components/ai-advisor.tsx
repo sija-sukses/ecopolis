@@ -294,8 +294,6 @@ export function AiAdvisor() {
     }
   }
 
-  // Tempatkan orb di kanan bawah saat pertama kali dimuat, dan jaga agar tetap
-  // di dalam layar ketika ukuran jendela berubah.
   useEffect(() => {
     function syncViewport() {
       const vw = window.innerWidth;
@@ -343,7 +341,6 @@ export function AiAdvisor() {
     };
   }, []);
 
-  // Pintasan keyboard: Alt+T / T untuk buka-tutup TARA, Esc untuk tutup
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       const isInput =
@@ -372,7 +369,6 @@ export function AiAdvisor() {
     return () => window.removeEventListener('keydown', onKeyDown);
   });
 
-  // Dengarkan pemicu konsultasi langsung dari halaman evaluasi (/results)
   useEffect(() => {
     function onAskTara(e: Event) {
       if (open && !closing) {
@@ -393,7 +389,6 @@ export function AiAdvisor() {
     return () => window.removeEventListener('ecopolis:ask-tara', onAskTara);
   });
 
-  // Batasi durasi tayang balon petunjuk (nudge) hingga 9 detik
   useEffect(() => {
     const timer = setTimeout(() => {
       setDismissedKey(currentKey);

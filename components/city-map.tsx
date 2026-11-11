@@ -40,28 +40,14 @@ export type ActivePlotTransition = {
 
 type Props = {
   plots: (AssetId | null)[];
-  /** Kalimat yang dibacakan pembaca layar sebagai ganti gambar. */
   label: string;
   className?: string;
-  /** Jatuhkan bangunan satu per satu saat pertama tampil. */
   animate?: boolean;
-  /** Avatar walikota yang tampil di mimbar Balai Kota. */
   avatar?: string;
-  /** Nilai kepuasan warga (jika < 30, memicu aksi demo di depan Balai Kota). */
   satisfaction?: number;
-  /** Transisi konstruksi / peresmian yang sedang berlangsung pada salah satu petak. */
   activeTransition?: ActivePlotTransition | null;
-  /** Petak yang sedang disorot kamera, atau null untuk pandangan kota penuh. */
   cameraPlot?: number | null;
-  /** Pose Walikota saat berada di petak yang disorot. */
   mayorMode?: 'inspection' | 'ceremony';
-  /**
-   * Isi penuh bingkainya alih-alih dimuat seluruhnya.
-   *
-   * Dipakai selama sinematik supaya peta memenuhi layar, bukan jadi pita tipis
-   * di tengah bidang kosong. Pergantiannya selalu terjadi saat iris menutup,
-   * jadi perubahan bingkainya tidak pernah terlihat.
-   */
   fill?: boolean;
 };
 
@@ -94,8 +80,6 @@ export function CityMap({
     plots[1] === 'tol' && (westPlotStage === 'ceremony' || westPlotStage === 'operational');
   const [tolPlotX, tolPlotY] = PLOT_POS[1];
 
-  // Walikota ikut hadir di lokasi sejak tahap konstruksi, bukan hanya saat
-  // peresmian, karena sinematiknya memperlihatkan dia meninjau lebih dulu.
   const mayorPlotIndex = activeTransition ? activeTransition.plotIndex : null;
 
   const mobileViewBox = '-450 -170 830 570';
@@ -109,11 +93,6 @@ export function CityMap({
       role="img"
       aria-label={label}
     >
-      {/* Kamera.
-          Transform dipasang sebagai inline style pada pembungkus yang tidak
-          punya atribut transform sendiri. Pada elemen SVG, transform CSS
-          menimpa atribut transform, dan mencampur keduanya di satu elemen
-          pernah menumpuk seluruh kota di titik asal. */}
       <g
         className="city-camera"
         data-camera-plot={cameraPlot === null ? 'kota' : String(cameraPlot)}
@@ -128,11 +107,7 @@ export function CityMap({
         const asset = plots[i];
         const stage = resolvePlotStage(asset, activeTransition, i);
         return (
-          // Posisi kawasan dan animasi jatuhnya sengaja dipisah ke dua elemen.
-          // CSS transform menimpa atribut transform pada elemen SVG, jadi
-          // menganimasikan keduanya di satu elemen akan menghapus posisi
-          // kawasannya dan menumpuk seluruh kota di titik asal.
-          <g
+         <g
             key={i}
             transform={`translate(${x} ${y})`}
             data-plot-index={i}

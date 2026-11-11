@@ -9,28 +9,10 @@ import {
 } from '@/lib/city-effects.ts';
 import type { AssetId } from '@/lib/types.ts';
 
-/**
- * Sistem isometrik kota Ecopolis yang luas dan terintegrasi.
- *
- * Satu ubin = 128 x 64 (rasio 2:1). Pulau dirancang membentang luas dengan
- * Balai Kota (City Hall) dan model 3D Walikota di jantung kota, dikelilingi
- * 5 kawasan organik (tanpa kotak petak kaku) yang langsung memunculkan efek
- * nyata di seluruh penjuru kota sesuai keputusan kebijakan pemain.
- */
 
 export const TILE_W = 128;
 export const TILE_H = 64;
 
-/**
- * Koordinat pusat 5 kawasan pembangunan di sekeliling Balai Kota (0.95, 1.75),
- * diurutkan dari belakang ke depan (menurut u + v) agar urutan tumpukan
- * (painter's algorithm) selalu akurat dan tidak ada elemen yang bertabrakan:
- * - Kawasan 0 (Energi): Punggung barat-laut (-0.75, -0.15)
- * - Kawasan 1 (Transportasi): Koridor sabuk barat kota (-1.15, 2.25)
- * - Kawasan 2 (Lahan Utara): Lembah timur-laut di kaki ngarai (3.65, 0.35)
- * - Kawasan 3 (Sampah): Lembah hilir tepi sungai selatan (0.55, 3.85)
- * - Kawasan 4 (Hunian): Semenanjung pesisir tenggara (3.65, 3.25)
- */
 export const PLOT_TILES: [number, number][] = [
   [-0.75, -0.15],
   [-1.15, 2.25],
@@ -39,7 +21,6 @@ export const PLOT_TILES: [number, number][] = [
   [3.65, 3.25],
 ];
 
-/** Proyeksi koordinat ubin ke koordinat layar. */
 export function iso(tx: number, ty: number): [number, number] {
   return [(tx - ty) * (TILE_W / 2), (tx + ty) * (TILE_H / 2)];
 }
@@ -49,7 +30,6 @@ export const PLOT_POS = PLOT_TILES.map(([x, y]) => iso(x, y));
 const HW = TILE_W / 2;
 const HH = TILE_H / 2;
 
-/** Titik layar isometrik `x,y` untuk koordinat ubin `(u, v)` dengan tinggi `lift`. */
 function pt(u: number, v: number, lift = 0) {
   return `${(u - v) * HW},${(u + v) * HH - lift}`;
 }
@@ -67,7 +47,6 @@ function streamPath(coords: [number, number, number?][]) {
     .join(' ');
 }
 
-/** Belah ketupat alas satu ubin, diperkecil oleh `inset`. */
 function diamond(inset = 0, lift = 0) {
   const w = HW - inset;
   const h = HH - inset / 2;
@@ -83,7 +62,6 @@ type BoxProps = {
   right: string;
 };
 
-/** Satu kotak isometrik: tutup, sisi kiri, sisi kanan. Tanpa garis tepi. */
 function Box({ h, inset = 0, lift = 0, top, left, right }: BoxProps) {
   const w = HW - inset;
   const d = HH - inset / 2;
@@ -109,7 +87,6 @@ type SlabProps = {
   right: string;
 };
 
-/** Balok isometrik bebas pada rentang ubin `[u1, u2] x [v1, v2]`. */
 function IsoSlab({ u1, v1, u2, v2, h, lift = 0, top, left, right }: SlabProps) {
   const topLift = lift + h;
   return (
@@ -195,11 +172,6 @@ const C = {
   ink: 'var(--ink)',
 };
 
-/**
- * Kawasan terintegrasi langsung dengan permukaan tanah pulau (lift = 0),
- * tanpa kotak fondasi kaku. Saat belum terbangun, hanya menampilkan hamparan
- * rumput alami yang lembut.
- */
 export const PAD_H = 0;
 export { BUILDING_LIFT, BUILDING_SCALE } from '@/lib/city-effects.ts';
 
@@ -224,7 +196,6 @@ function at(u: number, v: number, lift = 0) {
   return `translate(${(u - v) * HW} ${(u + v) * HH - lift})`;
 }
 
-/** Pohon pinus low-poly minimalis dengan tiga faset pencahayaan datar. */
 function PineTree({
   u,
   v,
@@ -259,7 +230,6 @@ function PineTree({
   );
 }
 
-/** Pohon kanopi kubus 3D isometrik untuk taman kota dan boulevard. */
 function RoundTree({
   u,
   v,
@@ -276,7 +246,6 @@ function RoundTree({
   return <BlockTree u={u} v={v} lift={lift} scale={scale} tone={tone} />;
 }
 
-/** Pohon kanopi kubus 3D isometrik bergaya clay diorama sesuai referensi. */
 function BlockTree({
   u,
   v,
@@ -303,7 +272,6 @@ function BlockTree({
   );
 }
 
-/** Bongkahan batu karang/ngarai low-poly tanpa garis tepi. */
 function RockCrop({
   u,
   v,
@@ -398,10 +366,6 @@ const SHIRT_PALETTE: Record<string, { top: string; left: string; right: string; 
   red: { top: '#f05656', left: '#d93838', right: '#b52626' },
 };
 
-/**
- * Model manusia 3D low-poly isometrik berukuran miniatur yang sedang bekerja
- * atau beraktivitas sesuai kawasan di peta.
- */
 function IsoWorker({
   u,
   v,
@@ -595,15 +559,6 @@ function IsoWorker({
   );
 }
 
-/**
- * Model 3D Walikota sesuai karakter avatar yang dipilih pemain:
- * - rian: Jas gelap + dasi hijau, rambut pirang di sisi, topi biru menghadap depan
- * - bima: Jaket hijau, janggut coklat tebal, topi snapback oranye-putih
- * - deni: Jas biru langit, kacamata hitam berlensa sian, rambut gimbal/topknot hitam
- * - lia: Blazer merah marun, rambut bob pirang mengapit wajah, kacamata biru
- * - maya: Baju hijau zamrud, rambut hitam bergelombang, kupluk (beanie) biru & anting sian
- * - siti: Tunik hijau zamrud, hijab merah muda (pink)
- */
 function MayorModel({
   avatar,
   u,
@@ -751,10 +706,6 @@ function MayorModel({
   );
 }
 
-/**
- * Emote marah mengambang di atas kerumunan warga yang sedang berdemo di depan
- * Balai Kota ketika kepuasan < 30.
- */
 function AngryEmote({
   x,
   y,
@@ -806,11 +757,7 @@ function AngryEmote({
   );
 }
 
-/**
- * Balai Kota Ecopolis (City Hall) di pusat pulau (u=0.95, v=1.75), lengkap
- * dengan Alun-Alun Kota, tiang bendera Merah Putih, model 3D Walikota, dan
- * aksi demonstrasi warga jika kepuasan < 30.
- */
+
 function CityHallSection({
   avatar,
   satisfaction,
@@ -1063,11 +1010,7 @@ function CityHallSection({
   );
 }
 
-/**
- * Partikel visual asap kelabu halus yang mengebul / muncul secara periodik
- * dari cerobong (PLTU & Kawasan Industri) maupun tumpukan sampah (TPA),
- * tanpa menggunakan polygon hitam.
- */
+
 function SmokePlume({
   x = 0,
   y = 0,
@@ -1143,13 +1086,6 @@ function SmokePlume({
   );
 }
 
-/**
- * Partikel polusi udara kota berdasarkan tingkat polusi:
- * - 'bersih': tidak ada partikel polusi
- * - 'sedang': salah satu dari PLTU Batu Bara atau Kawasan Industri aktif
- * - 'parah': keduanya (PLTU Batu Bara + Kawasan Industri) aktif bersamaan,
- *   memunculkan kepulan partikel asap kelabu ekstra pekat di udara kota
- */
 function AtmospherePollution({
   level,
   plots,
@@ -1199,10 +1135,6 @@ function AtmospherePollution({
   );
 }
 
-/**
- * Efek langsung berskala kota (City-Wide Consequences) yang muncul di seluruh
- * pulau berdasarkan kombinasi keputusan kebijakan pemain.
- */
 function CityWideEffects({ plots }: { plots: (AssetId | null)[] }) {
   const hasPlts = plots.includes('plts');
   const hasTol = plots.includes('tol');
@@ -1334,10 +1266,6 @@ function CityWideEffects({ plots }: { plots: (AssetId | null)[] }) {
   );
 }
 
-/**
- * Klaster awan putih low-poly isometrik 3D yang melayang lembut di udara sekitar pulau,
- * lengkap dengan jejak bayangan atmosferik diagonal.
- */
 function IsoCloudCluster({
   u,
   v,
@@ -1487,9 +1415,6 @@ function IsoCloudCluster({
   );
 }
 
-/**
- * Awan low-poly horizon tinggi di latar belakang langit atas.
- */
 function DistantSkyCloud({
   startX,
   startY,
@@ -1523,11 +1448,6 @@ function DistantSkyCloud({
   );
 }
 
-/**
- * Elemen atmosfer terapung di sekeliling pulau utama: awan putih low-poly,
- * kubus tanah/batu satelit di berbagai ketinggian, serta pulau-pulau kecil
- * terapung sesuai gambar referensi.
- */
 function FloatingAtmosphere() {
   return (
     <g>
@@ -1587,10 +1507,6 @@ function FloatingAtmosphere() {
   );
 }
 
-/**
- * Penampang Tebing Tanah Liat, Strata Terakota, dan Bongkahan Batu Low-Poly
- * Berlapis-lapis di Bawah Pulau Utama yang Melayang di Udara.
- */
 function FloatingCliffStrata() {
   return (
     <g>
@@ -1607,10 +1523,6 @@ function FloatingCliffStrata() {
       <RockCrop u={3.45} v={4.72} lift={-76} w={0.24} d={0.24} h={10} tone="canyon" />
       <RockCrop u={4.98} v={2.85} lift={-72} w={0.24} d={0.24} h={10} tone="terra" />
 
-      {/* =====================================================================
-          LAPIS 4 (PALING BAWAH): GIGI BATU UMBER-TERAKOTA BERUNDAK (lift -72 s/d -46)
-          ===================================================================== */}
-      {/* Tonjolan batu bawah sepanjang tebing barat-daya (v = 4.55) */}
       <IsoSlab u1={-1.68} v1={3.75} u2={-0.88} v2={4.42} h={22} lift={-68} top="#944618" left="#853c12" right="#692d0b" />
       <IsoSlab u1={-0.38} v1={3.85} u2={0.58} v2={4.56} h={24} lift={-72} top="#944618" left="#853c12" right="#692d0b" />
       <IsoSlab u1={0.92} v1={3.92} u2={1.88} v2={4.58} h={22} lift={-68} top="#944618" left="#853c12" right="#692d0b" />
@@ -1622,27 +1534,18 @@ function FloatingCliffStrata() {
       <IsoSlab u1={4.18} v1={1.05} u2={4.86} v2={2.05} h={24} lift={-70} top="#944618" left="#853c12" right="#692d0b" />
       <IsoSlab u1={4.15} v1={2.45} u2={4.85} v2={3.45} h={22} lift={-68} top="#944618" left="#853c12" right="#692d0b" />
 
-      {/* =====================================================================
-          LAPIS 3: STRATA BATU TERAKOTA TUA BERUNDAK (lift -52 s/d -32)
-          ===================================================================== */}
       <IsoSlab u1={-1.82} v1={1.35} u2={0.22} v2={4.38} h={20} lift={-52} top="#b55d28" left="#a14f1e" right="#823c13" />
       <IsoSlab u1={-0.18} v1={2.28} u2={2.04} v2={4.58} h={22} lift={-54} top="#b55d28" left="#a14f1e" right="#823c13" />
       <IsoSlab u1={2.58} v1={2.02} u2={4.84} v2={4.46} h={22} lift={-54} top="#b55d28" left="#a14f1e" right="#823c13" />
       <IsoSlab u1={2.32} v1={-0.48} u2={4.82} v2={2.04} h={20} lift={-52} top="#b55d28" left="#a14f1e" right="#823c13" />
       <IsoSlab u1={-1.76} v1={-0.72} u2={1.74} v2={2.28} h={18} lift={-50} top="#b55d28" left="#a14f1e" right="#823c13" />
 
-      {/* =====================================================================
-          LAPIS 2: STRATA TANAH LIAT COKLAT HANGAT (lift -34 s/d -16)
-          ===================================================================== */}
       <IsoSlab u1={-1.86} v1={-0.76} u2={1.78} v2={2.32} h={18} lift={-34} top="#d18040" left="#bd6e30" right="#9c551f" />
       <IsoSlab u1={-1.94} v1={1.26} u2={0.26} v2={4.36} h={18} lift={-34} top="#d18040" left="#bd6e30" right="#9c551f" />
       <IsoSlab u1={-0.24} v1={2.24} u2={2.06} v2={4.62} h={18} lift={-34} top="#d18040" left="#bd6e30" right="#9c551f" />
       <IsoSlab u1={2.28} v1={-0.52} u2={4.88} v2={2.06} h={18} lift={-34} top="#d18040" left="#bd6e30" right="#9c551f" />
       <IsoSlab u1={2.58} v1={1.92} u2={4.92} v2={4.50} h={18} lift={-34} top="#d18040" left="#bd6e30" right="#9c551f" />
 
-      {/* =====================================================================
-          LAPIS 1: BIBIR TANAH SUBSOIL OKER HANGAT (lift -18 s/d -10)
-          ===================================================================== */}
       <IsoSlab u1={-1.84} v1={-0.78} u2={1.78} v2={2.35} h={8} lift={-18} top="#e6a460" left="#d48e48" right="#b57232" />
       <IsoSlab u1={-1.92} v1={1.25} u2={0.25} v2={4.34} h={8} lift={-18} top="#e6a460" left="#d48e48" right="#b57232" />
       <IsoSlab u1={-0.25} v1={2.25} u2={2.04} v2={4.62} h={8} lift={-18} top="#e6a460" left="#d48e48" right="#b57232" />
@@ -1652,13 +1555,6 @@ function FloatingCliffStrata() {
   );
 }
 
-/**
- * Lanskap Pulau Kota Ecopolis yang Melayang di Udara (Floating Eco-City Diorama):
- * Menampilkan penampang tanah liat & terakota berlapis tebal di bawah pulau,
- * sungai diagonal dengan 3 kondisi lingkungan (jernih sian, keruh sedang
- * kehijauan-coklat, atau lumpur limbah coklat pekat penuh sampah) yang jatuh
- * sebagai air terjun berundak ke gumpalan awan low-poly di bawah tebing.
- */
 export function IslandTerrain({
   plots = [null, null, null, null, null],
 }: {
@@ -1703,19 +1599,10 @@ export function IslandTerrain({
 
   return (
     <g data-water-turbidity={turbidity}>
-      {/* =====================================================================
-          1. AWAN LOW-POLY & PULAU SATELIT TERAPUNG DI SEKELILING PULAU UTAMA
-          ===================================================================== */}
       <FloatingAtmosphere />
 
-      {/* =====================================================================
-          2. PENAMPANG TANAH LIAT, STRATA TERAKOTA & BATU TEBING PULAU UTAMA
-          ===================================================================== */}
       <FloatingCliffStrata />
 
-      {/* =====================================================================
-          3. DATARAN RUMPUT HIJAU & SUNGAI DIAGONAL (3 KONDISI LINGKUNGAN)
-          ===================================================================== */}
       {/* Daratan Barat-Laut & Pusat Kota (Kawasan 0 & Balai Kota) */}
       <IsoSlab u1={-1.82} v1={-0.78} u2={1.78} v2={2.35} h={10} lift={-10} top={C.mintTop} left={C.mintL} right={C.mintR} />
       {/* Sabuk Koridor Barat (Kawasan 1 - Transportasi) */}
@@ -1787,9 +1674,6 @@ export function IslandTerrain({
       {/* Daratan Semenanjung Tenggara (Kawasan 4 - Perumahan / Apartemen Hijau) */}
       <IsoSlab u1={2.60} v1={1.92} u2={4.92} v2={4.48} h={10} lift={-10} top={C.mintTop} left={C.mintL} right={C.mintR} />
 
-      {/* =====================================================================
-          4. AIR TERJUN BERUNDAK DI TEPI TEBING & GUMPALAN AWAN LOW-POLY DI BAWAHNYA
-          ===================================================================== */}
       {/* Bibir buih air terjun di tepi tebing selatan */}
       <IsoSlab u1={2.04} v1={4.54} u2={2.60} v2={4.66} h={4} lift={-8} top={river.foam} left={river.waterfallTop} right={river.waterfallLeft} />
       {/* Undakan atas air terjun menuruni tebing */}
@@ -1833,10 +1717,6 @@ export function IslandTerrain({
         <circle cx="1" cy="-5" r="2.0" fill={river.foam} className="waterfall-droplet--3" />
       </g>
 
-      {/* =====================================================================
-          5. GUNUNG BATU TERAKOTA-ORANYE TIMUR LAUT & PORTAL TEROWONGAN SUNGAI
-          ===================================================================== */}
-      {/* Blok Masif Terakota Kiri (tempat keluarnya sungai dari Portal Terowongan) */}
       <IsoSlab u1={1.48} v1={-1.02} u2={3.08} v2={-0.18} h={24} lift={0} top="#d9623b" left="#bf4f2b" right="#9e3d1e" />
       <IsoSlab u1={1.58} v1={-0.96} u2={2.98} v2={-0.24} h={16} lift={24} top="#f29544" left="#de792b" right="#bd6018" />
       <IsoSlab u1={1.74} v1={-0.88} u2={2.78} v2={-0.34} h={12} lift={40} top="#f7ad5c" left="#e68938" right="#c76d22" />
@@ -1852,10 +1732,6 @@ export function IslandTerrain({
       <line x1={springTopX} y1={springTopY} x2={springBotX} y2={springBotY} className="waterfall-stream" stroke={river.foam} strokeWidth="3.2" strokeLinecap="round" />
       <IsoSlab u1={1.84} v1={-0.18} u2={2.22} v2={0.04} h={3} lift={-5} top={river.foam} left={river.waterfallTop} right={river.waterfallLeft} />
 
-      {/* =====================================================================
-          6. JALUR PEDESTRIAN TANAH KREM & JEMBATAN BATU KANAL TENGAH
-          ===================================================================== */}
-      {/* Jalur Boulevard Utara-Selatan melewati Balai Kota */}
       <polygon points={`${pt(-0.85, -0.15, 0.4)} ${pt(-0.55, -0.15, 0.4)} ${pt(-0.55, 0.95, 0.4)} ${pt(-0.85, 0.95, 0.4)}`} fill={C.pathTop} />
       <polygon points={`${pt(-0.85, 0.72, 0.4)} ${pt(1.08, 0.72, 0.4)} ${pt(1.08, 0.98, 0.4)} ${pt(-0.85, 0.98, 0.4)}`} fill={C.pathTop} />
       <polygon points={`${pt(0.82, 0.72, 0.4)} ${pt(1.08, 0.72, 0.4)} ${pt(1.08, 3.85, 0.4)} ${pt(0.82, 3.85, 0.4)}`} fill={C.pathTop} />
@@ -1900,18 +1776,11 @@ export function IslandTerrain({
       <RoundTree u={2.88} v={0.42} lift={0} scale={0.68} />
       <PineTree u={4.62} v={0.42} lift={0} scale={0.84} tone="pine" />
 
-      {/* =====================================================================
-          7. EFEK LANGSUNG KEBIJAKAN DI SELURUH KOTA
-          ===================================================================== */}
       <CityWideEffects plots={plots} />
     </g>
   );
 }
 
-/**
- * Elemen lanskap latar depan, Balai Kota di pusat kota, dan partikel polusi
- * udara di langit kota.
- */
 export function IslandForeground({
   avatar = 'rian',
   satisfaction = 50,
@@ -1993,7 +1862,6 @@ function SolarPanel({ gleamDelay = 0 }: { gleamDelay?: number }) {
   );
 }
 
-/** Kawasan Ladang Surya & Energi Bersih Terbuka (tanpa matahari mengambang) */
 function Plts() {
   return (
     <g>
@@ -2094,7 +1962,6 @@ function Plts() {
   );
 }
 
-/** Kawasan Pembangkit Listrik Batu Bara (PLTU) & Lapangan Batu Bara */
 function Pltu() {
   const w = 64 - 22;
   const d = 32 - 11;
@@ -2165,10 +2032,6 @@ function Pltu() {
   );
 }
 
-/**
- * Pilar silinder beton (Cylindrical Pillar Stilt) bergaya 3D clay render
- * lengkap dengan bayangan kontak ambient occlusion dan kepala pilar (pier cap).
- */
 function CylindricalPillarStilt({
   u,
   v,
@@ -2219,10 +2082,6 @@ function CylindricalPillarStilt({
   );
 }
 
-/**
- * Lampu jalan miniatur (Overhead Miniature Streetlight) di sepanjang pembatas
- * beton jalan tol layang.
- */
 function HighwayStreetlight({
   x,
   y,
@@ -2277,19 +2136,6 @@ function HighwayStreetlight({
   );
 }
 
-/**
- * Koridor Jalan Tol Layang Dalam Kota (Elevated Urban Highway Flyover):
- * - Jalan tol beton layang ramping yang menanjak mulus dari permukaan tanah
- *   dan melengkung halus melintasi ubin diorama.
- * - Ditopang oleh tiang-tiang pilar silinder beton bersih di atas hamparan
- *   rumput hijau dan jalur pedestrian krem di bawah jembatan.
- * - Bayangan kontak ambient occlusion (AO) lembut di bawah jembatan layang.
- * - Permukaan aspal hitam arang halus dengan marka garis kuning dan garis
- *   putih putus-putus yang tajam, pembatas jalan beton (highway barriers),
- *   serta lampu jalan miniatur di sepanjang jalan layang.
- * - Kendaraan tol dirender pada layer dinamis terpisah (`TolTrafficLayer`)
- *   agar dapat bergerak tanpa me-render ulang pulau.
- */
 function Tol() {
   const N = 18;
   const ts = Array.from({ length: N + 1 }, (_, i) => i / N);
@@ -2389,10 +2235,6 @@ function Tol() {
 
   return (
     <g>
-      {/* =====================================================================
-          1. HAMPARAN RUMPUT HIJAU & JALUR PEDESTRIAN DI BAWAH JALAN LAYANG
-          ===================================================================== */}
-      {/* Hamparan rumput taman halus di dasar ubin jalan layang */}
       <polygon
         points={`${pt(-0.88, -0.68, 14)} ${pt(0.88, -0.68, 14)} ${pt(0.88, 0.82, 14)} ${pt(-0.88, 0.82, 14)}`}
         fill={C.mintTop}
@@ -2417,15 +2259,9 @@ function Tol() {
       <RoundTree u={-0.38} v={-0.54} lift={14} scale={0.56} />
       <RoundTree u={0.52} v={-0.38} lift={14} scale={0.58} />
 
-      {/* =====================================================================
-          2. BAYANGAN KONTAK AMBIENT OCCLUSION (AO) DI BAWAH JEMBATAN LAYANG
-          ===================================================================== */}
       <polygon points={polyPts(shadowOuterPts)} fill="#0f172a" opacity="0.14" />
       <polygon points={polyPts(shadowCorePts)} fill="#0f172a" opacity="0.22" />
 
-      {/* =====================================================================
-          3. TIANG PILAR SILINDER BETON (CYLINDRICAL PILLAR STILTS)
-          ===================================================================== */}
       {pillarStops.map((t) => {
         const s = sampleTolFlyoverSpine(t);
         const uBack = s.u - (-0.13) * 0.24;
@@ -2456,11 +2292,7 @@ function Tol() {
       <polygon points={polyPts(nwAbutmentWall)} fill="#94a3b8" />
       <polygon points={polyPts(seAbutmentWall)} fill="#94a3b8" />
 
-      {/* =====================================================================
-          4. DEK BETON JALAN LAYANG, ASPAL HITAM ARANG, MARKA & PEMBATAS BETON
-          ===================================================================== */}
-      {/* Sisi bawah & samping box-girder beton jalan layang */}
-      <polygon points={polyPts(deckSideUnderPts)} fill="#64748b" />
+     <polygon points={polyPts(deckSideUnderPts)} fill="#64748b" />
       <polygon points={polyPts(deckSideFrontPts)} fill="#cbd5e1" />
 
       {/* Pembatas jalan beton sisi belakang (Rear Concrete Highway Barrier) */}
@@ -2524,7 +2356,6 @@ function Tol() {
   );
 }
 
-/** Armada Bus Listrik BRT Detail (kaca depan lebar, pod baterai atap, aksen hijau, lampu & roda) */
 function BrtElectricBus({ scale = 1 }: { scale?: number }) {
   return (
     <g transform={`scale(${scale})`}>
@@ -2551,7 +2382,6 @@ function BrtElectricBus({ scale = 1 }: { scale?: number }) {
   );
 }
 
-/** Koridor Transit BRT Listrik Terpadu & Jalur Hijau Sepeda */
 function Brt() {
   return (
     <g>
@@ -2628,7 +2458,6 @@ function Brt() {
   );
 }
 
-/** Kawasan Industri Berat & Gudang Logistik di Lembah Utara (tanpa polygon hitam, dengan asap kelabu periodik) */
 function Industri() {
   return (
     <g>
@@ -2698,7 +2527,6 @@ function Industri() {
   );
 }
 
-/** Kawasan Hutan Kota & Danau Resapan Ekologis di Lembah Utara */
 function Hutan() {
   return (
     <g>
@@ -2761,7 +2589,6 @@ function Hutan() {
   );
 }
 
-/** Klaster polygon 3D tumpukan sampah di daratan / bantaran sungai */
 function TrashCluster({
   u,
   v,
@@ -2822,7 +2649,6 @@ function TrashCluster({
   );
 }
 
-/** Polygon sampah 3D yang mengapung & hanyut di atas aliran air sungai */
 function RiverTrashItem({
   u,
   v,
@@ -2873,7 +2699,6 @@ function RiverTrashItem({
   );
 }
 
-/** Kawasan Gunung Sampah TPA Terbuka di Lembah Selatan (dengan asap kelabu halus periodik) */
 function Tpa() {
   const debris: [number, number, string][] = [
     [-26, -22, C.glass],
@@ -2943,7 +2768,6 @@ function Tpa() {
   );
 }
 
-/** Kawasan Pusat Daur Ulang 3R & PLTSa Bersih */
 function Daurulang() {
   const bins: [number, string, string, string][] = [
     [-0.36, C.leafTop, C.leafL, '#86efac'],
@@ -3019,7 +2843,6 @@ function Daurulang() {
   );
 }
 
-/** Kawasan Perumahan Tapak Horizontal Padat (memakan lahan resapan tenggara) */
 function Perumahan() {
   const house = (
     roofSide: string,
@@ -3101,7 +2924,6 @@ function Perumahan() {
   );
 }
 
-/** Kawasan Apartemen Vertikal Hijau Hemat Lahan & Taman Resapan (warga di halaman, bukan di atas bangunan) */
 function Apartemen() {
   const tower = (h: number, w: number, terraces: number[]) => (
     <g>
@@ -3215,10 +3037,6 @@ export function Building({ id }: { id: AssetId }) {
   return <Draw />;
 }
 
-/**
- * Pembatas jalan oranye-putih (Orange-and-White Striped Safety Barrier) &
- * kerucut lalu lintas miniatur (Traffic Cone) di sekeliling petak konstruksi.
- */
 function SafetyBarrier({
   u,
   v,
@@ -3263,15 +3081,6 @@ function TrafficCone({ u, v, lift = 14 }: { u: number; v: number; lift?: number 
   );
 }
 
-/**
- * Tahap 2: Aset Konstruksi Gedung 3D Isometrik Kontekstual (`ConstructionSite`).
- *
- * Elemen Situs Konstruksi menyesuaikan kategori bangunan (`id`):
- * - `pltu` / `industri` / `tpa`: Mengangkat balok baja I-Beam merah-karat & drum/bata tahan api.
- * - `tol` / `brt` / `perumahan`: Mengangkat segmen beton jalan/box-girder & barier jalan.
- * - `hutan`: Mengangkat bibit pohon rimbun berakar tanah & balok kayu gazebo.
- * - Default (`plts`, `daurulang`, `apartemen`): Mengangkat modul panel surya & gulungan rumput turf.
- */
 export function ConstructionSite({ id }: { id?: AssetId }) {
   const isHeavy = id === 'pltu' || id === 'industri' || id === 'tpa';
   const isTransitOrRoad = id === 'tol' || id === 'brt' || id === 'perumahan';
@@ -3476,10 +3285,6 @@ export function ConstructionSite({ id }: { id?: AssetId }) {
   );
 }
 
-/**
- * Partikel Confetti Geometris Berwarna-warni (Subtle Tiny Geometric Confetti)
- * yang melayang meriah saat peresmian gedung.
- */
 function ConfettiBurst() {
   const pieces: { x: number; y: number; color: string; delay: number; shape: 'diamond' | 'rect' | 'circle' }[] = [
     { x: -38, y: -64, color: '#f43f5e', delay: 0, shape: 'diamond' },
@@ -3514,16 +3319,6 @@ function ConfettiBurst() {
   );
 }
 
-/**
- * Tahap 3: Aset Peresmian Gedung Baru 3D Isometrik (`OpeningCeremony`).
- *
- * Menampilkan:
- * - Latar Belakang: Fasilitas baru yang telah berdiri megah di atas petak.
- * - Latar Depan: Jalur karpet merah peresmian, dua tiang pembatas perak yang
- *   membentangkan pita satin merah cerah dengan animasi terbelah saat digunting
- *   Walikota (`.ceremony-ribbon-left`, `.ceremony-ribbon-right`, `.ceremony-ribbon-knot`),
- *   staf kota & warga yang bersorak, serta partikel confetti geometris di udara.
- */
 export function OpeningCeremony({ id }: { id: AssetId }) {
   return (
     <g className="opening-ceremony" data-testid="opening-ceremony" data-building-id={id}>

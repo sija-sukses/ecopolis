@@ -25,11 +25,8 @@ export type RevealProps = HTMLAttributes<HTMLElement> &
   UseInViewOptions & {
     as?: ElementType;
     variant?: RevealVariant;
-    /** Penundaan dalam ms (default: 0) */
     delay?: number;
-    /** Durasi kustom dalam ms (opsional, mengikuti default varian jika kosong) */
     duration?: number;
-    /** Jarak geser dalam px untuk varian slide-* (default mengikuti varian) */
     distance?: number;
     children: ReactNode;
   };
@@ -83,9 +80,7 @@ export function Reveal({
 export type StaggerGroupProps = HTMLAttributes<HTMLElement> &
   UseInViewOptions & {
     as?: ElementType;
-    /** Jeda antar anak dalam ms (standar Emil Kowalski: 40-60ms, default: 55ms) */
     staggerMs?: number;
-    /** Penundaan awal sebelum item pertama masuk (default: 0ms) */
     baseDelayMs?: number;
     children: ReactNode;
   };
@@ -104,7 +99,6 @@ export function StaggerGroup({
 }: StaggerGroupProps) {
   const [ref, inView] = useInView<HTMLElement>({ once, amount, margin });
 
-  // Batasi stagger maksimal 5 indeks efektif agar daftar tidak terasa lambat (Emil Kowalski Bar)
   const items = Children.map(children, (child, index) => {
     if (
       !isValidElement<{
@@ -186,10 +180,6 @@ export function StaggerItem({
   );
 }
 
-/**
- * Menjeda seluruh animasi CSS tak terbatas di dalam anak komponen (seperti <CityMap>)
- * ketika elemen berada di luar viewport.
- */
 export function ViewportPause({
   className = '',
   style,

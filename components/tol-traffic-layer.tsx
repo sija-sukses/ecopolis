@@ -12,16 +12,7 @@ type LaneVehicleSpec = {
   scale: number;
 };
 
-/**
- * Konfigurasi kendaraan dinamis di kedua lajur Jalan Tol Dalam Kota:
- * - Lajur 'nw' (sisi dalam/kanan, mengalir dari tenggara ke barat-laut):
- *   Van pengiriman nir-emisi, mobil putih kompak, dan mobil biru elektrik.
- * - Lajur 'se' (sisi luar/kiri, mengalir dari barat-laut ke tenggara):
- *   Mobil kuning cerah, bus umum listrik hijau miniatur, dan mobil biru elektrik.
- * Semua kendaraan tersusun rapi mengikuti kurva lajur tanpa kotak kargo liar.
- */
 const HIGHWAY_VEHICLES: LaneVehicleSpec[] = [
-  // Lajur 2 (Belakang / Arah Barat-Laut) - dirender lebih dulu sesuai painter's algorithm
   {
     id: 'nw-van',
     kind: 'van-delivery',
@@ -43,7 +34,6 @@ const HIGHWAY_VEHICLES: LaneVehicleSpec[] = [
     animClass: 'tol-mover tol-mover--nw-3',
     scale: 0.72,
   },
-  // Lajur 1 (Depan / Arah Tenggara)
   {
     id: 'se-yellow',
     kind: 'car-yellow',
@@ -67,12 +57,6 @@ const HIGHWAY_VEHICLES: LaneVehicleSpec[] = [
   },
 ];
 
-/**
- * Lapisan Kendaraan Tol Dinamis Terpisah (Decoupled Transparent Vehicle Asset Layer).
- * Dirender sebagai layer independen yang di-memoize menggunakan aset SVG transparan
- * (`/assets/vehicles/*.svg`) agar pergerakan kendaraan tol di atas canvas peta
- * berjalan mulus dengan komposisi GPU tanpa pernah me-render ulang seluruh pulau.
- */
 export const TolTrafficLayer = memo(function TolTrafficLayer({
   plotX,
   plotY,

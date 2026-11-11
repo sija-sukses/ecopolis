@@ -19,14 +19,6 @@ import {
 } from './motion/reveal.tsx';
 import { PolicyIcon } from './policy-icon.tsx';
 
-/**
- * Satu keputusan ronde 1 yang benar-benar bisa dicoba di landing page, memakai
- * data dan rumus yang sama persis dengan permainannya.
- *
- * Tanpa JavaScript, kedua pilihan tetap terbaca lengkap beserta dampaknya dan
- * indikator berdiri di angka awal 50 — tidak ada isi yang hilang.
- */
-
 const LABELS: Record<StatKey, string> = {
   economy: 'Ekonomi',
   environment: 'Lingkungan',
@@ -38,7 +30,6 @@ const KEYS = Object.keys(LABELS) as StatKey[];
 
 const ROUND_ONE = SCENARIOS[0];
 
-/** Menganimasikan angka indikator secara halus mengikuti gerak batang progres. */
 function useAnimatedStats(target: Stats): Stats {
   const [display, setDisplay] = useState<Stats>(target);
   const currentRef = useRef<Stats>(target);

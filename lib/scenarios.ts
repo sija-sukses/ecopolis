@@ -1,14 +1,5 @@
 import type { Scenario } from './types.ts';
 
-/**
- * Lima dilema kebijakan. Data murni — menambah ronde cukup menambah satu entri
- * di sini, tidak ada kode yang perlu diubah.
- *
- * Penyeimbangan: tidak ada opsi yang unggul di semua statistik. Jalur "serba
- * hijau" menamatkan permainan dengan ekonomi ~10, jalur "serba ekonomi"
- * menamatkannya dengan lingkungan ~0 — dua ekstrem sengaja berakhir krisis,
- * karena di situlah pelajaran tradeoff-nya.
- */
 export const SCENARIOS: Scenario[] = [
   {
     round: 1,

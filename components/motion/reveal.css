@@ -1,7 +1,3 @@
-/* ===========================================================================
-   Sistem Komponen Intersection Observer (Transform & Opacity Only)
-   Standar Emil Kowalski: animate, animation-performance, review-animations
-   =========================================================================== */
 
 [data-io-reveal] {
   --io-duration: 480ms;
