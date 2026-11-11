@@ -4,15 +4,6 @@ import type { Review, ReviewPayload } from '@/lib/types.ts';
 import { honorificOf } from '@/lib/avatars.ts';
 import { fallbackReview } from '@/lib/fallback.ts';
 
-/**
- * Satu-satunya pemanggilan jaringan di seluruh permainan, dijalankan tepat
- * sekali saat ronde terakhir selesai.
- *
- * Fungsi ini tidak pernah melempar error. Kegagalan apa pun — timeout, rate
- * limit, kuota habis, offline, kunci salah, JSON cacat — berakhir di narasi
- * cadangan lokal, supaya permainan tidak pernah berhenti di depan juri.
- */
-
 const TIMEOUT_MS = 4000;
 
 const rawModel = process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash-lite';

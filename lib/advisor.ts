@@ -196,10 +196,6 @@ export function localAdvisorReply(payload: AdvisorPayload): AdvisorReply {
   };
 }
 
-/**
- * Memberikan proyeksi analisis dampak taktis (AI Decision Support) secara deterministik
- * untuk masing-masing opsi kebijakan berdasarkan kondisi statistik kota saat ini.
- */
 export function getPolicyProjection(
   round: number,
   optionId: OptionId,

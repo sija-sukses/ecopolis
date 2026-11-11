@@ -9,7 +9,6 @@ const LEADER: Leader = { name: 'Budi', avatar: 'rian' };
 
 const started = () => reducer(initialState, { type: 'start', leader: LEADER });
 
-/** Mainkan satu permainan penuh dengan memilih opsi yang sama tiap ronde. */
 function playAll(option: OptionId): GameState {
   let s = started();
   for (let i = 0; i < ROUNDS; i++) s = reducer(s, { type: 'choose', option });

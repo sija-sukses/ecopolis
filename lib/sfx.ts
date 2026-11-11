@@ -1,17 +1,5 @@
-/**
- * Efek suara dibangkitkan lewat Web Audio, bukan berkas audio.
- * Nol dependensi, nol permintaan jaringan, dan nol lisensi yang perlu diurus.
- *
- * AudioContext dibuat malas pada bunyi pertama, karena peramban memblokir
- * pembuatannya sebelum ada interaksi pengguna.
- */
-
 type Sound = 'click' | 'drop' | 'construct' | 'ceremony' | 'done' | 'stamp';
 
-/**
- * Pola getaran mikro (haptics) untuk perangkat seluler berkemampuan getar.
- * Pendek dan halus (10-35ms) untuk sensasi taktil fisik layaknya game konsol.
- */
 const HAPTICS: Record<Sound, number | number[]> = {
   click: 10,
   drop: [12, 16],
@@ -21,7 +9,6 @@ const HAPTICS: Record<Sound, number | number[]> = {
   stamp: [25, 35, 20],
 };
 
-/** Nada dalam Hz, dan panjangnya dalam detik. */
 const NOTES: Record<Sound, { freq: number[]; dur: number; type: OscillatorType }> = {
   click: { freq: [660], dur: 0.06, type: 'triangle' },
   drop: { freq: [240, 150], dur: 0.17, type: 'sine' },

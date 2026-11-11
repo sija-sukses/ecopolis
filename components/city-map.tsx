@@ -21,18 +21,6 @@ import {
 import { MayorDynamicLayer } from './mayor-layer.tsx';
 import { TolTrafficLayer } from './tol-traffic-layer.tsx';
 
-/**
- * Peta lima petak di atas pulau terapung isometrik low-poly yang luas. Satu
- * elemen <svg> dengan viewBox, jadi skalanya mengikuti lebar kontainer dari
- * 375px sampai 1920px tanpa satu breakpoint pun dan tanpa aset yang terpotong.
- *
- * Mendukung alur transisi 4 tahap pada setiap petak:
- * 1. 'empty' -> Petak kosong / paving
- * 2. 'construction' -> Situs konstruksi aktif (crane kuning, perancah, pekerja, material)
- * 3. 'ceremony' -> Peresmian gedung (Walikota potong pita merah di karpet merah + confetti)
- * 4. 'operational' -> Gedung jadi yang beroperasi penuh
- */
-
 export type ActivePlotTransition = {
   plotIndex: number;
   stage: PlotTransitionStage;

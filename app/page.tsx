@@ -14,13 +14,7 @@ import { SCENARIOS } from '@/lib/scenarios.ts';
 import type { AssetId, StatKey, Stats } from '@/lib/types.ts';
 import styles from './page.module.css';
 
-/**
- * Kota contoh di landing page: jalur paling hijau, kelima kawasan terbangun.
- *
- * Dipakai peta hidup yang sama persis dengan yang ada di `/play`, bukan gambar
- * diam, supaya sungainya mengalir, pekerjanya bergerak, dan Walikota berdiri
- * di Balai Kota seperti di dalam permainannya.
- */
+
 const SHOWCASE: AssetId[] = ['plts', 'brt', 'hutan', 'daurulang', 'apartemen'];
 
 const DILEMMAS = [

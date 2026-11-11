@@ -123,7 +123,6 @@ export function Hud({ stats, round, leaderName, avatar, muted, onToggleMute }: P
   );
 }
 
-/** Menganimasikan angka indikator secara halus mengikuti gerak batang progres. */
 function useAnimatedStats(target: Stats): Stats {
   const [display, setDisplay] = useState<Stats>(target);
   const currentRef = useRef<Stats>(target);
